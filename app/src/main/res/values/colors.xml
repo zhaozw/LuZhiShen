@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimaryDark">#00796b</color>
+    <color name="colorPrimary">#009688</color>
+    <color name="colorAccent">#ffeb3b</color>
+
+    <color name="redPrimaryDark">#d32f2f</color>
+    <color name="redPrimary">#f44336</color>
+    <color name="redAccent">#ef5350</color>
+    <color name="light_red">#ef9a9a</color>
+
+    <color name="purplePrimaryDark">#5e35b1</color>
+    <color name="purplePrimary">#673ab7</color>
+    <color name="purpleAccent">#7e57c2</color>
+    <color name="light_purple">#b39ddb</color>
+
+    <color name="bluePrimaryDark">#1976d2</color>
+    <color name="bluePrimary">#2196f3</color>
+    <color name="blueAccent">#42a5f5</color>
+    <color name="light_blue">#90caf9</color>
+
+    <color name="greenPrimaryDark">#689f38</color>
+    <color name="greenPrimary">#8bc34a</color>
+    <color name="greenAccent">#9ccc65</color>
+    <color name="light_green">#c5e1a5</color>
+
+    <color name="deepOrangePrimaryDark">#e64a19</color>
+    <color name="deepOrangePrimary">#ff5722</color>
+    <color name="deepOrangeAccent">#ff7043</color>
+    <color name="light_deepOrange">#ffab91</color>
+
+    <color name="brownPrimaryDark">#5d4037</color>
+    <color name="brownPrimary">#795548</color>
+    <color name="brownAccent">#8d6e63</color>
+    <color name="light_brown">#bcaaa4</color>
+
+    <color name="tealPrimaryDark">#00796b</color>
+    <color name="tealPrimary">#009688</color>
+    <color name="tealAccent">#26a69a</color>
+    <color name="light_teal">#80cbc4</color>
+
+    <color name="pinkPrimaryDark">#c2185b</color>
+    <color name="pinkPrimary">#e91e63</color>
+    <color name="pinkAccent">#ec407a</color>
+    <color name="light_pink">#f48fb1</color>
+
+    <color name="greyPrimaryDark">#455a64</color>
+    <color name="greyPrimary">#607d8b</color>
+    <color name="greyAccent">#78909c</color>
+    <color name="light_grey">#b0bec5</color>
+
+    <color name="blackPrimaryDark">#424242</color>
+    <color name="blackPrimary">#616161</color>
+    <color name="blackAccent">#757575</color>
+    <color name="light_black">#9e9e9e</color>
+
+    <color name="videoViewBBG">#90424242</color>
+    <color name="menu_text_color">#fafafa</color>
+    <color name="menu_text_color_dark">#212121</color>
+</resources>
