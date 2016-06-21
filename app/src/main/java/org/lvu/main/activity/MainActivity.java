@@ -71,12 +71,17 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.wait_replace, fragment).commitAllowingStateLoss();
     }
 
-    public void hideToolbar(){
+    public void hideToolbar() {
         mToolbar.setVisibility(View.GONE);
     }
 
-    public void showToolbar(){
+    public void showToolbar() {
         mToolbar.setVisibility(View.VISIBLE);
+    }
+
+    public void setDrawerLockMode(boolean lock) {
+        mDrawerLayout.setDrawerLockMode(lock ?
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
     private void initImmerse() {

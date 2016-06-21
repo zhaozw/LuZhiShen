@@ -48,16 +48,12 @@ public class TestActivity2 extends AppCompatActivity {
         mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
         mPlayer = (VideoPlayer) findViewById(R.id.player);
         mPlayer.setActivity(this);
-        mPlayer.setOnScreenOrientationChangedListener(new VideoPlayer.OnScreenOrientationChangedListener() {
+        mPlayer.setOnPlayCompleteListener(new VideoPlayer.OnPlayCompleteListener() {
+
             @Override
-            public void onChangedToPortrait() {
+            public void playComplete() {
                 if (mRecyclerView.getVisibility() != View.VISIBLE)
                     mRecyclerView.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onChangeToLandscape() {
-
             }
         });
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);

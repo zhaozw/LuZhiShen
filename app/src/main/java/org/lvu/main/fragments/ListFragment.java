@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout;
 
 import org.lvu.R;
 import org.lvu.adapter.ChinaVideoAdapter;
@@ -23,6 +24,7 @@ import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.VideoPlayer;
 import org.lvu.main.activity.MainActivity;
 import org.lvu.model.Data;
+import org.lvu.utils.ImmerseUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,19 +152,20 @@ public class ListFragment extends Fragment {
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         url = "";
         mLoadMoreBar = (CircleProgressBar) mRootView.findViewById(R.id.progressbar);
+        if (ImmerseUtil.isHasNavigationBar(getActivity())) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
+            lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(getActivity());
+            mLoadMoreBar.setLayoutParams(lp);
+        }
         mPlayer = (VideoPlayer) mRootView.findViewById(R.id.player);
         mPlayer.setActivity(getActivity());
-        mPlayer.setOnScreenOrientationChangedListener(new VideoPlayer.OnScreenOrientationChangedListener() {
+        mPlayer.setOnPlayCompleteListener(new VideoPlayer.OnPlayCompleteListener() {
             @Override
-            public void onChangedToPortrait() {
+            public void playComplete() {
+                ((MainActivity)getActivity()).setDrawerLockMode(false);
                 if (mRecyclerView.getVisibility() != View.VISIBLE)
                     mRecyclerView.setVisibility(View.VISIBLE);
-                ((MainActivity)getActivity()).showToolbar();
-            }
-
-            @Override
-            public void onChangeToLandscape() {
-
+                ((MainActivity) getActivity()).showToolbar();
             }
         });
         mChinaVideoAdapter = new ChinaVideoAdapter(getActivity(), R.layout.list_item, new ArrayList<Data>());
@@ -185,7 +188,8 @@ public class ListFragment extends Fragment {
             public void onClick(String url, String title) {
                 if (mLoadMoreBar.getVisibility() == View.VISIBLE)
                     mLoadMoreBar.setVisibility(View.GONE);
-                ((MainActivity)getActivity()).hideToolbar();
+                ((MainActivity)getActivity()).setDrawerLockMode(true);
+                ((MainActivity) getActivity()).hideToolbar();
                 mPlayer.setUrlPlay(url);
                 mPlayer.setVisibility(View.VISIBLE);
                 mRecyclerView.setVisibility(View.GONE);
@@ -212,19 +216,21 @@ public class ListFragment extends Fragment {
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         url = "";
         mLoadMoreBar = (CircleProgressBar) mRootView.findViewById(R.id.progressbar);
+        if (ImmerseUtil.isHasNavigationBar(getActivity())) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
+            lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(getActivity());
+            mLoadMoreBar.setLayoutParams(lp);
+        }
         mPlayer = (VideoPlayer) mRootView.findViewById(R.id.player);
         mPlayer.setActivity(getActivity());
-        mPlayer.setOnScreenOrientationChangedListener(new VideoPlayer.OnScreenOrientationChangedListener() {
+        mPlayer.setOnPlayCompleteListener(new VideoPlayer.OnPlayCompleteListener() {
+
             @Override
-            public void onChangedToPortrait() {
+            public void playComplete() {
+                ((MainActivity)getActivity()).setDrawerLockMode(false);
                 if (mRecyclerView.getVisibility() != View.VISIBLE)
                     mRecyclerView.setVisibility(View.VISIBLE);
-                ((MainActivity)getActivity()).showToolbar();
-            }
-
-            @Override
-            public void onChangeToLandscape() {
-
+                ((MainActivity) getActivity()).showToolbar();
             }
         });
         mJapanVideoAdapter = new JapanVideoAdapter(getActivity(), R.layout.list_item, new ArrayList<Data>());
@@ -247,7 +253,8 @@ public class ListFragment extends Fragment {
             public void onClick(String url, String title) {
                 if (mLoadMoreBar.getVisibility() == View.VISIBLE)
                     mLoadMoreBar.setVisibility(View.GONE);
-                ((MainActivity)getActivity()).hideToolbar();
+                ((MainActivity)getActivity()).setDrawerLockMode(true);
+                ((MainActivity) getActivity()).hideToolbar();
                 mPlayer.setUrlPlay(url);
                 mPlayer.setVisibility(View.VISIBLE);
                 mRecyclerView.setVisibility(View.GONE);
@@ -285,8 +292,6 @@ public class ListFragment extends Fragment {
                 refreshData();
             }
         });
-
-        mLoadMoreBar = (CircleProgressBar) mRootView.findViewById(R.id.progressbar);
     }
 
     /**

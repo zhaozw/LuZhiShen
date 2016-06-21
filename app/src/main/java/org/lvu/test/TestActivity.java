@@ -31,14 +31,10 @@ public class TestActivity extends AppCompatActivity {
                 VideoPlayer player = (VideoPlayer) findViewById(R.id.vp);
                 player.setActivity(TestActivity.this);
                 player.setUrlPlay("http://www.bilibilijj.com/FreeDown/DownLoad/1466448961/mp4/2601561.D9B66800F4746A6C293D905EF77BBBEE");
-                player.setOnScreenOrientationChangedListener(new VideoPlayer.OnScreenOrientationChangedListener() {
+                player.setOnPlayCompleteListener(new VideoPlayer.OnPlayCompleteListener() {
                     @Override
-                    public void onChangedToPortrait() {
+                    public void playComplete() {
                         v.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onChangeToLandscape() {
                     }
                 });
             }

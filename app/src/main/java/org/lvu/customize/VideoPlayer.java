@@ -44,7 +44,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     private SeekBar mProgressbar;
     private boolean isControlButtonsShowing, isReplay,
             isTimingThreadRunning, isOriginallyPlaying, mRunningFlag;
-    private int mOriginallyVCS;
+    private int mOriginallyVCS, mOriginallyOrientation;
     private Handler mHandler;
     private float mStartX, mEndX;
     private int mMoveDistance, mTotalWidth = -1, mResult;
@@ -63,7 +63,6 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         super(context, attrs, defStyleAttr);
         init(context);
     }
-
 
     private void init(Context context) {
         mContext = context;
@@ -392,7 +391,10 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         pause();
         mRootView.setVisibility(GONE);
         mPlayer.destroyDrawingCache();
-        changeToPortrait();
+        if (mOriginallyOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+            changeToPortrait();
+        if (mOnPlayCompleteListener != null)
+            mOnPlayCompleteListener.playComplete();
         mActivity.setVolumeControlStream(mOriginallyVCS);
         try {
             if (mPlayer != null)
@@ -418,8 +420,6 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-            if (mOnScreenOrientationChangedListener != null)
-                mOnScreenOrientationChangedListener.onChangedToPortrait();
         }
     }
 
@@ -437,27 +437,23 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
                     | View.SYSTEM_UI_FLAG_FULLSCREEN; // hide status bar
             uiFlags |= 0x00001000;
             mActivity.getWindow().getDecorView().setSystemUiVisibility(uiFlags);
-            if (mOnScreenOrientationChangedListener != null)
-                mOnScreenOrientationChangedListener.onChangeToLandscape();
         }
     }
 
-    private OnScreenOrientationChangedListener mOnScreenOrientationChangedListener;
+    private OnPlayCompleteListener mOnPlayCompleteListener;
 
-    public void setOnScreenOrientationChangedListener(
-            OnScreenOrientationChangedListener listener) {
-        mOnScreenOrientationChangedListener = listener;
+    public void setOnPlayCompleteListener(OnPlayCompleteListener listener) {
+        mOnPlayCompleteListener = listener;
     }
 
-    public interface OnScreenOrientationChangedListener {
-        void onChangedToPortrait();
-
-        void onChangeToLandscape();
+    public interface OnPlayCompleteListener {
+        void playComplete();
     }
 
     public void setActivity(Activity activity) {
         mActivity = activity;
         mOriginallyVCS = mActivity.getVolumeControlStream();
+        mOriginallyOrientation = mActivity.getResources().getConfiguration().orientation;
         mActivity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 

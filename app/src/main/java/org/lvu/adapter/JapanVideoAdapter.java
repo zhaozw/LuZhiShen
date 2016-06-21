@@ -15,7 +15,6 @@ import android.widget.TextView;
 import org.lvu.R;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
-import org.lvu.utils.LogUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -161,7 +160,6 @@ public class JapanVideoAdapter extends RecyclerView.Adapter<JapanVideoAdapter.Vi
 
         @Override
         public void handleMessage(Message msg) {
-            LogUtil.print(msg.what);
             if (msg.what == 1) {
                 if (mClass.get().mOnLoadMoreFinishListener != null)
                     mClass.get().mOnLoadMoreFinishListener.onFinish();
