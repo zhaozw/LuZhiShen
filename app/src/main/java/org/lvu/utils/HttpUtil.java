@@ -34,10 +34,11 @@ public class HttpUtil {
                                 src = document.select("img[src]"),
                                 link = links.select("a[href][title][target]");
                         for (int i = 0; i < link.size(); i++) {
-                            result.add(new Data(
-                                    getVideoUrlByUrl(link.get(i).attr("abs:href")),
-                                    src.get(i).attr("abs:src"),
-                                    link.get(i).attr("title")));
+                            String videoUrl = getVideoUrlByUrl(link.get(i).attr("abs:href"));
+                            if (!videoUrl.isEmpty())
+                                result.add(new Data(videoUrl,
+                                        src.get(i).attr("abs:src"),
+                                        link.get(i).attr("title")));
                         }
                         Elements next = document.select("div[class]"), next2 = null;
                         for (Element tmp : next) {
