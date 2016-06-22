@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 
 import org.lvu.R;
 import org.lvu.adapter.ChinaVideoAdapter;
+import org.lvu.adapter.EuropeVideoAdapter;
 import org.lvu.adapter.JapanVideoAdapter;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.VideoPlayer;
@@ -36,8 +37,7 @@ public class ListFragment extends Fragment {
 
     public static final String LIST_TYPE = "listType";
     public static final int NAVIGATION = 0, CHINA_V = 1, EUROPE_V = 2, JAPAN_V = 3, FAMILY_P = 4,
-            ASIA_P = 5, EUROPE_P = 6, EVIL_P = 7, JAPAN_P = 8,
-            GIF = 9, EXCITED_N = 10, FAMILY_N = 11, WIFE_N = 12;
+            ASIA_P = 5, EUROPE_P = 6, EVIL_P = 7, GIF = 9, EXCITED_N = 10, FAMILY_N = 11, WIFE_N = 12;
     private View mRootView;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mRefreshLayout;
@@ -80,9 +80,7 @@ public class ListFragment extends Fragment {
                     initChinaV();
                     break;
                 case EUROPE_V:
-                    mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-                    url = "";
-                    mRootView = inflater.inflate(R.layout.temp, container, false);
+                    initEuropeV();
                     break;
                 case JAPAN_V:
                     initJapanV();
@@ -103,11 +101,6 @@ public class ListFragment extends Fragment {
                     mRootView = inflater.inflate(R.layout.temp, container, false);
                     break;
                 case EVIL_P:
-                    mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-                    url = "";
-                    mRootView = inflater.inflate(R.layout.temp, container, false);
-                    break;
-                case JAPAN_P:
                     mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
                     url = "";
                     mRootView = inflater.inflate(R.layout.temp, container, false);
@@ -143,6 +136,7 @@ public class ListFragment extends Fragment {
     private VideoPlayer mPlayer;
     private ChinaVideoAdapter mChinaVideoAdapter;
     private JapanVideoAdapter mJapanVideoAdapter;
+    private EuropeVideoAdapter mEuropeVideoAdapter;
 
     private void initChinaV() {
         final ProgressDialog dialog = new ProgressDialog(getActivity());
@@ -203,6 +197,70 @@ public class ListFragment extends Fragment {
                                 .findLastVisibleItemPosition() == mChinaVideoAdapter.getDataSize() - 1) {
                     showLoadMoreBar();
                     mChinaVideoAdapter.loadMore();
+                }
+            }
+        });
+    }
+
+    private void initEuropeV() {
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setMessage("加载中，请稍等。。。");
+        dialog.setCancelable(false);
+        dialog.show();
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        url = "";
+        mLoadMoreBar = (CircleProgressBar) mRootView.findViewById(R.id.progressbar);
+        if (ImmerseUtil.isHasNavigationBar(getActivity())) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
+            lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(getActivity());
+            mLoadMoreBar.setLayoutParams(lp);
+        }
+        mPlayer = (VideoPlayer) mRootView.findViewById(R.id.player);
+        mPlayer.setActivity(getActivity());
+        mPlayer.setOnPlayCompleteListener(new VideoPlayer.OnPlayCompleteListener() {
+            @Override
+            public void playComplete() {
+                ((MainActivity)getActivity()).setDrawerLockMode(false);
+                if (mRecyclerView.getVisibility() != View.VISIBLE)
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                ((MainActivity) getActivity()).showToolbar();
+            }
+        });
+        mEuropeVideoAdapter = new EuropeVideoAdapter(getActivity(), R.layout.list_item, new ArrayList<Data>());
+        mEuropeVideoAdapter.setOnLoadMoreFinishListener(new EuropeVideoAdapter.OnLoadMoreFinishListener() {
+            @Override
+            public void onFinish() {
+                hideLoadMoreBar();
+            }
+        });
+        mEuropeVideoAdapter.setOnSyncDataFinishListener(new EuropeVideoAdapter.OnSyncDataFinishListener() {
+            @Override
+            public void onFinish() {
+                dialog.dismiss();
+            }
+        });
+        mRecyclerView.setAdapter(mEuropeVideoAdapter);
+        mEuropeVideoAdapter.syncData("");
+        mEuropeVideoAdapter.setOnItemClickListener(new EuropeVideoAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(String url, String title) {
+                if (mLoadMoreBar.getVisibility() == View.VISIBLE)
+                    mLoadMoreBar.setVisibility(View.GONE);
+                ((MainActivity)getActivity()).setDrawerLockMode(true);
+                ((MainActivity) getActivity()).hideToolbar();
+                mPlayer.setUrlPlay(url);
+                mPlayer.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.GONE);
+            }
+        });
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (isScrollDown(dy) && !isLoadBarHiding && !isLoadingMore &&
+                        ((GridLayoutManager) recyclerView.getLayoutManager())
+                                .findLastVisibleItemPosition() == mEuropeVideoAdapter.getDataSize() - 1) {
+                    showLoadMoreBar();
+                    mEuropeVideoAdapter.loadMore();
                 }
             }
         });

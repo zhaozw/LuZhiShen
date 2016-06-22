@@ -6,29 +6,51 @@ import org.jsoup.select.Elements;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by wuyr on 6/16/16 7:40 PM.
  */
 public class HttpTest {
     public static void main(String[] args) {
-        String url = "http://a5408977.gotoip55.com/?s=vod-show-id-39.html";
+        // getVideoUrlByUrl("http://www.fapple.com/videos/119646");
+
+        String url = "http://m.fapple.com/videos";
         System.out.println("Thread start");
         int count = 0;
         while (true) {
             try {
                 Document document = Jsoup.connect(url).get();
-                Elements links = document.select("p[class]"),
-                        src = document.select("img[data-original]");
-                Elements link = new Elements();
-                for (Element tmp : links)
-                    if (tmp.attr("class").equals("content"))
-                        link.add(tmp);
+                Elements src = document.select("img[src]"), links = new Elements(), texts = document.select("h2");
+                for (Element tmp : texts) {
+                    links.add(tmp.parent());
+                }
+                src.remove(0);
+                for (int i = 0; i < links.size(); i++) {
+                    System.out.println(texts.get(i).text() + "\n" + src.get(i).attr("abs:src")
+                            + "\n" + links.get(i).attr("abs:href"));
+                    getVideoUrlByUrl(links.get(i).attr("abs:href"));
+                }
+
+                System.out.println(links.size());
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof ConnectException)
+                    continue;
+                if (e instanceof SocketException ||
+                        e instanceof UnknownHostException ||
+                        e instanceof SocketTimeoutException) {
+                    count++;
+                    if (count > 5)
+                        break;
+                    continue;
+                }
+                e.printStackTrace();
+            }
+        }
+                 /*    if (tmp.attr("class").equals("content"))
+                       link.add(tmp);
                 System.out.println("link.size:" + link.size() + "\tsrc.size:" + src.size());
                 for (int i = 0; i < link.size(); i++) {
                     System.out.println(handlerString(src.get(i).attr("alt")) + "\t"
@@ -77,12 +99,32 @@ public class HttpTest {
         }*/
     }
 
-    private static String handlerString2(String text) {
-        int pos = text.indexOf("'", 19);
-        return text.substring(19, pos);
-    }
-
-    private static String handlerString(String src) {
-        return src.replaceAll("点击播放", "");
+    private static String getVideoUrlByUrl(String url) {
+        int count = 0;
+        while (true) {
+            try {
+                Document document = Jsoup.connect(url).get();
+                Elements elements = document.select("a[class]");
+                for (Element tmp : elements)
+                    if (tmp.attr("class").equals("play")) {
+                        System.out.println(tmp.attr("abs:href") + "\n\n");
+                        return tmp.attr("abs:href");
+                    }
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof ConnectException)
+                    continue;
+                if (e instanceof SocketException ||
+                        e instanceof UnknownHostException ||
+                        e instanceof SocketTimeoutException) {
+                    count++;
+                    if (count > 5)
+                        break;
+                    continue;
+                }
+                break;
+            }
+        }
+        return "";
     }
 }

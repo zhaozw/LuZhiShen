@@ -72,7 +72,7 @@ public class JapanVideoAdapter extends RecyclerView.Adapter<JapanVideoAdapter.Vi
     public void syncData(@NonNull String url) {
         if (url.isEmpty())
             url = "http://a5408977.gotoip55.com/?s=vod-show-id-39.html";
-        HttpUtil.getVideoListAsync2(mData.size(), url, new HttpUtil.HttpRequestCallbackListener() {
+        HttpUtil.getJapanVideoListAsync(mData.size(), url, new HttpUtil.HttpRequestCallbackListener() {
 
             @Override
             public void onSuccess(List<Data> data, String nextPage) {
@@ -90,7 +90,7 @@ public class JapanVideoAdapter extends RecyclerView.Adapter<JapanVideoAdapter.Vi
 
     public void loadMore() {
         // TODO: 6/18/16 handler url
-            HttpUtil.getVideoListAsync2(mData.size(),
+            HttpUtil.getJapanVideoListAsync(mData.size(),
                     "http://a5408977.gotoip55.com/?s=vod-show-id-39.html",
                     new HttpUtil.HttpRequestCallbackListener() {
                         @Override

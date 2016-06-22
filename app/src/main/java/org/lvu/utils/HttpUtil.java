@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class HttpUtil {
 
-    public static void getVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
+    public static void getChinaVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
         new Thread() {
             @Override
             public void run() {
@@ -34,7 +34,7 @@ public class HttpUtil {
                                 src = document.select("img[src]"),
                                 link = links.select("a[href][title][target]");
                         for (int i = 0; i < link.size(); i++) {
-                            String videoUrl = getVideoUrlByUrl(link.get(i).attr("abs:href"));
+                            String videoUrl = getChinaVideoUrlByUrl(link.get(i).attr("abs:href"));
                             if (!videoUrl.isEmpty())
                                 result.add(new Data(videoUrl,
                                         src.get(i).attr("abs:src"),
@@ -72,7 +72,7 @@ public class HttpUtil {
         }.start();
     }
 
-    public static void getVideoListAsync2(final int currentSize, final String url, final HttpRequestCallbackListener listener) {
+    public static void getJapanVideoListAsync(final int currentSize, final String url, final HttpRequestCallbackListener listener) {
         new Thread() {
             @Override
             public void run() {
@@ -113,6 +113,49 @@ public class HttpUtil {
         }.start();
     }
 
+    public static void getEuropeVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
+        new Thread() {
+            @Override
+            public void run() {
+                int count = 0;
+                while (true) {
+                    try {
+                        List<Data> result = new ArrayList<>();
+                        String nextPage = "";
+                        Document document = Jsoup.connect(url).get();
+                        Elements src = document.select("img[src]"), links = new Elements(), texts = document.select("h2"),
+                                nextPageTmp = document.select("link[rel]");
+                        for (Element tmp : texts) {
+                            links.add(tmp.parent());
+                        }
+                        for (Element tmp : nextPageTmp)
+                            if (tmp.attr("rel").equals("next"))
+                                nextPage = tmp.attr("abs:href");
+                        src.remove(0);
+                        for (int i = 0; i < links.size(); i++)
+                            result.add(new Data(links.get(i).attr("abs:href"), src.get(i).attr("abs:src"), texts.get(i).text()));
+
+                        listener.onSuccess(result, nextPage);
+                        break;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        if (e instanceof ConnectException)
+                            continue;
+                        if (e instanceof SocketException ||
+                                e instanceof UnknownHostException ||
+                                e instanceof SocketTimeoutException) {
+                            count++;
+                            if (count > 5)
+                                break;
+                            continue;
+                        }
+                        listener.onFailure(e);
+                    }
+                }
+            }
+        }.start();
+    }
+
     private static String handlerString2(String text) {
         int pos = text.indexOf("'", 19);
         return text.substring(19, pos);
@@ -122,7 +165,7 @@ public class HttpUtil {
         return src.replaceAll("点击播放", "");
     }
 
-    private static String getVideoUrlByUrl(String url) {
+    private static String getChinaVideoUrlByUrl(String url) {
         int count = 0;
         while (true) {
             try {
@@ -147,6 +190,33 @@ public class HttpUtil {
                         break;
                     continue;
                 }
+            }
+        }
+        return "";
+    }
+
+    public static String getEuropeVideoUrlByUrl(String url) {
+        int count = 0;
+        while (true) {
+            try {
+                Document document = Jsoup.connect(url).get();
+                Elements elements = document.select("a[class]");
+                for (Element tmp : elements)
+                    if (tmp.attr("class").equals("play"))
+                        return tmp.attr("href");
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof ConnectException)
+                    continue;
+                if (e instanceof SocketException ||
+                        e instanceof UnknownHostException ||
+                        e instanceof SocketTimeoutException) {
+                    count++;
+                    if (count > 5)
+                        break;
+                    continue;
+                }
+                break;
             }
         }
         return "";

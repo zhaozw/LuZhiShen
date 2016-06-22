@@ -151,9 +151,6 @@ public class MainActivity extends AppCompatActivity {
                     case R.string.menu_evil_pics:
                         bundle.putInt(ListFragment.LIST_TYPE, ListFragment.EVIL_P);
                         break;
-                    case R.string.menu_japan_pics:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.JAPAN_P);
-                        break;
                     case R.string.menu_gif:
                         bundle.putInt(ListFragment.LIST_TYPE, ListFragment.GIF);
                         break;
