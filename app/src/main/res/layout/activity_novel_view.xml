@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="false">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_scrollFlags="scroll|enterAlways">
+
+        <View
+            android:id="@+id/status_bar_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="?attr/colorPrimaryDark"
+            app:layout_scrollFlags="scroll|enterAlways" />
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="@dimen/sp_18"
+                tools:text="總經理的秘書
+
+舒玉蕙，剛到我的公司就職的絕色美女。
+
+　　辦公室的內室，膚若凝脂、亭亭玉立、清純如水的的絕色處女舒玉蕙在我總經理職權威嚴的鎮壓下，嬌軀顫抖、驚恐萬分。
+
+　　１９歲，高級商務學校的校花，我的第九任總經理秘書。
+
+　　舒玉蕙一頭烏黑的如雲秀髮，秀麗粉嫩修長的玉頸。一身雪白飄柔、薄如蟬翼的輕紗將少女挺突俏聳的酥胸和纖細小巧的柳腰緊緊的包裹起來，若隱若現的輕薄褻衣緊束著高聳入雲的乳峰。修長的粉頸，深陷的乳溝，緊束的纖腰，高起的隆臀，白裡透紅的冰肌玉膚，陣陣嬌顫的玉體，教人想入非非。
+
+　　看著這姿色絕美、美麗清純的少女此刻已經無力掙紮，舒玉蕙的美色令我淫虐之心火燃燒。
+
+　　玉蕙被我雙手攔腰飛快一抱，猛的扔在的大床上。
+
+　　玉蕙被扔在床上。我一手按住少女盈盈不堪一握的細腰。舒玉蕙頓時被壓得動彈不得。
+
+　　舒玉蕙顫聲道：「老總，你……你要幹什麼？」
+
+　　我伸手捏著她的俏臉，淫笑道：「幹什麼？我要佔有你！我要玩你！」
+
+　　舒玉蕙道：「不……不要……」
+
+　　我伏身下去，隨手拔去舒玉蕙的髮髻，扔在一邊，任由她的如雲秀髮瀑布般披散開來。
+
+　　這貞潔少女無力抵擋男人的步步侵犯，我淫笑起來：「不要？今天要將你在這辦公室的內室拿下。玉蕙，今天就讓你這個絕色美人兒嘗嘗與男人作愛的滋味！」不等她回答，我一口吻向少女那紅嫩鮮艷的櫻唇。
+
+　　「唔……你……放、放開我，老總你無……不要……」這美人此刻被我所制，只能勉力掙紮。
+
+　　我聞著美麗清純的處子那獨有的幽雅體香，看著她清秀脫俗的面容，勻稱的玉體，白皙溫潤的肌膚，纖長柔美的手指，以及如雲如瀑的秀髮，一切都激起男人高亢的獸慾。
+
+　　我不顧抵抗，雙手深向舒玉蕙玲瓏浮凸的美妙胴體，沿著那誘人的曲線放肆的遊走起來。
+
+　　我的一雙大手順著舒玉蕙那一寸寸嬌嫩細滑的玉肌雪膚如絲綢般滑膩嬌軟。隔著輕薄的抹胸，我襲上少女那一雙嬌挺柔嫩的乳峰，肆意撫弄著、揉搓著。
+
+　　舒玉蕙又羞又怕，雙眸緊閉，嬌軟的玉體拚死反抗，但是此時的她又怎是我這強壯男人的對手。
+
+　　這個美麗處女在我淫邪的撫摸揉搓下，羞得粉面通紅，被我玩弄得一陣陣酸軟。
+
+　　我色迷迷地睃視著這妙齡女郎嬌柔的玉體：烏黑柔順的長髮散在身下，苗條修長的身段鮮嫩而柔軟，冰清玉潔的肌膚溫潤光滑瑩澤。絕麗容顏含羞帶怕，猶如帶露桃花、愈發嬌艷。
+
+　　我禁不住心醉神搖，一把攥住少女的兩隻細嫩的皓腕，把一雙玉臂強扭到身後，舒玉蕙的身體立時被迫成反弓型，美麗的酥胸羞辱地向前挺立，像兩座高聳的雪峰，愈發顯得豐滿挺拔，性感誘人。那深深的乳溝在褻衣的束縛下深不見底，風光綺麗。
+
+　　我的手按在少女高聳的乳峰上，輕輕地撫弄起來，肆意享用那一分誘人的綿軟。我雙手摸向少女胸前雪白高聳的乳峰。舒玉蕙拚命反抗，可是男人瘋狂起來的力量，又豈是這柔弱少女所能抗拒的。
+
+　　我雙臂制住舒玉蕙的身體，雙手繞到背後去解抹胸的花扣。一聲輕響，花扣脫開，少女身上最後一絲遮蔽終於也被除了下來，只見一具粉雕玉琢、晶瑩玉潤的處女胴體徹底裸裎在眼前。
+
+　　掙脫了褻衣束縛的雙乳更加堅挺地向前伸展著，如同漢白玉雕成的巧奪天工的藝術品，昏暗的燈光下映射下著朦朧的玉色光澤。 冰肌玉骨嬌滑柔嫩，成熟挺拔的雪白乳胸上襯托著兩點奪目的嫣紅，盈盈僅堪一握、纖滑嬌軟的如織細腰，平滑雪白的柔美小腹，優美修長的雪滑玉腿，真是無一處不美，無一處不誘人。
+
+　　尤其是那一對柔嫩的少女乳峰俏然聳立，嬌小玲瓏、美麗可愛的乳尖嫣紅玉潤、艷光四射，與周圍那一圈粉紅誘人、嬌媚至極的淡淡乳暈配在一起，猶如一雙含苞欲放、嬌羞初綻的稚嫩花蕾，楚楚含羞。舒玉蕙冰清玉潔的胴體完全無遮無掩的呈露出來，無助而淒艷，宛如一朵慘遭寒風摧殘的雪蓮，任人採擷。 "/>
+
+            <View
+                android:id="@+id/navigation_bar_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>

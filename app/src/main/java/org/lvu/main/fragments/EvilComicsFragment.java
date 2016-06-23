@@ -20,6 +20,11 @@ public class EvilComicsFragment extends BaseListFragment {
     }
 
     @Override
+    protected BaseListAdapter.OnItemClickListener getOnItemClickListener() {
+        return null;
+    }
+
+    @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
         return new GridLayoutManager(getActivity(), 2);
     }

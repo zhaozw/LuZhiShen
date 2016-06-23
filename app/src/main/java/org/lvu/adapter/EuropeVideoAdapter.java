@@ -21,7 +21,7 @@ import java.util.List;
 public class EuropeVideoAdapter extends BasePictureListAdapter {
 
     private final String URL = "http://m.fapple.com/videos";
-    private static final int GET_URL = 3;
+    private static final int GET_URL = 6;
 
     public EuropeVideoAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
@@ -79,7 +79,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
         return new MyHandler(this);
     }
 
-    static class MyHandler extends Handler {
+    private static class MyHandler extends Handler {
 
         private WeakReference<EuropeVideoAdapter> mClass;
 
@@ -90,15 +90,15 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case SYNC_DATA:
+                case SYNC_DATA_SUCCESS:
                     mClass.get().setData((List<Data>) msg.obj);
                     break;
-                case LOAD_MORE:
+                case LOAD_MORE_SUCCESS:
                     mClass.get().mData.addAll((List<Data>) msg.obj);
                     mClass.get().notifyItemRangeChanged(
                             mClass.get().getDataSize(), ((List) msg.obj).size());
                     break;
-                case REFRESH_DATA:
+                case REFRESH_DATA_SUCCESS:
                     mClass.get().mData = new ArrayList<>();
                     mClass.get().notifyDataSetChanged();
                     mClass.get().setData((List<Data>) msg.obj);
@@ -107,6 +107,18 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                     break;
                 case GET_URL:
                     mClass.get().mOnItemClickListener.onClick((String) msg.obj, "");
+                    break;
+                case SYNC_DATA_FAILURE:
+                    if (mClass.get().mOnSyncDataFinishListener != null)
+                        mClass.get().mOnSyncDataFinishListener.onFailure();
+                    break;
+                case LOAD_MORE_FAILURE:
+                    if (mClass.get().mOnLoadMoreFinishListener != null)
+                        mClass.get().mOnLoadMoreFinishListener.onFailure();
+                    break;
+                case REFRESH_DATA_FAILURE:
+                    if (mClass.get().mOnRefreshDataFinishListener != null)
+                        mClass.get().mOnRefreshDataFinishListener.onFailure();
                     break;
                 default:
                     break;

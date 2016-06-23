@@ -16,7 +16,12 @@ import java.util.ArrayList;
 public class LewdWifeNovelFragment extends BaseListFragment  {
     @Override
     protected BaseListAdapter getAdapter() {
-        return new LewdWifeNovelAdapter(getActivity(), R.layout.adapter_picture_list_item, new ArrayList<Data>());
+        return new LewdWifeNovelAdapter(getActivity(), R.layout.adapter_list_item, new ArrayList<Data>());
+    }
+
+    @Override
+    protected BaseListAdapter.OnItemClickListener getOnItemClickListener() {
+        return null;
     }
 
     @Override

@@ -13,10 +13,10 @@ import java.util.ArrayList;
 /**
  * Created by wuyr on 6/23/16 2:36 PM.
  */
-public class FamilyPhotoFragment extends BaseListFragment  {
+public class FamilyPhotoFragment extends EuropePictureFragment  {
     @Override
     protected BaseListAdapter getAdapter() {
-        return new FamilyPhotoAdapter(getActivity(), R.layout.adapter_picture_list_item, new ArrayList<Data>());
+        return new FamilyPhotoAdapter(getActivity(), R.layout.adapter_list_item, new ArrayList<Data>());
     }
 
     @Override

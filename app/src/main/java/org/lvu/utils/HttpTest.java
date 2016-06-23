@@ -15,24 +15,27 @@ public class HttpTest {
     public static void main(String[] args) {
         // getVideoUrlByUrl("http://www.fapple.com/videos/119646");
 
-        String url = "http://m.fapple.com/videos";
+        String url = "http://0pmp.com/html/11/index2.html";
         System.out.println("Thread start");
         int count = 0;
         while (true) {
             try {
                 Document document = Jsoup.connect(url).get();
-                Elements src = document.select("img[src]"), links = new Elements(), texts = document.select("h2");
-                for (Element tmp : texts) {
-                    links.add(tmp.parent());
+                Elements elements = document.select("li");
+                for (Element tmp : elements)
+                    System.out.println(tmp.children().get(1).text() + "\t\t" + tmp.children().get(1).attr("abs:href"));
+                Elements next = document.select("div[class]"), next2 = null;
+                for (Element tmp : next) {
+                    if (tmp.attr("class").equals("page"))
+                        next2 = tmp.children();
                 }
-                src.remove(0);
-                for (int i = 0; i < links.size(); i++) {
-                    System.out.println(texts.get(i).text() + "\n" + src.get(i).attr("abs:src")
-                            + "\n" + links.get(i).attr("abs:href"));
-                    getVideoUrlByUrl(links.get(i).attr("abs:href"));
+                if (next2 != null) {
+                    for (Element tmp : next2) {
+                        if (tmp.text().equals("下一页"))
+                            System.out.println(tmp.attr("abs:href"));
+                    }
                 }
 
-                System.out.println(links.size());
                 break;
             } catch (Exception e) {
                 e.printStackTrace();

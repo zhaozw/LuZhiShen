@@ -99,41 +99,46 @@ public class HttpUtil {
         });
     }
 
-    public static void getAsiaPictureListAsync(final String url, final HttpRequestCallbackListener listener) {
+    public static void getPicturesListAsync(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
                 Document document = Jsoup.connect(url).get();
-
+                Elements elements = document.select("li");
+                for (Element tmp : elements)
+                    result.add(new Data(tmp.children().get(1).attr("abs:href"), tmp.children().get(1).text()));
+                Elements next = document.select("div[class]"), next2 = null;
+                for (Element tmp : next) {
+                    if (tmp.attr("class").equals("page"))
+                        next2 = tmp.children();
+                }
+                if (next2 != null) {
+                    for (Element tmp : next2) {
+                        if (tmp.text().equals("下一页"))
+                            nextPage = tmp.attr("abs:href");
+                    }
+                }
                 listener.onSuccess(result, nextPage);
             }
         });
     }
 
-    public static void getEuropePictureListAsync(final String url, final HttpRequestCallbackListener listener) {
+    public static void getPicturesAsync(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
                 Document document = Jsoup.connect(url).get();
-
-                listener.onSuccess(result, nextPage);
-            }
-        });
-    }
-
-    public static void getFamilyPhotoListAsync(final String url, final HttpRequestCallbackListener listener) {
-        runOnBackground(listener, new BackgroundLogic() {
-            @Override
-            public void run() throws Exception {
-                List<Data> result = new ArrayList<>();
-                String nextPage = "";
-                Document document = Jsoup.connect(url).get();
-
-                listener.onSuccess(result, nextPage);
+                Elements elements = document.select("img");
+                elements.remove(elements.size() - 1);
+                for (Element tmp : elements) {
+                    result.add(new Data("", tmp.attr("abs:src"), ""));
+                    listener.onSuccess(result, nextPage);
+                }
+                listener.onSuccess(null, nextPage);
             }
         });
     }
@@ -160,6 +165,7 @@ public class HttpUtil {
                             continue;
                         }
                         listener.onFailure(e);
+                        break;
                     }
                 }
             }

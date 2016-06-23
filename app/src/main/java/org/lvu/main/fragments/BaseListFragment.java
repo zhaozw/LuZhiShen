@@ -4,9 +4,11 @@ import android.app.ProgressDialog;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +20,8 @@ import android.widget.FrameLayout;
 
 import org.lvu.R;
 import org.lvu.adapter.BaseListAdapter;
-import org.lvu.adapter.BasePictureListAdapter;
-import org.lvu.adapter.EuropeVideoAdapter;
 import org.lvu.customize.CircleProgressBar;
+import org.lvu.customize.MySnackBar;
 import org.lvu.customize.VideoPlayer;
 import org.lvu.main.activities.MainActivity;
 import org.lvu.utils.ImmerseUtil;
@@ -69,7 +70,8 @@ public abstract class BaseListFragment extends Fragment {
             }
         });
     }
-    private void initPlayer(){
+
+    private void initPlayer() {
         mPlayer = (VideoPlayer) mRootView.findViewById(R.id.player);
         mPlayer.setActivity(getActivity());
         mPlayer.setOnPlayCompleteListener(new VideoPlayer.OnPlayCompleteListener() {
@@ -83,62 +85,69 @@ public abstract class BaseListFragment extends Fragment {
         });
     }
 
-    private void initDialog(){
+    private void initDialog() {
         mDialog = new ProgressDialog(getActivity());
         mDialog.setMessage(getActivity().getString(R.string.loading_please_wait));
         mDialog.setCancelable(false);
         mDialog.show();
     }
 
-    private void initAdapter(){
+    private void initAdapter() {
         mAdapter = getAdapter();
-        mAdapter.setOnSyncDataFinishListener(new BasePictureListAdapter.OnSyncDataFinishListener() {
+        mAdapter.setOnSyncDataFinishListener(new BaseListAdapter.OnSyncDataFinishListener() {
             @Override
             public void onFinish() {
                 mDialog.dismiss();
             }
+
+            @Override
+            public void onFailure() {
+                mDialog.dismiss();
+                MySnackBar.show(getActivity().findViewById(R.id.coordinator),
+                        getString(R.string.get_list_failure), Snackbar.LENGTH_INDEFINITE);
+            }
         });
-        mAdapter.setOnLoadMoreFinishListener(new BasePictureListAdapter.OnLoadMoreFinishListener() {
+        mAdapter.setOnLoadMoreFinishListener(new BaseListAdapter.OnLoadMoreFinishListener() {
             @Override
             public void onFinish() {
                 hideLoadMoreBar();
             }
+
+            @Override
+            public void onFailure() {
+                hideLoadMoreBar();
+                MySnackBar.show(getActivity().findViewById(R.id.coordinator),
+                        getString(R.string.get_list_failure), Snackbar.LENGTH_INDEFINITE);
+            }
         });
-        mAdapter.setOnRefreshDataFinishListener(new BasePictureListAdapter.OnRefreshDataFinishListener() {
+        mAdapter.setOnRefreshDataFinishListener(new BaseListAdapter.OnRefreshDataFinishListener() {
             @Override
             public void onFinish() {
                 mRefreshLayout.setRefreshing(false);
             }
-        });
-        mAdapter.syncData("");
-        mAdapter.setOnItemClickListener(new EuropeVideoAdapter.OnItemClickListener() {
+
             @Override
-            public void onClick(String url, String title) {
-                if (mLoadMoreBar.getVisibility() == View.VISIBLE)
-                    mLoadMoreBar.setVisibility(View.GONE);
-                ((MainActivity) getActivity()).setDrawerLockMode(true);
-                ((MainActivity) getActivity()).hideToolbar();
-                mPlayer.setUrlPlay(url);
-                mPlayer.setVisibility(View.VISIBLE);
-                mRecyclerView.setVisibility(View.GONE);
+            public void onFailure() {
+                mRefreshLayout.setRefreshing(false);
+                MySnackBar.show(getActivity().findViewById(R.id.coordinator),
+                        getString(R.string.get_list_failure), Snackbar.LENGTH_INDEFINITE);
             }
         });
+        mAdapter.setOnItemClickListener(getOnItemClickListener());
+        mAdapter.syncData("");
     }
 
-    private void initRecyclerView(){
+    private void initRecyclerView() {
         mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recycler_view);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(getLayoutManager());
-        if (ImmerseUtil.isHasNavigationBar(getActivity())) {
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
-            lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(getActivity());
-            mLoadMoreBar.setLayoutParams(lp);
-        }
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (isScrollDown(dy) && !isLoadBarHiding && !isLoadingMore &&
-                        ((GridLayoutManager) recyclerView.getLayoutManager())
+                        (recyclerView.getLayoutManager() instanceof GridLayoutManager ?
+                                ((GridLayoutManager) recyclerView.getLayoutManager()) :
+                                ((LinearLayoutManager) recyclerView.getLayoutManager()))
                                 .findLastVisibleItemPosition() == mAdapter.getDataSize() - 1) {
                     showLoadMoreBar();
                     mAdapter.loadMore();
@@ -150,8 +159,14 @@ public abstract class BaseListFragment extends Fragment {
     // TODO: 6/18/16 img load failure set a default img
     private void initRefreshLayout() {
         mLoadMoreBar = (CircleProgressBar) mRootView.findViewById(R.id.progressbar);
+        if (ImmerseUtil.isHasNavigationBar(getActivity())) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
+            lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(getActivity());
+            mLoadMoreBar.setLayoutParams(lp);
+        }
         mRefreshLayout = (SwipeRefreshLayout) mRootView.findViewById(R.id.refresh_layout);
         mRefreshLayout.setColorSchemeResources(R.color.menu_text_color);
+        mLoadMoreBar.setColorSchemeResources(R.color.menu_text_color);
         List<Integer> data = new ArrayList<>();
         int[] array = R.styleable.AppCompatTheme;
         for (int tmp : array)
@@ -225,6 +240,8 @@ public abstract class BaseListFragment extends Fragment {
     }
 
     protected abstract BaseListAdapter getAdapter();
+
+    protected abstract BaseListAdapter.OnItemClickListener getOnItemClickListener();
 
     protected abstract RecyclerView.LayoutManager getLayoutManager();
 

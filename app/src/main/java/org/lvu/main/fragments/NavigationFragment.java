@@ -19,7 +19,8 @@ public class NavigationFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_navigation_view, container, false);
+        //mRootView = inflater.inflate(R.layout.fragment_navigation_view, container, false);
+        mRootView = inflater.inflate(R.layout.temp, container, false);
         return mRootView;
     }
 

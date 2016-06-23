@@ -43,5 +43,6 @@
     <string name="cancel">取消</string>
     <string name="resolving_video_address">解析视频地址中，请稍等。。。</string>
     <string name="loading_please_wait">加载中，请稍等。。。</string>
+    <string name="get_list_failure">抱歉，获取数据失败</string>
 
 </resources>

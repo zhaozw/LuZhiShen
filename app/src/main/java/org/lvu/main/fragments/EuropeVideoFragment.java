@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Created by wuyr on 6/23/16 2:30 PM.
  */
-public class EuropeVideoFragment extends BaseListFragment {
+public class EuropeVideoFragment extends ChinaVideoFragment {
 
     @Override
     protected BaseListAdapter getAdapter() {

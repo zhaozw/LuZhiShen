@@ -64,12 +64,22 @@ public class TestActivity2 extends AppCompatActivity {
             public void onFinish() {
                 hideLoadMoreBar();
             }
+
+            @Override
+            public void onFailure() {
+
+            }
         });
         mAdapter.setOnSyncDataFinishListener(new ChinaVideoAdapter.OnSyncDataFinishListener() {
             @Override
             public void onFinish() {
                 mDialog.dismiss();
                 mDialog = null;
+            }
+
+            @Override
+            public void onFailure() {
+
             }
         });
         mRecyclerView.setAdapter(mAdapter);

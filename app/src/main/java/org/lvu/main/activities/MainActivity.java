@@ -1,7 +1,6 @@
 package org.lvu.main.activities;
 
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -13,7 +12,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
@@ -29,30 +27,22 @@ import org.lvu.main.fragments.AsiaPictureFragment;
 import org.lvu.main.fragments.ChinaVideoFragment;
 import org.lvu.main.fragments.EuropePictureFragment;
 import org.lvu.main.fragments.EuropeVideoFragment;
-import org.lvu.main.fragments.EvilComicsFragment;
-import org.lvu.main.fragments.ExcitedNovelFragment;
-import org.lvu.main.fragments.FamilyMessNovelFragment;
 import org.lvu.main.fragments.FamilyPhotoFragment;
-import org.lvu.main.fragments.GifPictureFragment;
 import org.lvu.main.fragments.JapanVideoFragment;
-import org.lvu.main.fragments.LewdWifeNovelFragment;
 import org.lvu.main.fragments.NavigationFragment;
 import org.lvu.model.Menu;
 import org.lvu.utils.ImmerseUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.vov.vitamio.Vitamio;
 
 /**
  * Created by wuyr on 6/1/16 3:33 PM.
  */
-public class MainActivity extends AppCompatActivity {
-    private final String SKIN = "skin";
-    //fragment tag
+public class MainActivity extends BaseActivity {
+
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
     private View mTopView;
@@ -62,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Vitamio.isInitialized(getApplicationContext());
-        initSkins();
         setContentView(R.layout.activity_main_view);
         initViews();
         initImmerse();
@@ -155,19 +144,19 @@ public class MainActivity extends AppCompatActivity {
                         fragment = new EuropePictureFragment();
                         break;
                     case R.string.menu_evil_pics:
-                        fragment = new EvilComicsFragment();
+                        fragment = new NavigationFragment();
                         break;
                     case R.string.menu_gif:
-                        fragment = new GifPictureFragment();
+                        fragment = new NavigationFragment();
                         break;
                     case R.string.menu_excited_novel:
-                        fragment = new ExcitedNovelFragment();
+                        fragment = new NavigationFragment();
                         break;
                     case R.string.menu_family_mess_novel:
-                        fragment = new FamilyMessNovelFragment();
+                        fragment = new NavigationFragment();
                         break;
                     case R.string.menu_lewd_wife_novel:
-                        fragment = new LewdWifeNovelFragment();
+                        fragment = new NavigationFragment();
                         break;
                     default:
                         fragment = null;
@@ -245,39 +234,6 @@ public class MainActivity extends AppCompatActivity {
         if (!curSkin.equals(getString(R.string.skin_black)))
             result.add(new Menu(R.color.blackPrimary, R.string.skin_black));
         return result;
-    }
-
-    private void initSkins() {
-        SharedPreferences preferences = getSharedPreferences(
-                MainActivity.class.getName(), MODE_PRIVATE);
-        String curSkin = preferences.getString(SKIN, "");
-        if (curSkin.isEmpty()) {
-            curSkin = getString(R.string.skin_red);
-            preferences.edit().putString(SKIN, curSkin).apply();
-        }
-        try {
-            setTheme(getSkin(curSkin));
-        } catch (Exception e) {
-            e.printStackTrace();
-            curSkin = getString(R.string.skin_red);
-            preferences.edit().putString(SKIN, curSkin).apply();
-            setTheme(getSkin(curSkin));
-        }
-    }
-
-    private int getSkin(String name) {
-        Map<String, Integer> data = new HashMap<>();
-        data.put(getString(R.string.skin_blue), R.style.AppTheme_Blue);
-        data.put(getString(R.string.skin_red), R.style.AppTheme_Red);
-        data.put(getString(R.string.skin_purple), R.style.AppTheme_Purple);
-        data.put(getString(R.string.skin_deepOrange), R.style.AppTheme_Deep_Orange);
-        data.put(getString(R.string.skin_green), R.style.AppTheme_Green);
-        data.put(getString(R.string.skin_brown), R.style.AppTheme_Brown);
-        data.put(getString(R.string.skin_pink), R.style.AppTheme_Pink);
-        data.put(getString(R.string.skin_teal), R.style.AppTheme_Teal);
-        data.put(getString(R.string.skin_grey), R.style.AppTheme_Grey);
-        data.put(getString(R.string.skin_black), R.style.AppTheme_Black);
-        return data.get(name);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class JapanVideoAdapter extends BasePictureListAdapter {
     }
 
 
-    static class MyHandler extends Handler {
+    private static class MyHandler extends Handler {
 
         private WeakReference<JapanVideoAdapter> mClass;
 
@@ -63,19 +63,31 @@ public class JapanVideoAdapter extends BasePictureListAdapter {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case SYNC_DATA:
+                case SYNC_DATA_SUCCESS:
                     if (mClass.get().mOnSyncDataFinishListener != null)
                         mClass.get().mOnSyncDataFinishListener.onFinish();
                     break;
-                case LOAD_MORE:
+                case LOAD_MORE_SUCCESS:
                     if (mClass.get().mOnLoadMoreFinishListener != null)
                         mClass.get().mOnLoadMoreFinishListener.onFinish();
                     break;
-                case REFRESH_DATA:
+                case REFRESH_DATA_SUCCESS:
                     mClass.get().mData = new ArrayList<>();
                     mClass.get().notifyDataSetChanged();
                     if (mClass.get().mOnRefreshDataFinishListener != null)
                         mClass.get().mOnRefreshDataFinishListener.onFinish();
+                    break;
+                case SYNC_DATA_FAILURE:
+                    if (mClass.get().mOnSyncDataFinishListener != null)
+                        mClass.get().mOnSyncDataFinishListener.onFailure();
+                    break;
+                case LOAD_MORE_FAILURE:
+                    if (mClass.get().mOnLoadMoreFinishListener != null)
+                        mClass.get().mOnLoadMoreFinishListener.onFailure();
+                    break;
+                case REFRESH_DATA_FAILURE:
+                    if (mClass.get().mOnRefreshDataFinishListener != null)
+                        mClass.get().mOnRefreshDataFinishListener.onFailure();
                     break;
                 default:
                     break;
