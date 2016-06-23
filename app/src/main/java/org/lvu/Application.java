@@ -2,7 +2,7 @@ package org.lvu;
 
 import android.content.Context;
 
-import org.lvu.main.activity.MainActivity;
+import org.lvu.main.activities.MainActivity;
 
 /**
  * Created by wuyr on 3/31/16 6:17 PM.

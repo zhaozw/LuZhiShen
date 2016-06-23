@@ -69,7 +69,7 @@ public class MenuList extends LinearLayout {
         result.add(new Menu(R.drawable.ic_video, R.string.menu_china_video));
         result.add(new Menu(R.drawable.ic_video, R.string.menu_europe_video));
         result.add(new Menu(R.drawable.ic_video, R.string.menu_japan_video));
-        result.add(new Menu(R.drawable.ic_pic, R.string.menu_family_take_pic));
+        result.add(new Menu(R.drawable.ic_pic, R.string.menu_family_pic));
         result.add(new Menu(R.drawable.ic_pic, R.string.menu_asia_pic));
         result.add(new Menu(R.drawable.ic_pic, R.string.menu_europe_pic));
         result.add(new Menu(R.drawable.ic_pic, R.string.menu_evil_pics));

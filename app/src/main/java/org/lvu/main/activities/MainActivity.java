@@ -1,4 +1,4 @@
-package org.lvu.main.activity;
+package org.lvu.main.activities;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -25,7 +25,18 @@ import org.lvu.adapter.MenuListAdapter;
 import org.lvu.adapter.MenuListAdapter2;
 import org.lvu.customize.MenuList;
 import org.lvu.customize.MySnackBar;
-import org.lvu.main.fragments.ListFragment;
+import org.lvu.main.fragments.AsiaPictureFragment;
+import org.lvu.main.fragments.ChinaVideoFragment;
+import org.lvu.main.fragments.EuropePictureFragment;
+import org.lvu.main.fragments.EuropeVideoFragment;
+import org.lvu.main.fragments.EvilComicsFragment;
+import org.lvu.main.fragments.ExcitedNovelFragment;
+import org.lvu.main.fragments.FamilyMessNovelFragment;
+import org.lvu.main.fragments.FamilyPhotoFragment;
+import org.lvu.main.fragments.GifPictureFragment;
+import org.lvu.main.fragments.JapanVideoFragment;
+import org.lvu.main.fragments.LewdWifeNovelFragment;
+import org.lvu.main.fragments.NavigationFragment;
 import org.lvu.model.Menu;
 import org.lvu.utils.ImmerseUtil;
 
@@ -52,18 +63,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Vitamio.isInitialized(getApplicationContext());
         initSkins();
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_main_view);
         initViews();
         initImmerse();
-        initFragments();
+        initFragment();
     }
 
-    private void initFragments() {
-        ListFragment nav = new ListFragment();
-        Bundle navB = new Bundle();
-        navB.putInt(ListFragment.LIST_TYPE, ListFragment.NAVIGATION);
-        nav.setArguments(navB);
-        showFragment(nav);
+    private void initFragment() {
+        showFragment(new NavigationFragment());
     }
 
     private void showFragment(Fragment fragment) {
@@ -124,49 +131,50 @@ public class MainActivity extends AppCompatActivity {
         mMenuList.setOnItemListener(new MenuListAdapter.OnItemClickListener() {
             @Override
             public void onClick(int stringId) {
-                ListFragment fragment = new ListFragment();
-                Bundle bundle = new Bundle();
+                Fragment fragment;
                 switch (stringId) {
                     case R.string.menu_navigation:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.NAVIGATION);
+                        fragment = new NavigationFragment();
                         break;
                     case R.string.menu_china_video:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.CHINA_V);
+                        fragment = new ChinaVideoFragment();
                         break;
                     case R.string.menu_europe_video:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.EUROPE_V);
+                        fragment = new EuropeVideoFragment();
                         break;
                     case R.string.menu_japan_video:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.JAPAN_V);
+                        fragment = new JapanVideoFragment();
                         break;
-                    case R.string.menu_family_take_pic:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.FAMILY_P);
+                    case R.string.menu_family_pic:
+                        fragment = new FamilyPhotoFragment();
                         break;
                     case R.string.menu_asia_pic:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.ASIA_P);
+                        fragment = new AsiaPictureFragment();
                         break;
                     case R.string.menu_europe_pic:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.EUROPE_P);
+                        fragment = new EuropePictureFragment();
                         break;
                     case R.string.menu_evil_pics:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.EVIL_P);
+                        fragment = new EvilComicsFragment();
                         break;
                     case R.string.menu_gif:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.GIF);
+                        fragment = new GifPictureFragment();
                         break;
                     case R.string.menu_excited_novel:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.EXCITED_N);
+                        fragment = new ExcitedNovelFragment();
                         break;
                     case R.string.menu_family_mess_novel:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.FAMILY_N);
+                        fragment = new FamilyMessNovelFragment();
                         break;
                     case R.string.menu_lewd_wife_novel:
-                        bundle.putInt(ListFragment.LIST_TYPE, ListFragment.WIFE_N);
+                        fragment = new LewdWifeNovelFragment();
                         break;
                     default:
+                        fragment = null;
+                        break;
                 }
-                fragment.setArguments(bundle);
-                showFragment(fragment);
+                if (fragment != null)
+                    showFragment(fragment);
                 mToolbar.setTitle(stringId);
                 mDrawerLayout.closeDrawer(GravityCompat.START);
             }
@@ -234,7 +242,6 @@ public class MainActivity extends AppCompatActivity {
             result.add(new Menu(R.color.tealPrimary, R.string.skin_teal));
         if (!curSkin.equals(getString(R.string.skin_grey)))
             result.add(new Menu(R.color.greyPrimary, R.string.skin_grey));
-        ;
         if (!curSkin.equals(getString(R.string.skin_black)))
             result.add(new Menu(R.color.blackPrimary, R.string.skin_black));
         return result;

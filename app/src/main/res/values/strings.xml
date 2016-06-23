@@ -8,11 +8,10 @@
     <string name="menu_china_video">国产自拍</string>
     <string name="menu_europe_video">欧美电影</string>
     <string name="menu_japan_video">日本电影</string>
-    <string name="menu_family_take_pic">家庭自拍</string>
+    <string name="menu_family_pic">家庭自拍</string>
     <string name="menu_asia_pic">亚洲情色</string>
     <string name="menu_europe_pic">欧美色图</string>
     <string name="menu_evil_pics">邪恶漫画</string>
-    <string name="menu_japan_pics">日本漫画</string>
     <string name="menu_gif">动态图片</string>
     <string name="menu_excited_novel">激情文学</string>
     <string name="menu_family_mess_novel">乱伦文学</string>
@@ -42,5 +41,7 @@
     <string name="no">谁说的我打死他</string>
     <string name="ok">OK</string>
     <string name="cancel">取消</string>
+    <string name="resolving_video_address">解析视频地址中，请稍等。。。</string>
+    <string name="loading_please_wait">加载中，请稍等。。。</string>
 
 </resources>
