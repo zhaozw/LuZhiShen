@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by wuyr on 4/8/16 9:41 PM.
  */
-public class ChinaVideoAdapter extends BaseListAdapter {
+public class ChinaVideoAdapter extends BasePictureListAdapter {
 
     private final String URL = "http://0pmp.com/html/25/";
 
@@ -63,7 +63,7 @@ public class ChinaVideoAdapter extends BaseListAdapter {
                     mClass.get().setData((List<Data>) msg.obj);
                     break;
                 case LOAD_MORE:
-                    mClass.get().mData.addAll((List<Data>) msg.obj);
+                    mClass.get().mData.addAll((List<Data>)msg.obj);
                     mClass.get().notifyItemRangeChanged(
                             mClass.get().getDataSize(), ((List) msg.obj).size());
                     break;

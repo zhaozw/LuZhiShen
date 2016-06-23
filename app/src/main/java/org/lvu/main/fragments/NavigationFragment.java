@@ -1,21 +1,29 @@
 package org.lvu.main.fragments;
 
-import android.support.v7.widget.RecyclerView;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import org.lvu.adapter.BaseListAdapter;
+import org.lvu.R;
 
 /**
  * Created by wuyr on 6/23/16 2:33 PM.
  */
-public class NavigationFragment extends BaseListFragment {
+public class NavigationFragment extends Fragment {
 
+    private View mRootView;
+
+    @Nullable
     @Override
-    protected BaseListAdapter getAdapter() {
-        return null;
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mRootView = inflater.inflate(R.layout.fragment_navigation_view, container, false);
+        return mRootView;
     }
 
-    @Override
-    protected RecyclerView.LayoutManager getLayoutManager() {
-        return null;
+    private void initViews() {
+
     }
 }

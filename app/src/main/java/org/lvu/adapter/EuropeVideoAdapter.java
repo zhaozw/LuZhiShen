@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by wuyr on 6/22/16 10:51 PM.
  */
-public class EuropeVideoAdapter extends BaseListAdapter {
+public class EuropeVideoAdapter extends BasePictureListAdapter {
 
     private final String URL = "http://m.fapple.com/videos";
     private static final int GET_URL = 3;
@@ -28,7 +28,7 @@ public class EuropeVideoAdapter extends BaseListAdapter {
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final BaseListAdapter.ViewHolder holder, int position) {
         holder.image.setImageBitmap(mData.get(position).getBitmap());
         holder.text.setText(mData.get(position).getText());
         if (mOnItemClickListener != null)

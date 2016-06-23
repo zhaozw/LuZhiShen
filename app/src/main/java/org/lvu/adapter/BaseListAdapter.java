@@ -19,7 +19,7 @@ import org.lvu.utils.HttpUtil;
 import java.util.List;
 
 /**
- * Created by wuyr on 6/23/16 3:15 PM.
+ * Created by wuyr on 6/23/16 6:39 PM.
  */
 public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapter.ViewHolder> {
 
@@ -85,7 +85,6 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.image.setImageBitmap(mData.get(position).getBitmap());
         holder.text.setText(mData.get(position).getText());
         if (mOnItemClickListener != null)
             holder.root.setOnClickListener(new View.OnClickListener() {
@@ -153,24 +152,23 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         void onFinish();
     }
 
-    public void setOnRefreshDataFinishListener(OnRefreshDataFinishListener listener){
+    public void setOnRefreshDataFinishListener(OnRefreshDataFinishListener listener) {
         mOnRefreshDataFinishListener = listener;
     }
 
-    public interface OnRefreshDataFinishListener{
+    public interface OnRefreshDataFinishListener {
         void onFinish();
     }
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
 
         CardView root;
-        ImageView image;
         TextView text;
+        ImageView image;
 
         public ViewHolder(View itemView) {
             super(itemView);
             root = (CardView) itemView.findViewById(R.id.card_view);
-            image = (ImageView) itemView.findViewById(R.id.image);
             text = (TextView) itemView.findViewById(R.id.text);
         }
     }

@@ -17,7 +17,7 @@ public class ChinaVideoFragment extends BaseListFragment{
 
     @Override
     protected BaseListAdapter getAdapter() {
-        return new ChinaVideoAdapter(getActivity(), R.layout.list_item, new ArrayList<Data>());
+        return new ChinaVideoAdapter(getActivity(), R.layout.adapter_picture_list_item, new ArrayList<Data>());
     }
 
     @Override

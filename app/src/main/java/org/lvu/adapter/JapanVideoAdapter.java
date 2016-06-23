@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by wuyr on 4/8/16 9:41 PM.
  */
-public class JapanVideoAdapter extends BaseListAdapter {
+public class JapanVideoAdapter extends BasePictureListAdapter {
 
     private final String URL = "http://a5408977.gotoip55.com/?s=vod-show-id-39.html";
 

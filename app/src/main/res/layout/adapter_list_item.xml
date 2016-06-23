@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:foreground="@drawable/card_foreground"
+    app:cardBackgroundColor="?attr/colorAccent"
+    app:cardCornerRadius="@dimen/dp_3"
+    app:cardElevation="@dimen/dp_3"
+    app:cardUseCompatPadding="true">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|start"
+        android:layout_margin="@dimen/dp_12"
+        android:background="?attr/colorAccent"
+        android:gravity="center_horizontal|start"
+        android:singleLine="true"
+        android:textColor="@color/menu_text_color"
+        android:textSize="@dimen/sp_18"
+        tools:text="“蒜你狠”卷土重来 每斤价格直逼20元" />
+</android.support.v7.widget.CardView>

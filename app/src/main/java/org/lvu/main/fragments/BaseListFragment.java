@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 
 import org.lvu.R;
 import org.lvu.adapter.BaseListAdapter;
+import org.lvu.adapter.BasePictureListAdapter;
 import org.lvu.adapter.EuropeVideoAdapter;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.VideoPlayer;
@@ -91,19 +92,19 @@ public abstract class BaseListFragment extends Fragment {
 
     private void initAdapter(){
         mAdapter = getAdapter();
-        mAdapter.setOnSyncDataFinishListener(new BaseListAdapter.OnSyncDataFinishListener() {
+        mAdapter.setOnSyncDataFinishListener(new BasePictureListAdapter.OnSyncDataFinishListener() {
             @Override
             public void onFinish() {
                 mDialog.dismiss();
             }
         });
-        mAdapter.setOnLoadMoreFinishListener(new BaseListAdapter.OnLoadMoreFinishListener() {
+        mAdapter.setOnLoadMoreFinishListener(new BasePictureListAdapter.OnLoadMoreFinishListener() {
             @Override
             public void onFinish() {
                 hideLoadMoreBar();
             }
         });
-        mAdapter.setOnRefreshDataFinishListener(new BaseListAdapter.OnRefreshDataFinishListener() {
+        mAdapter.setOnRefreshDataFinishListener(new BasePictureListAdapter.OnRefreshDataFinishListener() {
             @Override
             public void onFinish() {
                 mRefreshLayout.setRefreshing(false);

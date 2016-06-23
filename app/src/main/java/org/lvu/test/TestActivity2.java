@@ -58,7 +58,7 @@ public class TestActivity2 extends AppCompatActivity {
         });
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        mAdapter = new ChinaVideoAdapter(this, R.layout.list_item, new ArrayList<Data>());
+        mAdapter = new ChinaVideoAdapter(this, R.layout.adapter_picture_list_item, new ArrayList<Data>());
         mAdapter.setOnLoadMoreFinishListener(new ChinaVideoAdapter.OnLoadMoreFinishListener() {
             @Override
             public void onFinish() {

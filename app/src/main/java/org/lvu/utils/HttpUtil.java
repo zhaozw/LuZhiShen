@@ -21,121 +21,131 @@ import java.util.List;
 public class HttpUtil {
 
     public static void getChinaVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
-        new Thread() {
+        runOnBackground(listener, new BackgroundLogic() {
             @Override
-            public void run() {
-                int count = 0;
-                while (true) {
-                    try {
-                        List<Data> result = new ArrayList<>();
-                        String nextPage = "";
-                        Document document = Jsoup.parse(new URL(url), 8000);
-                        Elements links = document.select("li"),
-                                src = document.select("img[src]"),
-                                link = links.select("a[href][title][target]");
-                        for (int i = 0; i < link.size(); i++) {
-                            String videoUrl = getChinaVideoUrlByUrl(link.get(i).attr("abs:href"));
-                            if (!videoUrl.isEmpty())
-                                result.add(new Data(videoUrl,
-                                        src.get(i).attr("abs:src"),
-                                        link.get(i).attr("title")));
-                        }
-                        Elements next = document.select("div[class]"), next2 = null;
-                        for (Element tmp : next) {
-                            if (tmp.attr("class").equals("page"))
-                                next2 = tmp.children();
-                        }
-                        if (next2 != null) {
-                            for (Element tmp : next2) {
-                                if (tmp.text().equals("下一页"))
-                                    nextPage = tmp.attr("abs:href");
-                            }
-                        }
-                        listener.onSuccess(result, nextPage);
-                        break;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (e instanceof ConnectException)
-                            continue;
-                        if (e instanceof SocketException ||
-                                e instanceof UnknownHostException ||
-                                e instanceof SocketTimeoutException) {
-                            count++;
-                            if (count > 5)
-                                break;
-                            continue;
-                        }
-                        listener.onFailure(e);
+            public void run() throws Exception {
+                List<Data> result = new ArrayList<>();
+                String nextPage = "";
+                Document document = Jsoup.connect(url).get();
+                Elements links = document.select("li"),
+                        src = document.select("img[src]"),
+                        link = links.select("a[href][title][target]");
+                for (int i = 0; i < link.size(); i++) {
+                    String videoUrl = getChinaVideoUrlByUrl(link.get(i).attr("abs:href"));
+                    if (!videoUrl.isEmpty())
+                        result.add(new Data(videoUrl,
+                                src.get(i).attr("abs:src"),
+                                link.get(i).attr("title")));
+                }
+                Elements next = document.select("div[class]"), next2 = null;
+                for (Element tmp : next) {
+                    if (tmp.attr("class").equals("page"))
+                        next2 = tmp.children();
+                }
+                if (next2 != null) {
+                    for (Element tmp : next2) {
+                        if (tmp.text().equals("下一页"))
+                            nextPage = tmp.attr("abs:href");
                     }
                 }
+                listener.onSuccess(result, nextPage);
             }
-        }.start();
-    }
-
-    public static void getJapanVideoListAsync(final int currentSize, final String url, final HttpRequestCallbackListener listener) {
-        new Thread() {
-            @Override
-            public void run() {
-                int count = 0;
-                while (true) {
-                    try {
-                        List<Data> result = new ArrayList<>();
-                        Document document = Jsoup.connect(url).get();
-                        Elements links = document.select("p[class]"),
-                                src = document.select("img[data-original]");
-                        Elements link = new Elements();
-                        for (Element tmp : links)
-                            if (tmp.attr("class").equals("content"))
-                                link.add(tmp);
-                        for (int i = currentSize; i < link.size(); i++) {
-                            if (result.size() < 10)
-                                result.add(new Data(handlerString2(link.get(i).text()), src.get(i).attr("abs:data-original"), handlerString(src.get(i).attr("alt"))));
-                            else break;
-                        }
-                        listener.onSuccess(result, "");
-                        break;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (e instanceof ConnectException)
-                            continue;
-                        if (e instanceof SocketException ||
-                                e instanceof UnknownHostException ||
-                                e instanceof SocketTimeoutException) {
-                            count++;
-                            if (count > 5)
-                                break;
-                            continue;
-                        }
-                        listener.onFailure(e);
-                    }
-                }
-            }
-        }.start();
+        });
     }
 
     public static void getEuropeVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
+        runOnBackground(listener, new BackgroundLogic() {
+            @Override
+            public void run() throws Exception {
+                List<Data> result = new ArrayList<>();
+                String nextPage = "";
+                Document document = Jsoup.connect(url).get();
+                Elements src = document.select("img[src]"), links = new Elements(), texts = document.select("h2"),
+                        nextPageTmp = document.select("link[rel]");
+                for (Element tmp : texts) {
+                    links.add(tmp.parent());
+                }
+                for (Element tmp : nextPageTmp)
+                    if (tmp.attr("rel").equals("next"))
+                        nextPage = tmp.attr("abs:href");
+                src.remove(0);
+                for (int i = 0; i < links.size(); i++)
+                    result.add(new Data(links.get(i).attr("abs:href"), src.get(i).attr("abs:src"), texts.get(i).text()));
+
+                listener.onSuccess(result, nextPage);
+            }
+        });
+    }
+
+    public static void getJapanVideoListAsync(final int currentSize, final String url, final HttpRequestCallbackListener listener) {
+        runOnBackground(listener, new BackgroundLogic() {
+            @Override
+            public void run() throws Exception {
+                List<Data> result = new ArrayList<>();
+                Document document = Jsoup.connect(url).get();
+                Elements links = document.select("p[class]"),
+                        src = document.select("img[data-original]");
+                Elements link = new Elements();
+                for (Element tmp : links)
+                    if (tmp.attr("class").equals("content"))
+                        link.add(tmp);
+                for (int i = currentSize; i < link.size(); i++) {
+                    if (result.size() < 10)
+                        result.add(new Data(handlerString2(link.get(i).text()), src.get(i).attr("abs:data-original"), handlerString(src.get(i).attr("alt"))));
+                    else break;
+                }
+                listener.onSuccess(result, "");
+            }
+        });
+    }
+
+    public static void getAsiaPictureListAsync(final String url, final HttpRequestCallbackListener listener) {
+        runOnBackground(listener, new BackgroundLogic() {
+            @Override
+            public void run() throws Exception {
+                List<Data> result = new ArrayList<>();
+                String nextPage = "";
+                Document document = Jsoup.connect(url).get();
+
+                listener.onSuccess(result, nextPage);
+            }
+        });
+    }
+
+    public static void getEuropePictureListAsync(final String url, final HttpRequestCallbackListener listener) {
+        runOnBackground(listener, new BackgroundLogic() {
+            @Override
+            public void run() throws Exception {
+                List<Data> result = new ArrayList<>();
+                String nextPage = "";
+                Document document = Jsoup.connect(url).get();
+
+                listener.onSuccess(result, nextPage);
+            }
+        });
+    }
+
+    public static void getFamilyPhotoListAsync(final String url, final HttpRequestCallbackListener listener) {
+        runOnBackground(listener, new BackgroundLogic() {
+            @Override
+            public void run() throws Exception {
+                List<Data> result = new ArrayList<>();
+                String nextPage = "";
+                Document document = Jsoup.connect(url).get();
+
+                listener.onSuccess(result, nextPage);
+            }
+        });
+    }
+
+    private static void runOnBackground(final HttpRequestCallbackListener listener, final BackgroundLogic backgroundLogic) {
         new Thread() {
             @Override
             public void run() {
                 int count = 0;
                 while (true) {
                     try {
-                        List<Data> result = new ArrayList<>();
-                        String nextPage = "";
-                        Document document = Jsoup.connect(url).get();
-                        Elements src = document.select("img[src]"), links = new Elements(), texts = document.select("h2"),
-                                nextPageTmp = document.select("link[rel]");
-                        for (Element tmp : texts) {
-                            links.add(tmp.parent());
-                        }
-                        for (Element tmp : nextPageTmp)
-                            if (tmp.attr("rel").equals("next"))
-                                nextPage = tmp.attr("abs:href");
-                        src.remove(0);
-                        for (int i = 0; i < links.size(); i++)
-                            result.add(new Data(links.get(i).attr("abs:href"), src.get(i).attr("abs:src"), texts.get(i).text()));
-
-                        listener.onSuccess(result, nextPage);
+                        backgroundLogic.run();
                         break;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -227,5 +237,9 @@ public class HttpUtil {
         void onSuccess(List<Data> data, String nextPage);
 
         void onFailure(Exception e);
+    }
+
+    private interface BackgroundLogic {
+        void run() throws Exception;
     }
 }

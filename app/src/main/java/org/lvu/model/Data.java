@@ -20,9 +20,13 @@ public class Data {
     private Bitmap bitmap;
 
     public Data(String url, String src, String text) {
+        this(url,text);
+        initBitmap(src);
+    }
+
+    public Data(String url,String text){
         this.url = url;
         this.text = text;
-        initBitmap(src);
     }
 
     private void initBitmap(String src) {
