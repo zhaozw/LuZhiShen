@@ -1,6 +1,5 @@
 package org.lvu.utils;
 
-import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -26,7 +25,7 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
-                Document document = Jsoup.connect(url).get();
+                Document document = Jsoup.parse(new URL(url), 8000);
                 Elements links = document.select("li"),
                         src = document.select("img[src]"),
                         link = links.select("a[href][title][target]");
@@ -59,7 +58,7 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
-                Document document = Jsoup.connect(url).get();
+                Document document = Jsoup.parse(new URL(url), 8000);
                 Elements src = document.select("img[src]"), links = new Elements(), texts = document.select("h2"),
                         nextPageTmp = document.select("link[rel]");
                 for (Element tmp : texts) {
@@ -82,7 +81,7 @@ public class HttpUtil {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                Document document = Jsoup.connect(url).get();
+                Document document = Jsoup.parse(new URL(url), 8000);
                 Elements links = document.select("p[class]"),
                         src = document.select("img[data-original]");
                 Elements link = new Elements();
@@ -105,7 +104,7 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
-                Document document = Jsoup.connect(url).get();
+                Document document = Jsoup.parse(new URL(url), 8000);
                 Elements elements = document.select("li");
                 for (Element tmp : elements)
                     result.add(new Data(tmp.children().get(1).attr("abs:href"), tmp.children().get(1).text()));
@@ -131,12 +130,13 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
-                Document document = Jsoup.connect(url).get();
+                Document document = Jsoup.parse(new URL(url), 8000);
                 Elements elements = document.select("img");
                 elements.remove(elements.size() - 1);
                 for (Element tmp : elements) {
                     result.add(new Data("", tmp.attr("abs:src"), ""));
                     listener.onSuccess(result, nextPage);
+                    result = new ArrayList<>();
                 }
                 listener.onSuccess(null, nextPage);
             }
@@ -154,14 +154,16 @@ public class HttpUtil {
                         break;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        if (e instanceof ConnectException)
+                        if (e instanceof ConnectException)// TODO: 6/24/16 check internet can use?
                             continue;
                         if (e instanceof SocketException ||
                                 e instanceof UnknownHostException ||
                                 e instanceof SocketTimeoutException) {
                             count++;
-                            if (count > 5)
+                            if (count > 5) {
+                                listener.onFailure(e);
                                 break;
+                            }
                             continue;
                         }
                         listener.onFailure(e);
@@ -196,8 +198,6 @@ public class HttpUtil {
                 e.printStackTrace();
                 if (e instanceof ConnectException)
                     continue;
-                if (e instanceof HttpStatusException)
-                    return "";
                 if (e instanceof SocketException ||
                         e instanceof UnknownHostException ||
                         e instanceof SocketTimeoutException) {
@@ -206,6 +206,7 @@ public class HttpUtil {
                         break;
                     continue;
                 }
+                break;
             }
         }
         return "";
@@ -215,7 +216,7 @@ public class HttpUtil {
         int count = 0;
         while (true) {
             try {
-                Document document = Jsoup.connect(url).get();
+                Document document = Jsoup.parse(new URL(url), 8000);
                 Elements elements = document.select("a[class]");
                 for (Element tmp : elements)
                     if (tmp.attr("class").equals("play"))

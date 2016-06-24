@@ -4,7 +4,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import org.lvu.R;
-import org.lvu.adapter.AsiaPictureAdapter;
+import org.lvu.adapter.BaseListAdapterSubs.AsiaPictureAdapter;
 import org.lvu.adapter.BaseListAdapter;
 import org.lvu.model.Data;
 

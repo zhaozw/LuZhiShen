@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 
 import org.lvu.R;
 import org.lvu.adapter.BaseListAdapter;
-import org.lvu.adapter.EuropePictureAdapter;
+import org.lvu.adapter.BaseListAdapterSubs.EuropePictureAdapter;
 import org.lvu.main.activities.PicturesViewActivity;
 import org.lvu.model.Data;
 

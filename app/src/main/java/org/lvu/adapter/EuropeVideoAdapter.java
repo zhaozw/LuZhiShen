@@ -79,6 +79,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
         return new MyHandler(this);
     }
 
+    @SuppressWarnings("unchecked")
     private static class MyHandler extends Handler {
 
         private WeakReference<EuropeVideoAdapter> mClass;

@@ -47,8 +47,10 @@ public class JapanVideoAdapter extends BasePictureListAdapter {
 
     @Override
     protected void setData(List<Data> data) {
-        mData.addAll(data);
-        notifyItemRangeChanged(getDataSize(), data.size());
+        if (data != null) {
+            mData.addAll(data);
+            notifyItemRangeChanged(getDataSize(), data.size());
+        }
     }
 
 
@@ -60,6 +62,7 @@ public class JapanVideoAdapter extends BasePictureListAdapter {
             mClass = new WeakReference<>(clazz);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {

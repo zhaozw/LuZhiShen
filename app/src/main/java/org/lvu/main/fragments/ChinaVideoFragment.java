@@ -1,7 +1,7 @@
 package org.lvu.main.fragments;
 
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 
 import org.lvu.R;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 /**
  * Created by wuyr on 6/23/16 2:30 PM.
  */
-public class ChinaVideoFragment extends BaseListFragment{
+public class ChinaVideoFragment extends BaseListFragment {
 
     @Override
     protected BaseListAdapter getAdapter() {
@@ -40,6 +40,6 @@ public class ChinaVideoFragment extends BaseListFragment{
 
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new GridLayoutManager(getActivity(), 2);
+        return new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
     }
 }

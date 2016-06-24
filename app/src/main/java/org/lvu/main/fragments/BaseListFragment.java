@@ -1,15 +1,16 @@
 package org.lvu.main.fragments;
 
 import android.app.ProgressDialog;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +70,10 @@ public abstract class BaseListFragment extends Fragment {
                 }
             }
         });
+        if (getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE)
+            changeToLandscape();
+        else changeToPortrait();
     }
 
     private void initPlayer() {
@@ -103,7 +108,7 @@ public abstract class BaseListFragment extends Fragment {
             @Override
             public void onFailure() {
                 mDialog.dismiss();
-                MySnackBar.show(getActivity().findViewById(R.id.coordinator),
+                MySnackBar.show(((MainActivity)getActivity()).coordinatorLayout,
                         getString(R.string.get_list_failure), Snackbar.LENGTH_INDEFINITE);
             }
         });
@@ -116,7 +121,7 @@ public abstract class BaseListFragment extends Fragment {
             @Override
             public void onFailure() {
                 hideLoadMoreBar();
-                MySnackBar.show(getActivity().findViewById(R.id.coordinator),
+                MySnackBar.show(((MainActivity)getActivity()).coordinatorLayout,
                         getString(R.string.get_list_failure), Snackbar.LENGTH_INDEFINITE);
             }
         });
@@ -129,7 +134,7 @@ public abstract class BaseListFragment extends Fragment {
             @Override
             public void onFailure() {
                 mRefreshLayout.setRefreshing(false);
-                MySnackBar.show(getActivity().findViewById(R.id.coordinator),
+                MySnackBar.show(((MainActivity)getActivity()).coordinatorLayout,
                         getString(R.string.get_list_failure), Snackbar.LENGTH_INDEFINITE);
             }
         });
@@ -142,18 +147,55 @@ public abstract class BaseListFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(getLayoutManager());
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            //用来标记是否正在向最后一个滑动，既是否向下滑动
+            boolean isSlidingToLast;
+
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (isScrollDown(dy) && !isLoadBarHiding && !isLoadingMore &&
-                        (recyclerView.getLayoutManager() instanceof GridLayoutManager ?
-                                ((GridLayoutManager) recyclerView.getLayoutManager()) :
-                                ((LinearLayoutManager) recyclerView.getLayoutManager()))
-                                .findLastVisibleItemPosition() == mAdapter.getDataSize() - 1) {
-                    showLoadMoreBar();
-                    mAdapter.loadMore();
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (recyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+                    StaggeredGridLayoutManager manager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
+                    // 当不滚动时
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        //获取最后一个完全显示的ItemPosition
+                        int[] lastVisiblePositions = manager.findLastVisibleItemPositions(new int[manager.getSpanCount()]);
+                        int lastVisiblePos = getMaxElem(lastVisiblePositions);
+                        int totalItemCount = manager.getItemCount();
+
+                        // 判断是否滚动到底部
+                        if (isSlidingToLast && !isLoadBarHiding && !isLoadingMore &&
+                                lastVisiblePos == (totalItemCount - 1)) {
+                            showLoadMoreBar();
+                            mAdapter.loadMore();
+                        }
+                    }
                 }
             }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                isSlidingToLast = isScrollDown(dy);
+                if (recyclerView.getLayoutManager() instanceof LinearLayoutManager)
+                    if (isSlidingToLast && !isLoadBarHiding && !isLoadingMore &&
+                            ((LinearLayoutManager) recyclerView.getLayoutManager())
+                                    .findLastVisibleItemPosition() == mAdapter.getDataSize() - 1) {
+                        showLoadMoreBar();
+                        mAdapter.loadMore();
+                    }
+            }
         });
+    }
+
+    private int getMaxElem(int[] arr) {
+        int maxVal = Integer.MIN_VALUE;
+        for (int anArr : arr)
+            if (anArr > maxVal)
+                maxVal = anArr;
+        return maxVal;
+    }
+
+    protected boolean isScrollDown(int y) {
+        return y > 0;
     }
 
     // TODO: 6/18/16 img load failure set a default img
@@ -182,10 +224,6 @@ public abstract class BaseListFragment extends Fragment {
                 mAdapter.refreshData();
             }
         });
-    }
-
-    protected boolean isScrollDown(int y) {
-        return y > 0;
     }
 
     private void showLoadMoreBar() {
@@ -237,6 +275,27 @@ public abstract class BaseListFragment extends Fragment {
             });
             mLoadMoreBar.startAnimation(animation);
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            changeToLandscape();
+        else
+            changeToPortrait();
+    }
+
+    public void changeToLandscape() {
+        if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
+            mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
+                    3, StaggeredGridLayoutManager.VERTICAL));
+    }
+
+    public void changeToPortrait() {
+        if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
+            mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
+                    2, StaggeredGridLayoutManager.VERTICAL));
     }
 
     protected abstract BaseListAdapter getAdapter();

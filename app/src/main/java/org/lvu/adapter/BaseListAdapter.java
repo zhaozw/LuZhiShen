@@ -51,7 +51,6 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
             @Override
             public void onFailure(Exception e) {
-                e.printStackTrace();
                 mHandler.sendEmptyMessage(SYNC_DATA_FAILURE);
             }
         };
@@ -64,7 +63,6 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
             @Override
             public void onFailure(Exception e) {
-                e.printStackTrace();
                 mHandler.sendEmptyMessage(LOAD_MORE_FAILURE);
             }
         };
@@ -76,7 +74,6 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
             @Override
             public void onFailure(Exception e) {
-                e.printStackTrace();
                 mHandler.sendEmptyMessage(REFRESH_DATA_FAILURE);
             }
         };
@@ -106,10 +103,12 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     }
 
     protected void setData(List<Data> data) {
-        mData = data;
-        notifyDataSetChanged();
-        if (mOnSyncDataFinishListener != null)
-            mOnSyncDataFinishListener.onFinish();
+        if (data != null) {
+            mData = data;
+            notifyDataSetChanged();
+            if (mOnSyncDataFinishListener != null)
+                mOnSyncDataFinishListener.onFinish();
+        }
     }
 
     private void sendMessage(int what, List<Data> data, String nextPage) {

@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 
 import org.lvu.R;
 import org.lvu.adapter.BaseListAdapter;
-import org.lvu.adapter.LewdWifeNovelAdapter;
+import org.lvu.adapter.BaseListAdapterSubs.LewdWifeNovelAdapter;
 import org.lvu.model.Data;
 
 import java.util.ArrayList;

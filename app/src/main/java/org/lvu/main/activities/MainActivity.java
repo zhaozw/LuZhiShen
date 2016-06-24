@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -41,12 +42,15 @@ import io.vov.vitamio.Vitamio;
 /**
  * Created by wuyr on 6/1/16 3:33 PM.
  */
+
+@SuppressWarnings("ConstantConditions")
 public class MainActivity extends BaseActivity {
 
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
     private View mTopView;
     private MenuList mMenuList;
+    public CoordinatorLayout coordinatorLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,6 +113,8 @@ public class MainActivity extends BaseActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(R.string.menu_navigation);
         setSupportActionBar(mToolbar);
+
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -291,7 +297,7 @@ public class MainActivity extends BaseActivity {
                     if ((System.currentTimeMillis() - mLastTime) < 2000)
                         finish();
                     mLastTime = System.currentTimeMillis();
-                    MySnackBar.show(findViewById(R.id.coordinator),
+                    MySnackBar.show(coordinatorLayout,
                             getString(R.string.press_back_exit), Snackbar.LENGTH_SHORT);
                 }
             }

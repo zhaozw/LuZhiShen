@@ -1,9 +1,10 @@
-package org.lvu.adapter;
+package org.lvu.adapter.BaseListAdapterSubs;
 
 import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 
+import org.lvu.adapter.BaseListAdapter;
 import org.lvu.model.Data;
 
 import java.util.List;

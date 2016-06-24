@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +16,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
-import android.widget.FrameLayout;
 
 import org.lvu.R;
 import org.lvu.adapter.BaseListAdapter;
@@ -34,7 +34,7 @@ import java.util.List;
 public class PicturesViewActivity extends BaseActivity {
 
     public static final String URL = "url", TITLE = "title";
-    private View mTopView, mBottomView;
+    private View mTopView;
     private CircleProgressBar mLoadMoreBar;
 
     @Override
@@ -45,6 +45,7 @@ public class PicturesViewActivity extends BaseActivity {
         initImmerse();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void initViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(getIntent().getStringExtra(TITLE));
@@ -69,7 +70,7 @@ public class PicturesViewActivity extends BaseActivity {
         });
         mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
         if (ImmerseUtil.isHasNavigationBar(this)) {
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
+            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
             lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(this);
             mLoadMoreBar.setLayoutParams(lp);
         }
@@ -103,13 +104,6 @@ public class PicturesViewActivity extends BaseActivity {
             AppBarLayout.LayoutParams topLP = new AppBarLayout.LayoutParams(
                     AppBarLayout.LayoutParams.MATCH_PARENT, ImmerseUtil.getStatusBarHeight(this));
             mTopView.setLayoutParams(topLP);
-            if (ImmerseUtil.isHasNavigationBar(this)) {
-                //init bottomView
-                mBottomView = findViewById(R.id.navigation_bar_view);
-                AppBarLayout.LayoutParams bottomLP = new AppBarLayout.LayoutParams(
-                        AppBarLayout.LayoutParams.MATCH_PARENT, ImmerseUtil.getNavigationBarHeight(this));
-                mBottomView.setLayoutParams(bottomLP);
-            }
             if (getResources().getConfiguration().orientation
                     == Configuration.ORIENTATION_LANDSCAPE)
                 changeToLandscape();
@@ -143,7 +137,6 @@ public class PicturesViewActivity extends BaseActivity {
 
     private void changeToLandscape() {
         mTopView.setVisibility(View.GONE);
-        mBottomView.setVisibility(View.GONE);
         int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -155,7 +148,6 @@ public class PicturesViewActivity extends BaseActivity {
 
     private void changeToPortrait() {
         mTopView.setVisibility(View.VISIBLE);
-        mBottomView.setVisibility(View.VISIBLE);
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION

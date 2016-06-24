@@ -8,7 +8,6 @@ import org.lvu.R;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.SoftReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -18,7 +17,7 @@ import java.net.URL;
 public class Data {
 
     private String url, text;
-    private SoftReference<Bitmap> bitmap;
+    private Bitmap bitmap;
 
     public Data(String url, String src, String text) {
         this(url, text);
@@ -31,23 +30,17 @@ public class Data {
     }
 
     private void initBitmap(String src) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 2;
-        //options.inTargetDensity = 80;
-        options.inDither = false;
-        options.inPurgeable = true;
-        options.inInputShareable = true;
         try {
             URL url = new URL(src);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
             connection.connect();
             InputStream input = connection.getInputStream();
-            bitmap = new SoftReference<>(BitmapFactory.decodeStream(input, null, options));
+            bitmap = BitmapFactory.decodeStream(input);
         } catch (IOException e) {
             e.printStackTrace();
-            bitmap = new SoftReference<>(BitmapFactory.decodeResource(
-                    Application.getContext().getResources(), R.drawable.avril, options));
+            bitmap = BitmapFactory.decodeResource(
+                    Application.getContext().getResources(), R.drawable.avril);
         }
     }
 
@@ -60,6 +53,6 @@ public class Data {
     }
 
     public Bitmap getBitmap() {
-        return bitmap.get();
+        return bitmap;
     }
 }

@@ -1,4 +1,4 @@
-package org.lvu.adapter;
+package org.lvu.adapter.BaseListAdapterSubs;
 
 import android.content.Context;
 

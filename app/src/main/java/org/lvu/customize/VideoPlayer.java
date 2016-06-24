@@ -1,9 +1,11 @@
 package org.lvu.customize;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
@@ -32,6 +34,7 @@ import io.vov.vitamio.widget.VideoView;
 /**
  * Created by wuyr on 6/6/16 8:50 PM.
  */
+@SuppressLint("SetTextI18n")
 public class VideoPlayer extends LinearLayout implements View.OnClickListener {
 
     private Context mContext;
@@ -48,6 +51,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     private Handler mHandler;
     private float mStartX, mEndX;
     private int mMoveDistance, mTotalWidth = -1, mResult;
+    private String mLastUrl = "";
 
     public VideoPlayer(Context context) {
         super(context);
@@ -73,6 +77,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         initProgressBar();
     }
 
+    @SuppressWarnings("deprecation")
     private void initProgressBar() {
         List<Integer> data = new ArrayList<>();
         int[] array = R.styleable.AppCompatTheme;
@@ -281,7 +286,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         return mMoveDistance < -30;
     }
 
-    private void initViewsColors() {
+    /*private void initViewsColors() {
         List<Integer> data = new ArrayList<>();
         int[] array = R.styleable.AppCompatTheme;
         for (int tmp : array)
@@ -298,7 +303,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         a.recycle();
     }
 
-    /*private void measure() {
+    private void measure() {
         int displayWith = mSurfaceView.getWidth(), displayHeight = mSurfaceView.getHeight();
         int vW = mPlayer.getVideoWidth(), vH = mPlayer.getVideoHeight();
 
@@ -360,10 +365,16 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     }
 
     public void setUrlPlay(String url) {
+        mOriginallyOrientation = mActivity.getResources().getConfiguration().orientation;
         changeToLandscape();
         mLoadingBar.setVisibility(VISIBLE);
         mDownloadSpeed.setVisibility(VISIBLE);
-        mPlayer.setVideoPath(url);
+        if (url.equals(mLastUrl)) {
+            mProgressbar.setEnabled(true);
+            play();
+        } else
+            mPlayer.setVideoPath(url);
+        mLastUrl = url;
         if (mRootView.getVisibility() == GONE)
             mRootView.setVisibility(VISIBLE);
         //mPlayer.setDataSource(mContext, Uri.parse("android:resource://org.lvu/"+R.raw.media));
@@ -390,8 +401,9 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     public void exit() {
         pause();
         mRootView.setVisibility(GONE);
+        mProgressbar.setEnabled(false);
         mPlayer.destroyDrawingCache();
-        if (mOriginallyOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+        if (mOriginallyOrientation == Configuration.ORIENTATION_PORTRAIT)
             changeToPortrait();
         if (mOnPlayCompleteListener != null)
             mOnPlayCompleteListener.playComplete();
@@ -453,7 +465,6 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     public void setActivity(Activity activity) {
         mActivity = activity;
         mOriginallyVCS = mActivity.getVolumeControlStream();
-        mOriginallyOrientation = mActivity.getResources().getConfiguration().orientation;
         mActivity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 

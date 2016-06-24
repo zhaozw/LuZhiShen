@@ -1,10 +1,11 @@
-package org.lvu.adapter;
+package org.lvu.adapter.BaseListAdapterSubs;
 
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 
+import org.lvu.adapter.BaseListAdapter;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 
@@ -61,6 +62,7 @@ public class EuropePictureAdapter extends BaseListAdapter {
             mClass = new WeakReference<>(clazz);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
