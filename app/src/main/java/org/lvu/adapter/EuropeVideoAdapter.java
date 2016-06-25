@@ -72,6 +72,8 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
     @Override
     public void refreshData() {
         HttpUtil.getEuropeVideoListAsync(URL, mRefreshDataCallbackListener);
+        mData = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -79,7 +81,6 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
         return new MyHandler(this);
     }
 
-    @SuppressWarnings("unchecked")
     private static class MyHandler extends Handler {
 
         private WeakReference<EuropeVideoAdapter> mClass;
@@ -88,23 +89,15 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
             mClass = new WeakReference<>(clazz);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case SYNC_DATA_SUCCESS:
-                    mClass.get().setData((List<Data>) msg.obj);
-                    break;
-                case LOAD_MORE_SUCCESS:
-                    mClass.get().mData.addAll((List<Data>) msg.obj);
-                    mClass.get().notifyItemRangeChanged(
-                            mClass.get().getDataSize(), ((List) msg.obj).size());
-                    break;
+            int what = msg.what;
+            switch (what) {
                 case REFRESH_DATA_SUCCESS:
-                    mClass.get().mData = new ArrayList<>();
-                    mClass.get().notifyDataSetChanged();
-                    mClass.get().setData((List<Data>) msg.obj);
-                    if (mClass.get().mOnRefreshDataFinishListener != null)
-                        mClass.get().mOnRefreshDataFinishListener.onFinish();
+                case SYNC_DATA_SUCCESS:
+                case LOAD_MORE_SUCCESS:
+                    mClass.get().addData((List<Data>) msg.obj, what);
                     break;
                 case GET_URL:
                     mClass.get().mOnItemClickListener.onClick((String) msg.obj, "");
@@ -124,8 +117,6 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                 default:
                     break;
             }
-            if (mClass.get().mOnLoadMoreFinishListener != null && msg.what != GET_URL)
-                mClass.get().mOnLoadMoreFinishListener.onFinish();
         }
     }
 }

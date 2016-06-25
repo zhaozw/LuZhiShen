@@ -17,10 +17,15 @@ import java.util.List;
  */
 public class ChinaVideoAdapter extends BasePictureListAdapter {
 
-    private final String URL = "http://0pmp.com/html/25/";
+    protected final String URL;
 
     public ChinaVideoAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
+        URL = getUrl();
+    }
+
+    protected String getUrl(){
+        return "http://0pmp.com/html/25/";
     }
 
     @Override
@@ -41,6 +46,8 @@ public class ChinaVideoAdapter extends BasePictureListAdapter {
     @Override
     public void refreshData() {
         HttpUtil.getChinaVideoListAsync(URL, mRefreshDataCallbackListener);
+        mData = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -48,7 +55,7 @@ public class ChinaVideoAdapter extends BasePictureListAdapter {
         return new MyHandler(this);
     }
 
-    private static class MyHandler extends Handler {
+    protected static class MyHandler extends Handler {
 
         private WeakReference<ChinaVideoAdapter> mClass;
 
@@ -59,21 +66,12 @@ public class ChinaVideoAdapter extends BasePictureListAdapter {
         @SuppressWarnings("unchecked")
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case SYNC_DATA_SUCCESS:
-                    mClass.get().setData((List<Data>) msg.obj);
-                    break;
-                case LOAD_MORE_SUCCESS:
-                    mClass.get().mData.addAll((List<Data>)msg.obj);
-                    mClass.get().notifyItemRangeChanged(
-                            mClass.get().getDataSize(), ((List) msg.obj).size());
-                    break;
+            int what = msg.what;
+            switch (what) {
                 case REFRESH_DATA_SUCCESS:
-                    mClass.get().mData = new ArrayList<>();
-                    mClass.get().notifyDataSetChanged();
-                    mClass.get().setData((List<Data>) msg.obj);
-                    if (mClass.get().mOnRefreshDataFinishListener != null)
-                        mClass.get().mOnRefreshDataFinishListener.onFinish();
+                case SYNC_DATA_SUCCESS:
+                case LOAD_MORE_SUCCESS:
+                    mClass.get().addData((List<Data>) msg.obj, what);
                     break;
                 case SYNC_DATA_FAILURE:
                     if (mClass.get().mOnSyncDataFinishListener != null)
@@ -90,8 +88,6 @@ public class ChinaVideoAdapter extends BasePictureListAdapter {
                 default:
                     break;
             }
-            if (mClass.get().mOnLoadMoreFinishListener != null)
-                mClass.get().mOnLoadMoreFinishListener.onFinish();
         }
     }
 

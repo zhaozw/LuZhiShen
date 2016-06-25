@@ -1,6 +1,5 @@
 package org.lvu.main.fragments;
 
-import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -39,10 +38,9 @@ public abstract class BaseListFragment extends Fragment {
     protected RecyclerView mRecyclerView;
     private SwipeRefreshLayout mRefreshLayout;
     protected CircleProgressBar mLoadMoreBar;
-    protected boolean isLoadingMore, isLoadBarHiding;
+    protected boolean isLoadingMore = true, isLoadBarHiding;
     protected VideoPlayer mPlayer;
     private BaseListAdapter mAdapter;
-    private ProgressDialog mDialog;
 
     @Nullable
     @Override
@@ -55,7 +53,6 @@ public abstract class BaseListFragment extends Fragment {
 
     private void init() {
         initPlayer();
-        initDialog();
         initAdapter();
         initRecyclerView();
         initRefreshLayout();
@@ -90,26 +87,19 @@ public abstract class BaseListFragment extends Fragment {
         });
     }
 
-    private void initDialog() {
-        mDialog = new ProgressDialog(getActivity());
-        mDialog.setMessage(getActivity().getString(R.string.loading_please_wait));
-        mDialog.setCancelable(false);
-        mDialog.show();
-    }
-
     private void initAdapter() {
         mAdapter = getAdapter();
         mAdapter.setOnSyncDataFinishListener(new BaseListAdapter.OnSyncDataFinishListener() {
             @Override
             public void onFinish() {
-                mDialog.dismiss();
+                hideLoadMoreBar();
             }
 
             @Override
             public void onFailure() {
-                mDialog.dismiss();
-                MySnackBar.show(((MainActivity)getActivity()).coordinatorLayout,
-                        getString(R.string.get_list_failure), Snackbar.LENGTH_INDEFINITE);
+                hideLoadMoreBar();
+                MySnackBar.show(((MainActivity) getActivity()).coordinatorLayout,
+                        getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
             }
         });
         mAdapter.setOnLoadMoreFinishListener(new BaseListAdapter.OnLoadMoreFinishListener() {
@@ -121,8 +111,8 @@ public abstract class BaseListFragment extends Fragment {
             @Override
             public void onFailure() {
                 hideLoadMoreBar();
-                MySnackBar.show(((MainActivity)getActivity()).coordinatorLayout,
-                        getString(R.string.get_list_failure), Snackbar.LENGTH_INDEFINITE);
+                MySnackBar.show(((MainActivity) getActivity()).coordinatorLayout,
+                        getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
             }
         });
         mAdapter.setOnRefreshDataFinishListener(new BaseListAdapter.OnRefreshDataFinishListener() {
@@ -134,8 +124,8 @@ public abstract class BaseListFragment extends Fragment {
             @Override
             public void onFailure() {
                 mRefreshLayout.setRefreshing(false);
-                MySnackBar.show(((MainActivity)getActivity()).coordinatorLayout,
-                        getString(R.string.get_list_failure), Snackbar.LENGTH_INDEFINITE);
+                MySnackBar.show(((MainActivity) getActivity()).coordinatorLayout,
+                        getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
             }
         });
         mAdapter.setOnItemClickListener(getOnItemClickListener());
@@ -251,6 +241,7 @@ public abstract class BaseListFragment extends Fragment {
 
     private void hideLoadMoreBar() {
         if (isLoadingMore) {
+            isLoadingMore = false;
             isLoadBarHiding = true;
             ScaleAnimation animation = new ScaleAnimation(
                     1, 0, 1, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -264,7 +255,6 @@ public abstract class BaseListFragment extends Fragment {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     mLoadMoreBar.setVisibility(View.GONE);
-                    isLoadingMore = false;
                     isLoadBarHiding = false;
                 }
 

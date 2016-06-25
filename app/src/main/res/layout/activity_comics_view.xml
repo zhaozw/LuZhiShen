@@ -53,4 +53,12 @@
                 android:background="@android:color/transparent" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
+
+    <org.lvu.customize.CircleProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/dp_28"
+        app:background_color="?attr/colorPrimary" />
 </android.support.design.widget.CoordinatorLayout>

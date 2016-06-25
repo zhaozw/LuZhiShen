@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import org.lvu.model.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +31,8 @@ public class GifPictureAdapter extends BasePictureListAdapter {
     @Override
     public void refreshData() {
 
+        mData = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override

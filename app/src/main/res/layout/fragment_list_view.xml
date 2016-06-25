@@ -27,6 +27,5 @@
         android:layout_height="48dp"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="@dimen/dp_28"
-        android:visibility="gone"
         app:background_color="?attr/colorPrimary" />
 </FrameLayout>

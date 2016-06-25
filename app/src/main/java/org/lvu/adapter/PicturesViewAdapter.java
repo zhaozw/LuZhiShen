@@ -53,6 +53,7 @@ public class PicturesViewAdapter extends BasePictureListAdapter {
             mClass = new WeakReference<>(clazz);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){

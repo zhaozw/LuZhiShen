@@ -13,15 +13,10 @@ import java.util.ArrayList;
 /**
  * Created by wuyr on 6/23/16 2:42 PM.
  */
-public class LewdWifeNovelFragment extends BaseListFragment  {
+public class LewdWifeNovelFragment extends ExcitedNovelFragment  {
     @Override
     protected BaseListAdapter getAdapter() {
         return new LewdWifeNovelAdapter(getActivity(), R.layout.adapter_list_item, new ArrayList<Data>());
-    }
-
-    @Override
-    protected BaseListAdapter.OnItemClickListener getOnItemClickListener() {
-        return null;
     }
 
     @Override

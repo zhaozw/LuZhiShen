@@ -50,6 +50,7 @@ public class PicturesViewActivity extends BaseActivity {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(getIntent().getStringExtra(TITLE));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         PicturesViewAdapter adapter = new PicturesViewAdapter(this, R.layout.activity_pictures_item, new ArrayList<Data>());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -65,7 +66,7 @@ public class PicturesViewActivity extends BaseActivity {
             public void onFailure() {
                 hideLoadMoreBar();
                 MySnackBar.show(findViewById(R.id.coordinator),
-                        getString(R.string.get_list_failure), Snackbar.LENGTH_INDEFINITE);
+                        getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
             }
         });
         mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
@@ -110,7 +111,6 @@ public class PicturesViewActivity extends BaseActivity {
             else changeToPortrait();
         }
     }
-
 
     private void hideLoadMoreBar() {
         ScaleAnimation animation = new ScaleAnimation(

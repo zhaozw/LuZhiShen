@@ -102,12 +102,27 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         return mData.size();
     }
 
-    protected void setData(List<Data> data) {
+    protected void addData(List<Data> data, int what) {
         if (data != null) {
-            mData = data;
-            notifyDataSetChanged();
-            if (mOnSyncDataFinishListener != null)
-                mOnSyncDataFinishListener.onFinish();
+            mData.addAll(data);
+            notifyItemRangeChanged(getDataSize(), data.size());
+        } else {
+            switch (what) {
+                case SYNC_DATA_SUCCESS:
+                    if (mOnSyncDataFinishListener != null)
+                        mOnSyncDataFinishListener.onFinish();
+                    break;
+                case LOAD_MORE_SUCCESS:
+                    if (mOnLoadMoreFinishListener != null)
+                        mOnLoadMoreFinishListener.onFinish();
+                    break;
+                case REFRESH_DATA_SUCCESS:
+                    if (mOnRefreshDataFinishListener != null)
+                        mOnRefreshDataFinishListener.onFinish();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

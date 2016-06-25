@@ -13,15 +13,10 @@ import java.util.ArrayList;
 /**
  * Created by wuyr on 6/23/16 2:42 PM.
  */
-public class FamilyMessNovelFragment extends BaseListFragment {
+public class FamilyMessNovelFragment extends ExcitedNovelFragment {
     @Override
     protected BaseListAdapter getAdapter() {
         return new FamilyMessNovelAdapter(getActivity(), R.layout.adapter_list_item, new ArrayList<Data>());
-    }
-
-    @Override
-    protected BaseListAdapter.OnItemClickListener getOnItemClickListener() {
-        return null;
     }
 
     @Override

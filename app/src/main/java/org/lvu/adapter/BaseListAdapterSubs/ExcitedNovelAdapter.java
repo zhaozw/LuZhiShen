@@ -1,40 +1,48 @@
 package org.lvu.adapter.BaseListAdapterSubs;
 
 import android.content.Context;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 
-import org.lvu.adapter.BaseListAdapter;
 import org.lvu.model.Data;
+import org.lvu.utils.HttpUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by wuyr on 6/23/16 6:18 PM.
  */
-public class ExcitedNovelAdapter extends BaseListAdapter {
+public class ExcitedNovelAdapter extends EuropePictureAdapter {
 
     public ExcitedNovelAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
     }
 
     @Override
-    public void syncData(@NonNull String url) {
+    protected String getUrl(){
+        return "http://23eeee.com/t01/index.html";
+    }
 
+    @Override
+    public void syncData(@NonNull String url) {
+        if (url.isEmpty())
+            url = URL;
+        HttpUtil.getNovelListAsync(url, mSyncDataCallbackListener);
     }
 
     @Override
     public void loadMore() {
-
+        if (mNextPageUrl == null || mNextPageUrl.isEmpty())
+            syncData("");
+        else
+            HttpUtil.getNovelListAsync(mNextPageUrl, mLoadMoreCallbackListener);
     }
 
     @Override
     public void refreshData() {
-
+        HttpUtil.getNovelListAsync(URL, mRefreshDataCallbackListener);
+        mData = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
-    @Override
-    protected Handler getHandler() {
-        return null;
-    }
 }

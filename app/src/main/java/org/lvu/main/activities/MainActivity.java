@@ -28,8 +28,12 @@ import org.lvu.main.fragments.AsiaPictureFragment;
 import org.lvu.main.fragments.ChinaVideoFragment;
 import org.lvu.main.fragments.EuropePictureFragment;
 import org.lvu.main.fragments.EuropeVideoFragment;
+import org.lvu.main.fragments.EvilComicsFragment;
+import org.lvu.main.fragments.ExcitedNovelFragment;
+import org.lvu.main.fragments.FamilyMessNovelFragment;
 import org.lvu.main.fragments.FamilyPhotoFragment;
 import org.lvu.main.fragments.JapanVideoFragment;
+import org.lvu.main.fragments.LewdWifeNovelFragment;
 import org.lvu.main.fragments.NavigationFragment;
 import org.lvu.model.Menu;
 import org.lvu.utils.ImmerseUtil;
@@ -150,19 +154,19 @@ public class MainActivity extends BaseActivity {
                         fragment = new EuropePictureFragment();
                         break;
                     case R.string.menu_evil_pics:
-                        fragment = new NavigationFragment();
+                        fragment = new EvilComicsFragment();
                         break;
                     case R.string.menu_gif:
                         fragment = new NavigationFragment();
                         break;
                     case R.string.menu_excited_novel:
-                        fragment = new NavigationFragment();
+                        fragment = new ExcitedNovelFragment();
                         break;
                     case R.string.menu_family_mess_novel:
-                        fragment = new NavigationFragment();
+                        fragment = new FamilyMessNovelFragment();
                         break;
                     case R.string.menu_lewd_wife_novel:
-                        fragment = new NavigationFragment();
+                        fragment = new LewdWifeNovelFragment();
                         break;
                     default:
                         fragment = null;

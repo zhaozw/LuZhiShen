@@ -38,21 +38,14 @@ public class JapanVideoAdapter extends BasePictureListAdapter {
     @Override
     public void refreshData() {
         HttpUtil.getJapanVideoListAsync(0, URL, mRefreshDataCallbackListener);
+        mData = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override
     protected Handler getHandler() {
         return new MyHandler(this);
     }
-
-    @Override
-    protected void setData(List<Data> data) {
-        if (data != null) {
-            mData.addAll(data);
-            notifyItemRangeChanged(getDataSize(), data.size());
-        }
-    }
-
 
     private static class MyHandler extends Handler {
 
@@ -65,20 +58,12 @@ public class JapanVideoAdapter extends BasePictureListAdapter {
         @SuppressWarnings("unchecked")
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case SYNC_DATA_SUCCESS:
-                    if (mClass.get().mOnSyncDataFinishListener != null)
-                        mClass.get().mOnSyncDataFinishListener.onFinish();
-                    break;
-                case LOAD_MORE_SUCCESS:
-                    if (mClass.get().mOnLoadMoreFinishListener != null)
-                        mClass.get().mOnLoadMoreFinishListener.onFinish();
-                    break;
+            int what = msg.what;
+            switch (what) {
                 case REFRESH_DATA_SUCCESS:
-                    mClass.get().mData = new ArrayList<>();
-                    mClass.get().notifyDataSetChanged();
-                    if (mClass.get().mOnRefreshDataFinishListener != null)
-                        mClass.get().mOnRefreshDataFinishListener.onFinish();
+                case SYNC_DATA_SUCCESS:
+                case LOAD_MORE_SUCCESS:
+                    mClass.get().addData((List<Data>) msg.obj, what);
                     break;
                 case SYNC_DATA_FAILURE:
                     if (mClass.get().mOnSyncDataFinishListener != null)
@@ -95,7 +80,6 @@ public class JapanVideoAdapter extends BasePictureListAdapter {
                 default:
                     break;
             }
-            mClass.get().setData((List<Data>) msg.obj);
         }
     }
 

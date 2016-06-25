@@ -18,14 +18,14 @@ import java.util.List;
  */
 public class EuropePictureAdapter extends BaseListAdapter {
 
-    private final String URL;
+    protected final String URL;
 
     public EuropePictureAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
         URL = getUrl();
     }
 
-    protected String getUrl(){
+    protected String getUrl() {
         return "http://0pmp.com/html/11/";
     }
 
@@ -47,6 +47,8 @@ public class EuropePictureAdapter extends BaseListAdapter {
     @Override
     public void refreshData() {
         HttpUtil.getPicturesListAsync(URL, mRefreshDataCallbackListener);
+        mData = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -65,21 +67,12 @@ public class EuropePictureAdapter extends BaseListAdapter {
         @SuppressWarnings("unchecked")
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case SYNC_DATA_SUCCESS:
-                    mClass.get().setData((List<Data>) msg.obj);
-                    break;
-                case LOAD_MORE_SUCCESS:
-                    mClass.get().mData.addAll((List<Data>)msg.obj);
-                    mClass.get().notifyItemRangeChanged(
-                            mClass.get().getDataSize(), ((List) msg.obj).size());
-                    break;
+            int what = msg.what;
+            switch (what) {
                 case REFRESH_DATA_SUCCESS:
-                    mClass.get().mData = new ArrayList<>();
-                    mClass.get().notifyDataSetChanged();
-                    mClass.get().setData((List<Data>) msg.obj);
-                    if (mClass.get().mOnRefreshDataFinishListener != null)
-                        mClass.get().mOnRefreshDataFinishListener.onFinish();
+                case SYNC_DATA_SUCCESS:
+                case LOAD_MORE_SUCCESS:
+                    mClass.get().addData((List<Data>) msg.obj, what);
                     break;
                 case SYNC_DATA_FAILURE:
                     if (mClass.get().mOnSyncDataFinishListener != null)
@@ -96,8 +89,6 @@ public class EuropePictureAdapter extends BaseListAdapter {
                 default:
                     break;
             }
-            if (mClass.get().mOnLoadMoreFinishListener != null)
-                mClass.get().mOnLoadMoreFinishListener.onFinish();
         }
     }
 }
