@@ -44,4 +44,15 @@
     <string name="loading_please_wait">加载中，请稍等。。。</string>
     <string name="get_data_failure">抱歉，获取数据失败(向右滑动清除)</string>
 
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">╮(╯Д╰)╭ 撸至深出了点小情况\n可爱的小虫说翻就翻</string>
+    <string name="customactivityoncrash_error_activity_unknown_exception">未知异常</string>
+    <string name="customactivityoncrash_error_activity_restart_app">重新进入</string>
+    <string name="customactivityoncrash_error_activity_close_app">关闭应用</string>
+    <string name="customactivityoncrash_error_activity_error_details">让我看下</string>
+    <string name="customactivityoncrash_error_activity_error_details_title">异常处理</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">关闭</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">复制到剪贴板</string>
+    <string name="customactivityoncrash_error_activity_error_details_copied">已复制</string>
+    <string name="customactivityoncrash_error_activity_error_details_clipboard_label">堆栈跟踪信息</string>
+
 </resources>

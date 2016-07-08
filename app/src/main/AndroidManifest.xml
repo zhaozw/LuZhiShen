@@ -23,6 +23,10 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.READ_LOGS" />
+
     <application
         android:name=".Application"
         android:allowBackup="true"
@@ -31,7 +35,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Red">
 
-        <activity android:name=".main.activities.MainActivity"
+        <activity
+            android:name=".main.activities.MainActivity"
             android:configChanges="orientation|screenSize">
 
             <intent-filter>
@@ -39,32 +44,36 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="cat.ereza.customactivityoncrash.RESTART" />
+            </intent-filter>
         </activity>
-
-        <activity android:name=".main.activities.PicturesViewActivity"
-            android:configChanges="orientation|screenSize"/>
-
-        <activity android:name=".main.activities.ComicsViewActivity"
-            android:configChanges="orientation|screenSize"/>
-
-        <activity android:name=".main.activities.GifViewActivity"
-            android:configChanges="orientation|screenSize"/>
-
-        <activity android:name=".main.activities.NovelViewActivity"
-            android:configChanges="orientation|screenSize"/>
 
         <activity
-            android:name=".test.TestActivity2"
-            android:configChanges="orientation|screenSize">
-
-        </activity>
-            <!--android:configChanges="orientation|screenSize"-->
+            android:name=".main.activities.PicturesViewActivity"
+            android:configChanges="orientation|screenSize" />
 
         <activity
-            android:name=".test.TestActivity"
-            android:configChanges="orientation|screenSize">
+            android:name=".main.activities.ComicsViewActivity"
+            android:configChanges="orientation|screenSize" />
+
+        <activity
+            android:name=".main.activities.GifViewActivity"
+            android:configChanges="orientation|screenSize" />
+
+        <activity
+            android:name=".main.activities.NovelViewActivity"
+            android:configChanges="orientation|screenSize" />
+
+        <activity
+            android:name=".main.activities.ErrorActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/customactivityoncrash_error_activity_error_details_title"
+            android:process=":error_activity">
+            <intent-filter>
+                <action android:name="cat.ereza.customactivityoncrash.ERROR" />
+            </intent-filter>
         </activity>
-            <!--android:configChanges="orientation|screenSize"-->
 
         <activity
             android:name="io.vov.vitamio.activity.InitActivity"

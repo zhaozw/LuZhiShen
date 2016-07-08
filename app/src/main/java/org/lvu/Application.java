@@ -2,7 +2,12 @@ package org.lvu;
 
 import android.content.Context;
 
+import com.tencent.bugly.crashreport.CrashReport;
+
+import org.lvu.main.activities.ErrorActivity;
 import org.lvu.main.activities.MainActivity;
+
+import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 
 /**
  * Created by wuyr on 3/31/16 6:17 PM.
@@ -15,6 +20,13 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
+        CrashReport.initCrashReport(getApplicationContext(), "900037586", false);
+        //Install CustomActivityOnCrash
+        CustomActivityOnCrash.install(this);
+        CustomActivityOnCrash.setErrorActivityClass(ErrorActivity.class);
+        //Now initialize your error handlers as normal
+        //i.e., ACRA.init(this);
+        //or Fabric.with(this, new Crashlytics())
     }
 
     public static Context getContext(){
