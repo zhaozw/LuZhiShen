@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,7 +17,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
-import android.widget.FrameLayout;
 
 import org.lvu.R;
 import org.lvu.adapter.BaseListAdapter;
@@ -97,9 +97,11 @@ public abstract class BaseListFragment extends Fragment {
 
             @Override
             public void onFailure() {
-                hideLoadMoreBar();
-                MySnackBar.show(((MainActivity) getActivity()).coordinatorLayout,
-                        getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
+                if (!isDetached()) {
+                    hideLoadMoreBar();
+                    MySnackBar.show(mRootView.findViewById(R.id.coordinator),
+                            getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
+                }
             }
         });
         mAdapter.setOnLoadMoreFinishListener(new BaseListAdapter.OnLoadMoreFinishListener() {
@@ -110,9 +112,11 @@ public abstract class BaseListFragment extends Fragment {
 
             @Override
             public void onFailure() {
-                hideLoadMoreBar();
-                MySnackBar.show(((MainActivity) getActivity()).coordinatorLayout,
-                        getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
+                if (!isDetached()) {
+                    hideLoadMoreBar();
+                    MySnackBar.show(mRootView.findViewById(R.id.coordinator),
+                            getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
+                }
             }
         });
         mAdapter.setOnRefreshDataFinishListener(new BaseListAdapter.OnRefreshDataFinishListener() {
@@ -123,9 +127,11 @@ public abstract class BaseListFragment extends Fragment {
 
             @Override
             public void onFailure() {
-                mRefreshLayout.setRefreshing(false);
-                MySnackBar.show(((MainActivity) getActivity()).coordinatorLayout,
-                        getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
+                if (!isDetached()) {
+                    mRefreshLayout.setRefreshing(false);
+                    MySnackBar.show(mRootView.findViewById(R.id.coordinator),
+                            getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
+                }
             }
         });
         mAdapter.setOnItemClickListener(getOnItemClickListener());
@@ -192,7 +198,7 @@ public abstract class BaseListFragment extends Fragment {
     private void initRefreshLayout() {
         mLoadMoreBar = (CircleProgressBar) mRootView.findViewById(R.id.progressbar);
         if (ImmerseUtil.isHasNavigationBar(getActivity())) {
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
+            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
             lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(getActivity());
             mLoadMoreBar.setLayoutParams(lp);
         }

@@ -368,7 +368,6 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         mOriginallyOrientation = mActivity.getResources().getConfiguration().orientation;
         changeToLandscape();
         mLoadingBar.setVisibility(VISIBLE);
-        mDownloadSpeed.setVisibility(VISIBLE);
         if (url.equals(mLastUrl)) {
             mProgressbar.setEnabled(true);
             play();

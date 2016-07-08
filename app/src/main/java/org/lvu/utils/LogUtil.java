@@ -7,7 +7,9 @@ import android.util.Log;
  */
 public class LogUtil {
     public static void print(Object s) {
-        if (s != null)
-            Log.e("LogUtil",String.valueOf(s));
+        if (s != null) {
+            StackTraceElement element = Thread.currentThread().getStackTrace()[3];
+            Log.e(String.format("%s-->%s", element.getClassName(), element.getMethodName()), String.valueOf(s));
+        }
     }
 }

@@ -6,9 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
-    android:foreground="@drawable/card_foreground"
+    android:foreground="@drawable/card_foreground_selector"
     app:cardBackgroundColor="?attr/colorAccent"
-    app:cardCornerRadius="@dimen/dp_3"
+    app:cardCornerRadius="@dimen/dp_0"
+    android:layout_margin="@dimen/dp_3"
     app:cardElevation="@dimen/dp_3"
     app:cardUseCompatPadding="true">
 
@@ -16,9 +17,9 @@
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/dp_12"
         android:background="?attr/colorAccent"
         android:gravity="center_vertical|start"
+        android:padding="@dimen/dp_12"
         android:singleLine="true"
         android:textColor="@color/menu_text_color"
         android:textSize="@dimen/sp_18"

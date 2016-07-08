@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.lvu.R;
+import org.lvu.main.activities.MainActivity;
 
 /**
  * Created by wuyr on 6/23/16 2:33 PM.
@@ -21,10 +22,16 @@ public class NavigationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //mRootView = inflater.inflate(R.layout.fragment_navigation_view, container, false);
         mRootView = inflater.inflate(R.layout.temp, container, false);
+        initViews();
         return mRootView;
     }
 
     private void initViews() {
-
+        ((MainActivity)getActivity()).setOnBackPressedListener(new MainActivity.OnBackPressedListener() {
+            @Override
+            public boolean onBackPressed() {
+                return false;
+            }
+        });
     }
 }

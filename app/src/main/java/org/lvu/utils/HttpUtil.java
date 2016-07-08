@@ -289,7 +289,8 @@ public class HttpUtil {
     }
 
     private static String handlerNovelContent(String src) {
-        return src.replaceAll("<br>", "\n").replaceAll("<p>", "").replaceAll("</p>", "\n").replaceAll("&nbsp;", "");
+        return src.replaceAll("<br>", "\n").replaceAll("<p>", "").replaceAll("</p>", "\n")
+                .replaceAll("&nbsp;", "").replaceAll("<b>", "").replaceAll("</b>", "");
     }
 
     private static String getChinaVideoUrlByUrl(String url) {
