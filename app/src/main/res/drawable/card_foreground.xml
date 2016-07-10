@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
     android:drawable="@drawable/card_foreground_selector"
-    android:insetLeft="@dimen/dp_2"
-    android:insetRight="@dimen/dp_2"
-    android:insetTop="@dimen/dp_2"
-    android:insetBottom="@dimen/dp_2"/>
+    android:insetLeft="@dimen/dp_3"
+    android:insetRight="@dimen/dp_3"
+    android:insetTop="@dimen/dp_5"
+    android:insetBottom="@dimen/dp_5"/>

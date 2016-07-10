@@ -5,21 +5,24 @@
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="@dimen/dp_2"
     android:clickable="true"
-    android:foreground="@drawable/card_foreground_selector"
+    android:foreground="@drawable/card_foreground"
     app:cardBackgroundColor="?attr/colorAccent"
     app:cardCornerRadius="@dimen/dp_0"
-    android:layout_margin="@dimen/dp_3"
-    app:cardElevation="@dimen/dp_3"
+    app:cardElevation="@dimen/dp_4"
     app:cardUseCompatPadding="true">
 
-    <TextView
+    <org.lvu.customize.ScrollingTextView
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorAccent"
+        android:ellipsize="marquee"
         android:gravity="center_vertical|start"
+        android:marqueeRepeatLimit="marquee_forever"
         android:padding="@dimen/dp_12"
+        android:scrollHorizontally="true"
         android:singleLine="true"
         android:textColor="@color/menu_text_color"
         android:textSize="@dimen/sp_18"

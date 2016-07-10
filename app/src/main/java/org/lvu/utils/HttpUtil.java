@@ -100,7 +100,7 @@ public class HttpUtil {
                                 src.get(i).attr("abs:data-original"), handlerString(src.get(i).attr("alt"))));
                         listener.onSuccess(result, "");
                         result = new ArrayList<>();
-                        flag ++;
+                        flag++;
                     } else break;
                 }
                 listener.onSuccess(null, "");
@@ -248,15 +248,22 @@ public class HttpUtil {
         new Thread() {
             @Override
             public void run() {
-                int count = 0;
+                int count = 0, count2 = 0;
                 while (true) {
                     try {
                         backgroundLogic.run();
                         break;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        if (e instanceof ConnectException)// TODO: 6/24/16 check internet can use?
+                        if (e instanceof ConnectException) {
+                            // TODO: 6/24/16 check internet can use?
+                            count2++;
+                            if (count2 > 5) {
+                                listener.onFailure(e);
+                                break;
+                            }
                             continue;
+                        }
                         if (e instanceof SocketException ||
                                 e instanceof UnknownHostException ||
                                 e instanceof SocketTimeoutException) {
@@ -294,7 +301,7 @@ public class HttpUtil {
     }
 
     private static String getChinaVideoUrlByUrl(String url) {
-        int count = 0;
+        int count = 0, count2 = 0;
         while (true) {
             try {
                 Document document = Jsoup.parse(new URL(url), 6000);
@@ -306,8 +313,12 @@ public class HttpUtil {
                 break;
             } catch (Exception e) {
                 e.printStackTrace();
-                if (e instanceof ConnectException)
+                if (e instanceof ConnectException) {
+                    count2++;
+                    if (count2 > 5)
+                        break;
                     continue;
+                }
                 if (e instanceof SocketException ||
                         e instanceof UnknownHostException ||
                         e instanceof SocketTimeoutException) {
@@ -323,7 +334,7 @@ public class HttpUtil {
     }
 
     public static String getEuropeVideoUrlByUrl(String url) {
-        int count = 0;
+        int count = 0, count2 = 0;
         while (true) {
             try {
                 Document document = Jsoup.parse(new URL(url), 6000);
@@ -333,8 +344,12 @@ public class HttpUtil {
                         return tmp.attr("href");
             } catch (Exception e) {
                 e.printStackTrace();
-                if (e instanceof ConnectException)
+                if (e instanceof ConnectException) {
+                    count2++;
+                    if (count2 > 5)
+                        break;
                     continue;
+                }
                 if (e instanceof SocketException ||
                         e instanceof UnknownHostException ||
                         e instanceof SocketTimeoutException) {

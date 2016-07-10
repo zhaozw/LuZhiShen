@@ -34,7 +34,7 @@ import java.util.List;
 public class PicturesViewActivity extends BaseActivity {
 
     public static final String URL = "url", TITLE = "title";
-    private View mTopView;
+    private View mTopView, mBottomView;
     private CircleProgressBar mLoadMoreBar;
 
     @Override
@@ -50,7 +50,6 @@ public class PicturesViewActivity extends BaseActivity {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(getIntent().getStringExtra(TITLE));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         PicturesViewAdapter adapter = new PicturesViewAdapter(this, R.layout.activity_pictures_item, new ArrayList<Data>());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -105,6 +104,13 @@ public class PicturesViewActivity extends BaseActivity {
             AppBarLayout.LayoutParams topLP = new AppBarLayout.LayoutParams(
                     AppBarLayout.LayoutParams.MATCH_PARENT, ImmerseUtil.getStatusBarHeight(this));
             mTopView.setLayoutParams(topLP);
+            if (ImmerseUtil.isHasNavigationBar(this)) {
+                //init bottomView
+                mBottomView = findViewById(R.id.navigation_bar_view);
+                AppBarLayout.LayoutParams bottomLP = new AppBarLayout.LayoutParams(
+                        AppBarLayout.LayoutParams.MATCH_PARENT, ImmerseUtil.getNavigationBarHeight(this));
+                mBottomView.setLayoutParams(bottomLP);
+            }
             if (getResources().getConfiguration().orientation
                     == Configuration.ORIENTATION_LANDSCAPE)
                 changeToLandscape();
@@ -137,6 +143,8 @@ public class PicturesViewActivity extends BaseActivity {
 
     private void changeToLandscape() {
         mTopView.setVisibility(View.GONE);
+        if (mBottomView != null)
+            mBottomView.setVisibility(View.GONE);
         int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -148,6 +156,8 @@ public class PicturesViewActivity extends BaseActivity {
 
     private void changeToPortrait() {
         mTopView.setVisibility(View.VISIBLE);
+        if (mBottomView != null)
+            mBottomView.setVisibility(View.VISIBLE);
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION

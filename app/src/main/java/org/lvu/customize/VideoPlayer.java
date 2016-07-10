@@ -45,7 +45,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     private View mRootView, mBottomView, mExitBtn, mLoadingBar;
     private TextView mSeekView, mCurrentTime, mTotalTime, mDownloadSpeed;
     private SeekBar mProgressbar;
-    private boolean isControlButtonsShowing, isReplay,
+    private boolean isControlButtonsShowing, isReplay, isExited,
             isTimingThreadRunning, isOriginallyPlaying, mRunningFlag;
     private int mOriginallyVCS, mOriginallyOrientation;
     private Handler mHandler;
@@ -168,31 +168,33 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                mp.setPlaybackSpeed(1.0f);
-                mProgressbar.setEnabled(true);
-                mTotalWidth = mPlayer.getWidth();
-                if (mMediaPlayer == null) {
-                    mMediaPlayer = mp;
-                    mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            mPlayStatus.setImageResource(R.drawable.ic_continue);
-                            pause();
-                            mCurrentTime.setText("00:00");
-                            isReplay = true;
-                            mPlayer.seekTo(1);
-                            mProgressbar.setProgress(1);
-                            showControlButtons(true);
-                        }
-                    });
+                if (!isExited) {
+                    mp.setPlaybackSpeed(1.0f);
+                    mProgressbar.setEnabled(true);
+                    mTotalWidth = mPlayer.getWidth();
+                    if (mMediaPlayer == null) {
+                        mMediaPlayer = mp;
+                        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                mPlayStatus.setImageResource(R.drawable.ic_continue);
+                                pause();
+                                mCurrentTime.setText("00:00");
+                                isReplay = true;
+                                mPlayer.seekTo(1);
+                                mProgressbar.setProgress(1);
+                                showControlButtons(true);
+                            }
+                        });
+                    }
+                    mLoadingBar.setVisibility(INVISIBLE);
+                    mDownloadSpeed.setVisibility(INVISIBLE);
+                    mProgressbar.setMax((int) mPlayer.getDuration());
+                    mTotalTime.setText(parseToString((int) mPlayer.getDuration()));
+                    mCurrentTime.setText(parseToString((int) mPlayer.getCurrentPosition()));
+                    mPlayer.start();
+                    startTimingThread();
                 }
-                mLoadingBar.setVisibility(INVISIBLE);
-                mDownloadSpeed.setVisibility(INVISIBLE);
-                mProgressbar.setMax((int) mPlayer.getDuration());
-                mTotalTime.setText(parseToString((int) mPlayer.getDuration()));
-                mCurrentTime.setText(parseToString((int) mPlayer.getCurrentPosition()));
-                mPlayer.start();
-                startTimingThread();
             }
         });
         /*mPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
@@ -335,6 +337,8 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
                 isTimingThreadRunning = true;
                 mRunningFlag = true;
                 while (mRunningFlag) {
+                    if (mPlayer == null)
+                        break;
                     if (mPlayer.isPlaying()) {
                         //每隔0.5秒同步一次歌曲播放进度
                         if (mPlayer.getCurrentPosition() < mProgressbar.getMax()) {
@@ -365,6 +369,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     }
 
     public void setUrlPlay(String url) {
+        isExited = false;
         mOriginallyOrientation = mActivity.getResources().getConfiguration().orientation;
         changeToLandscape();
         mLoadingBar.setVisibility(VISIBLE);
@@ -399,6 +404,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
 
     public void exit() {
         pause();
+        isExited = true;
         mRootView.setVisibility(GONE);
         mProgressbar.setEnabled(false);
         mPlayer.destroyDrawingCache();

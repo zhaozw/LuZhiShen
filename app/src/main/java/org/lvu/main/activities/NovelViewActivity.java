@@ -146,7 +146,8 @@ public class NovelViewActivity extends BaseActivity {
 
     private void changeToLandscape() {
         mTopView.setVisibility(View.GONE);
-        mBottomView.setVisibility(View.GONE);
+        if (mBottomView != null)
+            mBottomView.setVisibility(View.GONE);
         int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -158,7 +159,8 @@ public class NovelViewActivity extends BaseActivity {
 
     private void changeToPortrait() {
         mTopView.setVisibility(View.VISIBLE);
-        mBottomView.setVisibility(View.VISIBLE);
+        if (mBottomView != null)
+            mBottomView.setVisibility(View.VISIBLE);
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -188,17 +190,17 @@ public class NovelViewActivity extends BaseActivity {
         return true;
     }
 
-    private static class MyHandler extends Handler{
+    private static class MyHandler extends Handler {
 
         private WeakReference<NovelViewActivity> mClass;
 
-        public MyHandler(NovelViewActivity clazz){
+        public MyHandler(NovelViewActivity clazz) {
             mClass = new WeakReference<>(clazz);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            mClass.get().mContent.setText((String)msg.obj);
+            mClass.get().mContent.setText((String) msg.obj);
             mClass.get().hideLoadMoreBar();
         }
     }

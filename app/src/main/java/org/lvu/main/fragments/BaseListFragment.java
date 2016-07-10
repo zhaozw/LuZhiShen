@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -34,7 +35,7 @@ import java.util.List;
  */
 public abstract class BaseListFragment extends Fragment {
 
-    protected View mRootView;
+    protected View mRootView,mBottomView;
     protected RecyclerView mRecyclerView;
     private SwipeRefreshLayout mRefreshLayout;
     protected CircleProgressBar mLoadMoreBar;
@@ -63,10 +64,19 @@ public abstract class BaseListFragment extends Fragment {
                     return false;
                 else {
                     mPlayer.exit();
+                    if (isLoadingMore)
+                        showLoadMoreBar();
                     return true;
                 }
             }
         });
+        if (ImmerseUtil.isHasNavigationBar(getActivity())) {
+            //init bottomView
+            mBottomView = mRootView.findViewById(R.id.navigation_bar_view);
+            AppBarLayout.LayoutParams bottomLP = new AppBarLayout.LayoutParams(
+                    AppBarLayout.LayoutParams.MATCH_PARENT, ImmerseUtil.getNavigationBarHeight(getActivity()));
+            mBottomView.setLayoutParams(bottomLP);
+        }
         if (getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE)
             changeToLandscape();
@@ -83,6 +93,8 @@ public abstract class BaseListFragment extends Fragment {
                 if (mRecyclerView.getVisibility() != View.VISIBLE)
                     mRecyclerView.setVisibility(View.VISIBLE);
                 ((MainActivity) getActivity()).showToolbar();
+                if (isLoadingMore)
+                    showLoadMoreBar();
             }
         });
     }
@@ -246,7 +258,7 @@ public abstract class BaseListFragment extends Fragment {
     }
 
     private void hideLoadMoreBar() {
-        if (isLoadingMore) {
+        if (isLoadingMore || mLoadMoreBar.getVisibility() == View.VISIBLE) {
             isLoadingMore = false;
             isLoadBarHiding = true;
             ScaleAnimation animation = new ScaleAnimation(
@@ -283,12 +295,16 @@ public abstract class BaseListFragment extends Fragment {
     }
 
     public void changeToLandscape() {
+        if (mBottomView != null)
+            mBottomView.setVisibility(View.GONE);
         if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
             mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
                     3, StaggeredGridLayoutManager.VERTICAL));
     }
 
     public void changeToPortrait() {
+        if (mBottomView != null)
+            mBottomView.setVisibility(View.VISIBLE);
         if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
             mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
                     2, StaggeredGridLayoutManager.VERTICAL));

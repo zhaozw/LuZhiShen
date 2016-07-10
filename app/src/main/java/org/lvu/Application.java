@@ -20,13 +20,13 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        CrashReport.initCrashReport(getApplicationContext(), "900037586", false);
         //Install CustomActivityOnCrash
         CustomActivityOnCrash.install(this);
         CustomActivityOnCrash.setErrorActivityClass(ErrorActivity.class);
         //Now initialize your error handlers as normal
         //i.e., ACRA.init(this);
         //or Fabric.with(this, new Crashlytics())
+        CrashReport.initCrashReport(getApplicationContext(), "900037586", false);
     }
 
     public static Context getContext(){
