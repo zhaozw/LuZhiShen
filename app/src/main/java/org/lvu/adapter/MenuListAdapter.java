@@ -21,7 +21,8 @@ import java.util.List;
  */
 public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHolder> {
 
-    private Context mContext;
+    //private Context mContext;
+    private LayoutInflater mLayoutInflater;
     private int mLayoutId;
     private List<Menu> mData;
     private OnItemClickListener mListener;
@@ -29,18 +30,19 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHold
     private int mLastSelectedPos = -1;
 
     public MenuListAdapter(Context context, @LayoutRes int layoutId, List<Menu> data) {
-        mContext = context;
+        //mContext = context;
         mLayoutId = layoutId;
         mData = data;
+        mLayoutInflater = LayoutInflater.from(context);
     }
 
     @Override
-    public MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new MyHolder(LayoutInflater.from(mContext).inflate(mLayoutId, parent, false));
+    public MenuListAdapter.MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new MyHolder(mLayoutInflater.inflate(mLayoutId, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(final MyHolder holder, int position) {
+    public void onBindViewHolder(final MenuListAdapter.MyHolder holder, int position) {
         final Menu menu = mData.get(position);
         holder.icon.setImageResource(menu.getImageId());
         holder.name.setText(menu.getNameId());
@@ -65,6 +67,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHold
             mPosView = holder.root;
         } else holder.root.setSelected(false);
     }
+
 
     @Override
     public int getItemCount() {

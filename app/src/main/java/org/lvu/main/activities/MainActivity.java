@@ -20,7 +20,7 @@ import android.view.WindowManager;
 import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.adapter.MenuListAdapter;
-import org.lvu.adapter.MenuListAdapter2;
+import org.lvu.adapter.SkinChooseAdapter;
 import org.lvu.customize.MenuList;
 import org.lvu.customize.MySnackBar;
 import org.lvu.main.fragments.AsiaPictureFragment;
@@ -197,8 +197,8 @@ public class MainActivity extends BaseActivity {
                 .equals(getString(R.string.skin_black)) ?
                 R.style.CustomDialogTheme2 : R.style.CustomDialogTheme)
                 .setTitle(R.string.choose_skin)
-                .setAdapter(new MenuListAdapter2(this, R.layout.menu_list_item, initData())
-                        .setOnItemClickListener(new MenuListAdapter2.OnItemClickListener() {
+                .setAdapter(new SkinChooseAdapter(this, R.layout.menu_list_item, initData())
+                        .setOnItemClickListener(new SkinChooseAdapter.OnItemClickListener() {
                             @Override
                             public void onClick(int stringId) {
                                 String skin = getString(stringId);

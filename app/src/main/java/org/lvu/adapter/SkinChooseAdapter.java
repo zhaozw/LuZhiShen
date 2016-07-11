@@ -19,14 +19,14 @@ import java.util.List;
 /**
  * Created by wuyr on 4/2/16 11:56 PM.
  */
-public class MenuListAdapter2 extends ArrayAdapter<Menu> {
+public class SkinChooseAdapter extends ArrayAdapter<Menu> {
 
     private Context mContext;
     private int mResource;
     private List<Menu> mData;
-    private MenuListAdapter2.OnItemClickListener mListener;
+    private SkinChooseAdapter.OnItemClickListener mListener;
 
-    public MenuListAdapter2(Context context, int resource, List<Menu> objects) {
+    public SkinChooseAdapter(Context context, int resource, List<Menu> objects) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
@@ -69,7 +69,7 @@ public class MenuListAdapter2 extends ArrayAdapter<Menu> {
         TextView name;
     }
 
-    public MenuListAdapter2 setOnItemClickListener(MenuListAdapter2.OnItemClickListener listener) {
+    public SkinChooseAdapter setOnItemClickListener(SkinChooseAdapter.OnItemClickListener listener) {
         mListener = listener;
         return this;
     }
