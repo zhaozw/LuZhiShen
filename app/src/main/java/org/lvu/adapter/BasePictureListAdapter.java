@@ -1,7 +1,6 @@
 package org.lvu.adapter;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -22,12 +21,12 @@ public abstract class BasePictureListAdapter extends BaseListAdapter {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(mContext).inflate(mLayoutId, parent, false));
+        return new ViewHolder(mLayoutInflater.inflate(mLayoutId, parent, false));
     }
 
     @Override
     public void onBindViewHolder(BaseListAdapter.ViewHolder holder, int position) {
-        holder.image.setImageBitmap(mData.get(position).getBitmap());
+        holder.image.setImageBitmap(mData.get(position >= mData.size() ? mData.size() - 1 : position).getBitmap());
         super.onBindViewHolder(holder, position);
     }
 

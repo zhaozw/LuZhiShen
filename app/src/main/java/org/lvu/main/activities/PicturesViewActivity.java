@@ -36,6 +36,7 @@ public class PicturesViewActivity extends BaseActivity {
     public static final String URL = "url", TITLE = "title";
     private View mTopView;
     private CircleProgressBar mLoadMoreBar;
+    private PicturesViewAdapter mAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,11 +52,11 @@ public class PicturesViewActivity extends BaseActivity {
         getSupportActionBar().setTitle(getIntent().getStringExtra(TITLE));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        PicturesViewAdapter adapter = new PicturesViewAdapter(this, R.layout.activity_pictures_item, new ArrayList<Data>());
+        mAdapter = new PicturesViewAdapter(this, R.layout.activity_pictures_item, new ArrayList<Data>());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-        adapter.syncData(getIntent().getStringExtra(URL));
-        adapter.setOnSyncDataFinishListener(new BaseListAdapter.OnSyncDataFinishListener() {
+        recyclerView.setAdapter(mAdapter);
+        mAdapter.syncData(getIntent().getStringExtra(URL));
+        mAdapter.setOnSyncDataFinishListener(new BaseListAdapter.OnSyncDataFinishListener() {
             @Override
             public void onFinish() {
                 hideLoadMoreBar();
@@ -143,6 +144,7 @@ public class PicturesViewActivity extends BaseActivity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN; // hide status bar
         uiFlags |= 0x00001000;
         getWindow().getDecorView().setSystemUiVisibility(uiFlags);
+        mAdapter.changeToLandscape();
     }
 
     private void changeToPortrait() {
@@ -151,6 +153,7 @@ public class PicturesViewActivity extends BaseActivity {
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        mAdapter.changeToPortrait();
     }
 
     @Override

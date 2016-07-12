@@ -4,6 +4,7 @@ package org.lvu.model;
  * Created by wuyr on 3/31/16 10:13 PM.
  */
 public class Menu {
+
     private int mNameId;
     private int mImageId;
 

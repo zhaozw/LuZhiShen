@@ -26,6 +26,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     protected static final int SYNC_DATA_SUCCESS = 0, LOAD_MORE_SUCCESS = 1, REFRESH_DATA_SUCCESS = 2,
             SYNC_DATA_FAILURE = 3, LOAD_MORE_FAILURE = 4, REFRESH_DATA_FAILURE = 5;
     protected Context mContext;
+    protected LayoutInflater mLayoutInflater;
     protected int mLayoutId;
     protected List<Data> mData;
     protected OnItemClickListener mOnItemClickListener;
@@ -42,6 +43,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         mLayoutId = layoutId;
         mData = data;
         mHandler = getHandler();
+        mLayoutInflater = LayoutInflater.from(context);
         mSyncDataCallbackListener = new HttpUtil.HttpRequestCallbackListener() {
 
             @Override
@@ -81,17 +83,18 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(mContext).inflate(mLayoutId, parent, false));
+        return new ViewHolder(mLayoutInflater.inflate(mLayoutId, parent, false));
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.text.setText(mData.get(position).getText());
+        holder.text.setText(mData.get(position >= mData.size() ? mData.size() - 1 : position).getText());
         if (mOnItemClickListener != null)
             holder.root.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Data data = mData.get(holder.getAdapterPosition());
+                    Data data = mData.get(holder.getAdapterPosition() >= mData.size() ?
+                            mData.size() - 1 : holder.getAdapterPosition());
                     mOnItemClickListener.onClick(data.getUrl(), data.getText());
                 }
             });
