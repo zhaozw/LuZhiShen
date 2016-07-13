@@ -6,10 +6,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import org.lvu.R;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
+import org.lvu.utils.ImmerseUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -29,29 +31,42 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
 
     @Override
     public void onBindViewHolder(final BaseListAdapter.ViewHolder holder, int position) {
-        holder.image.setImageBitmap(mData.get(position).getBitmap());
-        holder.text.setText(mData.get(position).getText());
-        if (mOnItemClickListener != null)
-            holder.root.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final ProgressDialog dialog = new ProgressDialog(mContext);
-                    dialog.setMessage(mContext.getString(R.string.resolving_video_address));
-                    dialog.setCancelable(false);
-                    dialog.show();
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            Message message = new Message();
-                            message.obj = HttpUtil.getEuropeVideoUrlByUrl(
-                                    mData.get(holder.getAdapterPosition()).getUrl());
-                            message.what = GET_URL;
-                            dialog.dismiss();
-                            mHandler.sendMessage(message);
-                        }
-                    }.start();
-                }
-            });
+        if (holder instanceof FooterHolder) {
+            FooterHolder footerHolder = (FooterHolder) holder;
+            LinearLayout.LayoutParams bottomLP = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    ImmerseUtil.getNavigationBarHeight(mContext));
+            footerHolder.bottomView.setLayoutParams(bottomLP);
+        } else {
+            if (mData.isEmpty())
+                return;
+            holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ?
+                    mData.size() - 1 : position).getBitmap());
+            holder.text.setText(mData.get(position != 0 && position >= mData.size() ?
+                    mData.size() - 1 : position).getText());
+            if (mOnItemClickListener != null)
+                holder.root.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final ProgressDialog dialog = new ProgressDialog(mContext);
+                        dialog.setMessage(mContext.getString(R.string.resolving_video_address));
+                        dialog.setCancelable(false);
+                        dialog.show();
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                Message message = new Message();
+                                message.obj = HttpUtil.getEuropeVideoUrlByUrl(
+                                        mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
+                                                mData.size() - 1 : holder.getAdapterPosition()).getUrl());
+                                message.what = GET_URL;
+                                dialog.dismiss();
+                                mHandler.sendMessage(message);
+                            }
+                        }.start();
+                    }
+                });
+        }
     }
 
     @Override

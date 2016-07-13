@@ -6,15 +6,18 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.lvu.R;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
+import org.lvu.utils.ImmerseUtil;
 
 import java.util.List;
 
@@ -25,6 +28,10 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     protected static final int SYNC_DATA_SUCCESS = 0, LOAD_MORE_SUCCESS = 1, REFRESH_DATA_SUCCESS = 2,
             SYNC_DATA_FAILURE = 3, LOAD_MORE_FAILURE = 4, REFRESH_DATA_FAILURE = 5;
+
+    //item类型
+    protected static final int ITEM_TYPE_CONTENT = 0, ITEM_TYPE_BOTTOM = 1;
+    protected int mBottomCount;//底部View个数
     protected Context mContext;
     protected LayoutInflater mLayoutInflater;
     protected int mLayoutId;
@@ -83,26 +90,84 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == ITEM_TYPE_BOTTOM && ImmerseUtil.isAboveKITKAT()
+                && ImmerseUtil.isHasNavigationBar(mContext))
+            return new FooterHolder(mLayoutInflater.inflate(
+                    R.layout.recycler_view_item_footer, parent, false));
         return new ViewHolder(mLayoutInflater.inflate(mLayoutId, parent, false));
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.text.setText(mData.get(position >= mData.size() ? mData.size() - 1 : position).getText());
-        if (mOnItemClickListener != null)
-            holder.root.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Data data = mData.get(holder.getAdapterPosition() >= mData.size() ?
-                            mData.size() - 1 : holder.getAdapterPosition());
-                    mOnItemClickListener.onClick(data.getUrl(), data.getText());
-                }
-            });
+        if (holder instanceof FooterHolder) {
+            FooterHolder footerHolder = (FooterHolder) holder;
+            LinearLayout.LayoutParams bottomLP = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    ImmerseUtil.getNavigationBarHeight(mContext));
+            footerHolder.bottomView.setLayoutParams(bottomLP);
+        } else {
+            if (mData.isEmpty())
+                return;
+            holder.text.setText(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getText());
+            if (mOnItemClickListener != null)
+                holder.root.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Data data = mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
+                                mData.size() - 1 : holder.getAdapterPosition());
+                        mOnItemClickListener.onClick(data.getUrl(), data.getText());
+                    }
+                });
+        }
+    }
+
+    //判断当前item类型
+    @Override
+    public int getItemViewType(int position) {
+        return mBottomCount != 0 && position >= getContentItemCount() ?
+                ITEM_TYPE_BOTTOM : ITEM_TYPE_CONTENT;
     }
 
     @Override
     public int getItemCount() {
+        return getContentItemCount() + mBottomCount;
+    }
+
+    @Override
+    public void onViewAttachedToWindow(BaseListAdapter.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        if (isStaggeredGridLayout(holder))
+            handleLayoutIfStaggeredGridLayout(holder, holder.getLayoutPosition());
+    }
+
+    protected boolean isStaggeredGridLayout(RecyclerView.ViewHolder holder) {
+        ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
+        return layoutParams != null && layoutParams instanceof StaggeredGridLayoutManager.LayoutParams;
+    }
+
+    protected void handleLayoutIfStaggeredGridLayout(RecyclerView.ViewHolder holder, int position) {
+        if (isFooter(position)) {
+            StaggeredGridLayoutManager.LayoutParams p =
+                    (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
+            p.setFullSpan(true);
+        }
+    }
+
+    public boolean isFooter(int position) {
+        return mBottomCount != 0 && position == getContentItemCount();
+    }
+
+    //内容长度
+    public int getContentItemCount() {
         return mData.size();
+    }
+
+    public void changeToLandscape() {
+        mBottomCount = 0;
+    }
+
+    public void changeToPortrait() {
+        mBottomCount = ImmerseUtil.isAboveKITKAT() && ImmerseUtil.isHasNavigationBar(mContext) ? 1 : 0;
     }
 
     protected void addData(List<Data> data, int what) {
@@ -197,6 +262,16 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             super(itemView);
             root = (CardView) itemView.findViewById(R.id.card_view);
             text = (TextView) itemView.findViewById(R.id.text);
+        }
+    }
+
+    protected static class FooterHolder extends BasePictureListAdapter.ViewHolder {
+
+        View bottomView;
+
+        public FooterHolder(View itemView) {
+            super(itemView);
+            bottomView = itemView.findViewById(R.id.navigation_bar_view);
         }
     }
 }

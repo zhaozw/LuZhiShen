@@ -290,12 +290,16 @@ public abstract class BaseListFragment extends Fragment {
         if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
             mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
                     3, StaggeredGridLayoutManager.VERTICAL));
+        if (mAdapter != null)
+            mAdapter.changeToLandscape();
     }
 
     public void changeToPortrait() {
         if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
             mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
                     2, StaggeredGridLayoutManager.VERTICAL));
+        if (mAdapter != null)
+            mAdapter.changeToPortrait();
     }
 
     protected abstract BaseListAdapter getAdapter();

@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import org.lvu.R;
 import org.lvu.model.Data;
+import org.lvu.utils.ImmerseUtil;
 
 import java.util.List;
 
@@ -21,13 +22,19 @@ public abstract class BasePictureListAdapter extends BaseListAdapter {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == ITEM_TYPE_BOTTOM && ImmerseUtil.isAboveKITKAT()
+                && ImmerseUtil.isHasNavigationBar(mContext))
+            return new FooterHolder(mLayoutInflater.inflate(
+                    R.layout.recycler_view_item_footer, parent, false));
         return new ViewHolder(mLayoutInflater.inflate(mLayoutId, parent, false));
     }
 
     @Override
     public void onBindViewHolder(BaseListAdapter.ViewHolder holder, int position) {
-        holder.image.setImageBitmap(mData.get(position >= mData.size() ? mData.size() - 1 : position).getBitmap());
         super.onBindViewHolder(holder, position);
+        if (mData.isEmpty())
+            return;
+        holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getBitmap());
     }
 
     protected static class ViewHolder extends BaseListAdapter.ViewHolder {
