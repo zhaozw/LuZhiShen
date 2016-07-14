@@ -72,7 +72,7 @@ public class PicturesViewAdapter extends BasePictureListAdapter {
                     break;
                 case SYNC_DATA_FAILURE:
                     if (mClass.get().mOnSyncDataFinishListener != null)
-                        mClass.get().mOnSyncDataFinishListener.onFailure();
+                        mClass.get().mOnSyncDataFinishListener.onFailure((String) msg.obj);
                     break;
                 default:
                     break;

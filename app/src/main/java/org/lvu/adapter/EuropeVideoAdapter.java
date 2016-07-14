@@ -23,7 +23,7 @@ import java.util.List;
 public class EuropeVideoAdapter extends BasePictureListAdapter {
 
     private final String URL = "http://m.fapple.com/videos";
-    private static final int GET_URL = 6;
+    private static final int GET_URL_SUCCESS = 6, GET_URL_FAILURE = 7;
 
     public EuropeVideoAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
@@ -52,18 +52,27 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                         dialog.setMessage(mContext.getString(R.string.resolving_video_address));
                         dialog.setCancelable(false);
                         dialog.show();
-                        new Thread() {
-                            @Override
-                            public void run() {
-                                Message message = new Message();
-                                message.obj = HttpUtil.getEuropeVideoUrlByUrl(
-                                        mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
-                                                mData.size() - 1 : holder.getAdapterPosition()).getUrl());
-                                message.what = GET_URL;
-                                dialog.dismiss();
-                                mHandler.sendMessage(message);
-                            }
-                        }.start();
+                        HttpUtil.getEuropeVideoUrlByUrl(
+                                mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
+                                        mData.size() - 1 : holder.getAdapterPosition()).getUrl(), new HttpUtil.HttpRequestCallbackListener() {
+                                    @Override
+                                    public void onSuccess(List<Data> data, String nextPage) {
+                                        dialog.dismiss();
+                                        Message message = new Message();
+                                        message.obj = nextPage;
+                                        message.what = GET_URL_SUCCESS;
+                                        mHandler.sendMessage(message);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Exception e, String reason) {
+                                        dialog.dismiss();
+                                        Message message = new Message();
+                                        message.obj = reason;
+                                        message.what = GET_URL_FAILURE;
+                                        mHandler.sendMessage(message);
+                                    }
+                                });
                     }
                 });
         }
@@ -114,20 +123,21 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                 case LOAD_MORE_SUCCESS:
                     mClass.get().addData((List<Data>) msg.obj, what);
                     break;
-                case GET_URL:
+                case GET_URL_FAILURE:
+                case GET_URL_SUCCESS:
                     mClass.get().mOnItemClickListener.onClick((String) msg.obj, "");
                     break;
                 case SYNC_DATA_FAILURE:
                     if (mClass.get().mOnSyncDataFinishListener != null)
-                        mClass.get().mOnSyncDataFinishListener.onFailure();
+                        mClass.get().mOnSyncDataFinishListener.onFailure((String) msg.obj);
                     break;
                 case LOAD_MORE_FAILURE:
                     if (mClass.get().mOnLoadMoreFinishListener != null)
-                        mClass.get().mOnLoadMoreFinishListener.onFailure();
+                        mClass.get().mOnLoadMoreFinishListener.onFailure((String) msg.obj);
                     break;
                 case REFRESH_DATA_FAILURE:
                     if (mClass.get().mOnRefreshDataFinishListener != null)
-                        mClass.get().mOnRefreshDataFinishListener.onFailure();
+                        mClass.get().mOnRefreshDataFinishListener.onFailure((String) msg.obj);
                     break;
                 default:
                     break;

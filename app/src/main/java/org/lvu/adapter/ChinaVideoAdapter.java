@@ -75,15 +75,15 @@ public class ChinaVideoAdapter extends BasePictureListAdapter {
                     break;
                 case SYNC_DATA_FAILURE:
                     if (mClass.get().mOnSyncDataFinishListener != null)
-                        mClass.get().mOnSyncDataFinishListener.onFailure();
+                        mClass.get().mOnSyncDataFinishListener.onFailure((String) msg.obj);
                     break;
                 case LOAD_MORE_FAILURE:
                     if (mClass.get().mOnLoadMoreFinishListener != null)
-                        mClass.get().mOnLoadMoreFinishListener.onFailure();
+                        mClass.get().mOnLoadMoreFinishListener.onFailure((String) msg.obj);
                     break;
                 case REFRESH_DATA_FAILURE:
                     if (mClass.get().mOnRefreshDataFinishListener != null)
-                        mClass.get().mOnRefreshDataFinishListener.onFailure();
+                        mClass.get().mOnRefreshDataFinishListener.onFailure((String) msg.obj);
                     break;
                 default:
                     break;

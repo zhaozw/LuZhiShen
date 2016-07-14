@@ -63,10 +63,9 @@ public class PicturesViewActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure() {
+            public void onFailure(String reason) {
                 hideLoadMoreBar();
-                MySnackBar.show(findViewById(R.id.coordinator),
-                        getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
+                MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
             }
         });
         mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
@@ -168,11 +167,17 @@ public class PicturesViewActivity extends BaseActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        mAdapter.clearData();
+        mAdapter.setOwnerIsDestroyed();
+        super.onBackPressed();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
-                System.gc();
+                onBackPressed();
                 break;
             default:
         }

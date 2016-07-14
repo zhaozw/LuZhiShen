@@ -66,9 +66,10 @@ public class TestActivity2 extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure() {
+            public void onFailure(String reason) {
 
             }
+
         });
         mAdapter.setOnSyncDataFinishListener(new ChinaVideoAdapter.OnSyncDataFinishListener() {
             @Override
@@ -78,7 +79,7 @@ public class TestActivity2 extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure() {
+            public void onFailure(String reason) {
 
             }
         });

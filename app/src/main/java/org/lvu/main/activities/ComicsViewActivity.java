@@ -66,10 +66,9 @@ public class ComicsViewActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(Exception e) {
+            public void onFailure(Exception e, String reason) {
                 hideLoadMoreBar();
-                MySnackBar.show(findViewById(R.id.coordinator),
-                        getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
+                MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
             }
         });
 
@@ -181,11 +180,17 @@ public class ComicsViewActivity extends BaseActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        mContent = null;
+        System.gc();
+        super.onBackPressed();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
-                System.gc();
+                onBackPressed();
                 break;
             default:
         }
@@ -202,8 +207,13 @@ public class ComicsViewActivity extends BaseActivity {
 
         @Override
         public void handleMessage(Message msg) {
-            mClass.get().mContent.setImageBitmap((Bitmap) msg.obj);
-            mClass.get().hideLoadMoreBar();
+            if (mClass.get().mContent != null) {
+                mClass.get().mContent.setImageBitmap((Bitmap) msg.obj);
+                mClass.get().hideLoadMoreBar();
+            }else{
+                msg.obj = null;
+                System.gc();
+            }
         }
     }
 }

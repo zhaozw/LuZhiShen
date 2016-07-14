@@ -19,6 +19,7 @@ import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,6 +45,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     protected HttpUtil.HttpRequestCallbackListener mSyncDataCallbackListener,
             mLoadMoreCallbackListener, mRefreshDataCallbackListener;
     protected Handler mHandler;
+    protected boolean isOwnerDestroyed;
 
     public BaseListAdapter(Context context, int layoutId, List<Data> data) {
         mContext = context;
@@ -55,37 +57,58 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
             @Override
             public void onSuccess(List<Data> data, String nextPage) {
-                sendMessage(SYNC_DATA_SUCCESS, data, nextPage);
+                if (!isOwnerDestroyed)
+                    sendSuccessMessage(SYNC_DATA_SUCCESS, data, nextPage);
             }
 
             @Override
-            public void onFailure(Exception e) {
-                mHandler.sendEmptyMessage(SYNC_DATA_FAILURE);
+            public void onFailure(Exception e, String reason) {
+                if (!isOwnerDestroyed)
+                    sendFailureMessage(SYNC_DATA_FAILURE, reason);
             }
         };
         mLoadMoreCallbackListener = new HttpUtil.HttpRequestCallbackListener() {
 
             @Override
             public void onSuccess(List<Data> data, String nextPage) {
-                sendMessage(LOAD_MORE_SUCCESS, data, nextPage);
+                if (!isOwnerDestroyed)
+                    sendSuccessMessage(LOAD_MORE_SUCCESS, data, nextPage);
             }
 
             @Override
-            public void onFailure(Exception e) {
-                mHandler.sendEmptyMessage(LOAD_MORE_FAILURE);
+            public void onFailure(Exception e, String reason) {
+                if (!isOwnerDestroyed)
+                    sendFailureMessage(LOAD_MORE_FAILURE, reason);
             }
         };
         mRefreshDataCallbackListener = new HttpUtil.HttpRequestCallbackListener() {
             @Override
             public void onSuccess(List<Data> data, String nextPage) {
-                sendMessage(REFRESH_DATA_SUCCESS, data, nextPage);
+                if (!isOwnerDestroyed)
+                    sendSuccessMessage(REFRESH_DATA_SUCCESS, data, nextPage);
             }
 
             @Override
-            public void onFailure(Exception e) {
-                mHandler.sendEmptyMessage(REFRESH_DATA_FAILURE);
+            public void onFailure(Exception e, String reason) {
+                if (!isOwnerDestroyed)
+                    sendFailureMessage(REFRESH_DATA_FAILURE, reason);
             }
         };
+    }
+
+    private void sendSuccessMessage(int what, List<Data> data, String nextPage) {
+        mNextPageUrl = nextPage;
+        Message message = new Message();
+        message.obj = data;
+        message.what = what;
+        mHandler.sendMessage(message);
+    }
+
+    private void sendFailureMessage(int what, String reason) {
+        Message message = new Message();
+        message.what = what;
+        message.obj = reason;
+        mHandler.sendMessage(message);
     }
 
     @Override
@@ -194,14 +217,6 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         }
     }
 
-    private void sendMessage(int what, List<Data> data, String nextPage) {
-        mNextPageUrl = nextPage;
-        Message message = new Message();
-        message.obj = data;
-        message.what = what;
-        mHandler.sendMessage(message);
-    }
-
     public abstract void syncData(@NonNull String url);
 
     public abstract void loadMore();
@@ -212,6 +227,17 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     public int getDataSize() {
         return mData.size();
+    }
+
+    public void clearData() {
+        mData = null;
+        mData = new ArrayList<>();
+        notifyDataSetChanged();
+        System.gc();
+    }
+
+    public void setOwnerIsDestroyed() {
+        isOwnerDestroyed = true;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -229,27 +255,21 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     public interface OnSyncDataFinishListener {
         void onFinish();
 
-        void onFailure();
+        void onFailure(String reason);
     }
 
     public void setOnLoadMoreFinishListener(OnLoadMoreFinishListener listener) {
         mOnLoadMoreFinishListener = listener;
     }
 
-    public interface OnLoadMoreFinishListener {
-        void onFinish();
-
-        void onFailure();
+    public interface OnLoadMoreFinishListener extends OnSyncDataFinishListener {
     }
 
     public void setOnRefreshDataFinishListener(OnRefreshDataFinishListener listener) {
         mOnRefreshDataFinishListener = listener;
     }
 
-    public interface OnRefreshDataFinishListener {
-        void onFinish();
-
-        void onFailure();
+    public interface OnRefreshDataFinishListener extends OnSyncDataFinishListener {
     }
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {

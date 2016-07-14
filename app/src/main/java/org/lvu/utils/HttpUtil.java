@@ -1,9 +1,15 @@
 package org.lvu.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.lvu.Application;
 import org.lvu.model.Data;
 
 import java.net.ConnectException;
@@ -18,6 +24,11 @@ import java.util.List;
  * Created by wuyr on 4/7/16 1:24 PM.
  */
 public class HttpUtil {
+
+    public static final String REASON_NO_INTERNET_CONNECT = "无可用网络。\t(向右滑动清除)",
+            REASON_SERVER_404 = "无法找到资源。(服务器404)\t(向右滑动清除)",
+            REASON_CONNECT_SERVER_FAILURE = "连接服务器失败。\t(向右滑动清除)",
+            REASON_INTERNET_NO_GOOD = "网络不给力。\t(向右滑动清除)";
 
     public static void getChinaVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
@@ -226,7 +237,7 @@ public class HttpUtil {
                     if (tmp.attr("id").equals("view2"))
                         content = tmp.html();
                 if (content.isEmpty())
-                    listener.onFailure(new Exception("novel content is empty!"));
+                    listener.onFailure(new Exception("novel content is empty!"), REASON_SERVER_404);
                 else
                     listener.onSuccess(null, handlerNovelContent(content));
             }
@@ -256,25 +267,30 @@ public class HttpUtil {
                     } catch (Exception e) {
                         e.printStackTrace();
                         if (e instanceof ConnectException) {
-                            // TODO: 6/24/16 check internet can use?
-                            count2++;
-                            if (count2 > 5) {
-                                listener.onFailure(e);
+                            if (!isNetWorkAvailable()) {
+                                listener.onFailure(e, REASON_NO_INTERNET_CONNECT);
                                 break;
+                            } else {
+                                count2++;
+                                if (count2 > 5) {
+                                    listener.onFailure(e, REASON_INTERNET_NO_GOOD);
+                                    break;
+                                }
+                                continue;
                             }
-                            continue;
                         }
                         if (e instanceof SocketException ||
                                 e instanceof UnknownHostException ||
                                 e instanceof SocketTimeoutException) {
                             count++;
                             if (count > 5) {
-                                listener.onFailure(e);
+                                listener.onFailure(e, REASON_CONNECT_SERVER_FAILURE);
                                 break;
                             }
                             continue;
                         }
-                        listener.onFailure(e);
+                        listener.onFailure(e, e instanceof HttpStatusException ? REASON_SERVER_404 :
+                                !isNetWorkAvailable() ? REASON_NO_INTERNET_CONNECT : REASON_CONNECT_SERVER_FAILURE);
                         break;
                     }
                 }
@@ -333,42 +349,33 @@ public class HttpUtil {
         return "";
     }
 
-    public static String getEuropeVideoUrlByUrl(String url) {
-        int count = 0, count2 = 0;
-        while (true) {
-            try {
+    public static void getEuropeVideoUrlByUrl(final String url, final HttpRequestCallbackListener listener) {
+        runOnBackground(listener, new BackgroundLogic() {
+            @Override
+            public void run() throws Exception {
                 Document document = Jsoup.parse(new URL(url), 6000);
                 Elements elements = document.select("a[class]");
                 for (Element tmp : elements)
                     if (tmp.attr("class").equals("play"))
-                        return tmp.attr("href");
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof ConnectException) {
-                    count2++;
-                    if (count2 > 5)
-                        break;
-                    continue;
-                }
-                if (e instanceof SocketException ||
-                        e instanceof UnknownHostException ||
-                        e instanceof SocketTimeoutException) {
-                    count++;
-                    if (count > 5)
-                        break;
-                    continue;
-                }
-                break;
+                        listener.onSuccess(null, tmp.attr("href"));
             }
-        }
-        return "";
+        });
+    }
+
+    public static boolean isNetWorkAvailable() {
+        ConnectivityManager manager = (ConnectivityManager) Application.getContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager == null)
+            return false;
+        NetworkInfo info = manager.getActiveNetworkInfo();
+        return info != null && info.isConnected();
     }
 
     public interface HttpRequestCallbackListener {
 
         void onSuccess(List<Data> data, String nextPage);
 
-        void onFailure(Exception e);
+        void onFailure(Exception e, String reason);
     }
 
     private interface BackgroundLogic {

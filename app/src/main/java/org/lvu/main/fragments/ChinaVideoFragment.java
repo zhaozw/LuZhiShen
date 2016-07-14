@@ -1,5 +1,6 @@
 package org.lvu.main.fragments;
 
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
@@ -7,8 +8,10 @@ import android.view.View;
 import org.lvu.R;
 import org.lvu.adapter.BaseListAdapter;
 import org.lvu.adapter.ChinaVideoAdapter;
+import org.lvu.customize.MySnackBar;
 import org.lvu.main.activities.MainActivity;
 import org.lvu.model.Data;
+import org.lvu.utils.HttpUtil;
 
 import java.util.ArrayList;
 
@@ -27,6 +30,10 @@ public class ChinaVideoFragment extends BaseListFragment {
         return new BaseListAdapter.OnItemClickListener() {
             @Override
             public void onClick(String url, String title) {
+                if (url.equals(HttpUtil.REASON_NO_INTERNET_CONNECT) || url.equals(HttpUtil.REASON_CONNECT_SERVER_FAILURE)) {
+                    MySnackBar.show(mRootView.findViewById(R.id.coordinator), url, Snackbar.LENGTH_LONG);
+                    return;
+                }
                 if (mLoadMoreBar.getVisibility() == View.VISIBLE)
                     mLoadMoreBar.setVisibility(View.GONE);
                 ((MainActivity) getActivity()).setDrawerLockMode(true);

@@ -20,6 +20,9 @@ import android.view.animation.TranslateAnimation;
 
 import org.lvu.R;
 import org.lvu.adapter.BaseListAdapter;
+import org.lvu.adapter.ChinaVideoAdapter;
+import org.lvu.adapter.EuropeVideoAdapter;
+import org.lvu.adapter.JapanVideoAdapter;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
 import org.lvu.customize.VideoPlayer;
@@ -52,10 +55,13 @@ public abstract class BaseListFragment extends Fragment {
     }
 
     private void init() {
-        initPlayer();
-        initAdapter();
-        initRecyclerView();
         initRefreshLayout();
+        initAdapter();
+        if (mAdapter instanceof ChinaVideoAdapter ||
+                mAdapter instanceof EuropeVideoAdapter ||
+                mAdapter instanceof JapanVideoAdapter)
+            initPlayer();
+        initRecyclerView();
         ((MainActivity) getActivity()).setOnBackPressedListener(new MainActivity.OnBackPressedListener() {
             @Override
             public boolean onBackPressed() {
@@ -100,12 +106,9 @@ public abstract class BaseListFragment extends Fragment {
             }
 
             @Override
-            public void onFailure() {
-                if (!isDetached()) {
-                    hideLoadMoreBar();
-                    MySnackBar.show(mRootView.findViewById(R.id.coordinator),
-                            getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
-                }
+            public void onFailure(String reason) {
+                MySnackBar.show(mRootView.findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
+                hideLoadMoreBar();
             }
         });
         mAdapter.setOnLoadMoreFinishListener(new BaseListAdapter.OnLoadMoreFinishListener() {
@@ -115,12 +118,9 @@ public abstract class BaseListFragment extends Fragment {
             }
 
             @Override
-            public void onFailure() {
-                if (!isDetached()) {
-                    hideLoadMoreBar();
-                    MySnackBar.show(mRootView.findViewById(R.id.coordinator),
-                            getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
-                }
+            public void onFailure(String reason) {
+                MySnackBar.show(mRootView.findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
+                hideLoadMoreBar();
             }
         });
         mAdapter.setOnRefreshDataFinishListener(new BaseListAdapter.OnRefreshDataFinishListener() {
@@ -130,12 +130,9 @@ public abstract class BaseListFragment extends Fragment {
             }
 
             @Override
-            public void onFailure() {
-                if (!isDetached()) {
-                    mRefreshLayout.setRefreshing(false);
-                    MySnackBar.show(mRootView.findViewById(R.id.coordinator),
-                            getString(R.string.get_data_failure), Snackbar.LENGTH_INDEFINITE);
-                }
+            public void onFailure(String reason) {
+                MySnackBar.show(mRootView.findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
+                mRefreshLayout.setRefreshing(false);
             }
         });
         mAdapter.setOnItemClickListener(getOnItemClickListener());
@@ -300,6 +297,13 @@ public abstract class BaseListFragment extends Fragment {
                     2, StaggeredGridLayoutManager.VERTICAL));
         if (mAdapter != null)
             mAdapter.changeToPortrait();
+    }
+
+    @Override
+    public void onDetach() {
+        mAdapter.clearData();
+        mAdapter.setOwnerIsDestroyed();
+        super.onDetach();
     }
 
     protected abstract BaseListAdapter getAdapter();
