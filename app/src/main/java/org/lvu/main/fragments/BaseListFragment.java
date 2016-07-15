@@ -65,6 +65,8 @@ public abstract class BaseListFragment extends Fragment {
         ((MainActivity) getActivity()).setOnBackPressedListener(new MainActivity.OnBackPressedListener() {
             @Override
             public boolean onBackPressed() {
+                if (mPlayer == null)
+                    return false;
                 if (mPlayer.getVisibility() == View.GONE)
                     return false;
                 else {

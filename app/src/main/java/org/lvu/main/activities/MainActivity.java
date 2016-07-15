@@ -34,6 +34,7 @@ import org.lvu.main.fragments.FamilyPhotoFragment;
 import org.lvu.main.fragments.JapanVideoFragment;
 import org.lvu.main.fragments.LewdWifeNovelFragment;
 import org.lvu.main.fragments.NavigationFragment;
+import org.lvu.main.fragments.SchoolNovelFragment;
 import org.lvu.model.Menu;
 import org.lvu.utils.ImmerseUtil;
 
@@ -160,6 +161,9 @@ public class MainActivity extends BaseActivity {
                         break;
                     case R.string.menu_family_mess_novel:
                         fragment = new FamilyMessNovelFragment();
+                        break;
+                    case R.string.menu_school_novel:
+                        fragment = new SchoolNovelFragment();
                         break;
                     case R.string.menu_lewd_wife_novel:
                         fragment = new LewdWifeNovelFragment();

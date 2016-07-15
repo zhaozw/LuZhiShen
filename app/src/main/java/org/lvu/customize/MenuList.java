@@ -76,6 +76,7 @@ public class MenuList extends LinearLayout {
         result.add(new Menu(R.drawable.ic_pic, R.string.menu_gif));
         result.add(new Menu(R.drawable.ic_book, R.string.menu_excited_novel));
         result.add(new Menu(R.drawable.ic_book, R.string.menu_family_mess_novel));
+        result.add(new Menu(R.drawable.ic_book, R.string.menu_school_novel));
         result.add(new Menu(R.drawable.ic_book, R.string.menu_lewd_wife_novel));
         return result;
     }
