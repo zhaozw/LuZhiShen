@@ -5,12 +5,12 @@
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/dp_2"
+    android:layout_margin="@dimen/dp_3"
     android:clickable="true"
     android:foreground="@drawable/card_foreground"
     app:cardBackgroundColor="?attr/colorAccent"
     app:cardCornerRadius="@dimen/dp_0"
-    app:cardElevation="@dimen/dp_4"
+    app:cardElevation="@dimen/dp_3"
     app:cardUseCompatPadding="true">
 
     <org.lvu.customize.ScrollingTextView

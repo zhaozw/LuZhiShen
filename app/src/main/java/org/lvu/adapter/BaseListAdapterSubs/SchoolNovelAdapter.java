@@ -17,6 +17,6 @@ public class SchoolNovelAdapter extends ExcitedNovelAdapter {
 
     @Override
     protected String getUrl(){
-        return "http://23eeee.com/t03/index.html";
+        return "https://www.dd99aa.com/htm/novellist2/";
     }
 }

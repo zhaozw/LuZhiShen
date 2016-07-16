@@ -66,6 +66,7 @@ public class NovelViewActivity extends BaseActivity {
 
             @Override
             public void onFailure(Exception e, String reason) {
+                hideLoadMoreBar();
                 MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
             }
         });

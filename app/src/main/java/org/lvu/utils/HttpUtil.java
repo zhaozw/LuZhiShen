@@ -15,7 +15,6 @@ import org.lvu.model.Data;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,38 +29,32 @@ public class HttpUtil {
             REASON_CONNECT_SERVER_FAILURE = "连接服务器失败。\t(向右滑动清除)",
             REASON_INTERNET_NO_GOOD = "网络不给力。\t(向右滑动清除)";
 
+    // TODO: 7/17/16 if nextPageUrl == null show is last page if previousPageUrl == null show is first page
     public static void getChinaVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                String nextPage = "";
-                Document document = Jsoup.parse(new URL(url), 6000);
-                Elements links = document.select("li"),
-                        src = document.select("img[src]"),
-                        link = links.select("a[href][title][target]");
-                for (int i = 0; i < link.size(); i++) {
-                    String videoUrl = getChinaVideoUrlByUrl(link.get(i).attr("abs:href"));
-                    if (!videoUrl.isEmpty()) {
-                        result.add(new Data(videoUrl,
-                                src.get(i).attr("abs:src"),
-                                link.get(i).attr("title")));
-                        listener.onSuccess(result, nextPage);
-                        result = new ArrayList<>();
-                    }
+                String currentPage, nextPageUrl = "", previousPageUrl;
+                Document document = Jsoup.connect(url).timeout(6000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                Elements li = document.select("ul").last().children();
+                for (Element tmp : li) {
+                    Elements items = tmp.child(0).children();
+                    result.add(new Data(items.get(1).select("a").attr("abs:href"),
+                            items.select("img").get(0).attr("abs:src"),
+                            items.get(1).child(0).text()));
+                    listener.onSuccess(result, nextPageUrl);
+                    result = new ArrayList<>();
                 }
-                Elements next = document.select("div[class]"), next2 = null;
-                for (Element tmp : next) {
-                    if (tmp.attr("class").equals("page"))
-                        next2 = tmp.children();
-                }
-                if (next2 != null) {
-                    for (Element tmp : next2) {
-                        if (tmp.text().equals("下一页"))
-                            nextPage = tmp.attr("abs:href");
-                    }
-                }
-                listener.onSuccess(null, nextPage);
+                Elements page = document.select("div[id]").last().children();
+                currentPage = page.select("span").get(0).text();
+                previousPageUrl = page.get(1).tagName().equals("em") ? "" : page.get(1).attr("abs:href");
+                nextPageUrl = page.get(page.size() - 4).tagName().equals("em") ? "" :
+                        page.get(page.size() - 4).attr("abs:href");
+                System.out.printf("currentPage: %s\nnextPageUrl: %s\npreviousPageUrl: %s\n",
+                        currentPage, nextPageUrl, previousPageUrl);
+                listener.onSuccess(null, nextPageUrl);
             }
         });
     }
@@ -72,7 +65,8 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
-                Document document = Jsoup.parse(new URL(url), 6000);
+                Document document = Jsoup.connect(url).timeout(6000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements src = document.select("img[src]"), links = new Elements(), texts = document.select("h2"),
                         nextPageTmp = document.select("link[rel]");
                 for (Element tmp : texts) {
@@ -97,7 +91,8 @@ public class HttpUtil {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                Document document = Jsoup.parse(new URL(url), 6000);
+                Document document = Jsoup.connect(url).timeout(6000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements links = document.select("p[class]"),
                         src = document.select("img[data-original]");
                 Elements link = new Elements();
@@ -107,8 +102,8 @@ public class HttpUtil {
                 int flag = result.size();
                 for (int i = currentSize; i < link.size(); i++) {
                     if (flag < 10) {
-                        result.add(new Data(handlerString2(link.get(i).text()),
-                                src.get(i).attr("abs:data-original"), handlerString(src.get(i).attr("alt"))));
+                        result.add(new Data(handleString2(link.get(i).text()),
+                                src.get(i).attr("abs:data-original"), handleString(src.get(i).attr("alt"))));
                         listener.onSuccess(result, "");
                         result = new ArrayList<>();
                         flag++;
@@ -119,31 +114,41 @@ public class HttpUtil {
         });
     }
 
-    public static void getPicturesListAsync(final String url, final HttpRequestCallbackListener listener) {
+    public static void getPicturesListAsync(String url, HttpRequestCallbackListener listener) {
+        getResourcesList(url, listener);
+    }
+
+    public static void getNovelListAsync(String url, HttpRequestCallbackListener listener) {
+        getResourcesList(url, listener);
+    }
+
+    public static void getResourcesList(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                String nextPage = "";
-                Document document = Jsoup.parse(new URL(url), 6000);
-                Elements elements = document.select("li");
-                for (Element tmp : elements) {
-                    result.add(new Data(tmp.children().get(1).attr("abs:href"), tmp.children().get(1).text()));
-                    listener.onSuccess(result, nextPage);
+                String currentPage, nextPageUrl = "", previousPageUrl;
+                Document document = Jsoup.connect(url).timeout(6000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                Elements div = document.select("div[class]");
+                Elements pagination = new Elements(), items = new Elements(), a = new Elements();
+                for (Element tmp : div)
+                    if (tmp.attr("class").equals("box list channel")) {
+                        items = tmp.child(0).children();
+                        pagination = tmp.child(2).children();
+                    }
+                for (Element tmp : items)
+                    if (tmp.tagName().equals("li"))
+                        a.add(tmp.child(0));
+                for (Element tmp : a) {
+                    result.add(new Data(tmp.attr("abs:href"), handleString4(tmp.text())));
+                    listener.onSuccess(result, nextPageUrl);
                     result = new ArrayList<>();
                 }
-                Elements next = document.select("div[class]"), next2 = null;
-                for (Element tmp : next) {
-                    if (tmp.attr("class").equals("page"))
-                        next2 = tmp.children();
-                }
-                if (next2 != null) {
-                    for (Element tmp : next2) {
-                        if (tmp.text().equals("下一页"))
-                            nextPage = tmp.attr("abs:href");
-                    }
-                }
-                listener.onSuccess(null, nextPage);
+                currentPage = pagination.select("strong").text();
+                previousPageUrl = pagination.get(1).attr("abs:href");
+                nextPageUrl = pagination.get(pagination.size() - 2).attr("abs:href");
+                listener.onSuccess(null, nextPageUrl);
             }
         });
     }
@@ -154,7 +159,8 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
-                Document document = Jsoup.parse(new URL(url), 6000);
+                Document document = Jsoup.connect(url).timeout(6000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements elements = document.select("ul[class]"),
                         li = new Elements(), a, img, next = document.select("a");
                 for (Element tmp : elements)
@@ -165,7 +171,7 @@ public class HttpUtil {
 
                 for (int i = 0; i < a.size(); i++) {
                     result.add(new Data(a.get(i).attr("abs:href"),
-                            img.get(i).attr("abs:xSrc"), handlerString3(a.get(i).attr("title"))));
+                            img.get(i).attr("abs:xSrc"), handleString3(a.get(i).attr("title"))));
                     listener.onSuccess(result, nextPage);
                     result = new ArrayList<>();
                 }
@@ -178,44 +184,15 @@ public class HttpUtil {
         });
     }
 
-    public static void getNovelListAsync(final String url, final HttpRequestCallbackListener listener) {
-        runOnBackground(listener, new BackgroundLogic() {
-            @Override
-            public void run() throws Exception {
-                List<Data> result = new ArrayList<>();
-                String nextPage = "";
-                Document document = Jsoup.parse(new URL(url), 6000);
-                Elements elements = document.select("ul"), data = new Elements();
-                for (Element tmp : elements)
-                    if (tmp.children().size() == 2)
-                        data.add(tmp.children().get(0).children().get(1));
-                for (Element tmp : data) {
-                    result.add(new Data(tmp.attr("abs:href"), tmp.text()));
-                    listener.onSuccess(result, nextPage);
-                    result = new ArrayList<>();
-                }
-
-                Elements next = document.select("div[id]"), next2 = null;
-                for (Element tmp : next) {
-                    if (tmp.attr("id").equals("page"))
-                        next2 = tmp.children();
-                }
-                if (next2 != null)
-                    nextPage = next2.get(next2.size() - 3).attr("abs:href");
-                listener.onSuccess(null, nextPage);
-            }
-        });
-    }
-
     public static void getPicturesAsync(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
-                Document document = Jsoup.parse(new URL(url), 6000);
+                Document document = Jsoup.connect(url).timeout(6000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements elements = document.select("img");
-                elements.remove(elements.size() - 1);
                 for (Element tmp : elements) {
                     result.add(new Data("", tmp.attr("abs:src"), ""));
                     listener.onSuccess(result, nextPage);
@@ -230,16 +207,17 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                Document document = Jsoup.parse(new URL(url), 6000);
-                Elements elements = document.select("div[id]");
+                Document document = Jsoup.connect(url).timeout(6000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                Elements div = document.select("div[class]");
                 String content = "";
-                for (Element tmp : elements)
-                    if (tmp.attr("id").equals("view2"))
+                for (Element tmp : div)
+                    if (tmp.attr("class").equals("content"))
                         content = tmp.html();
                 if (content.isEmpty())
                     listener.onFailure(new Exception("novel content is empty!"), REASON_SERVER_404);
                 else
-                    listener.onSuccess(null, handlerNovelContent(content));
+                    listener.onSuccess(null, "\n\n\t\t" + handleNovelContent(content));
             }
         });
     }
@@ -249,7 +227,9 @@ public class HttpUtil {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                result.add(new Data("", Jsoup.parse(new URL(url), 6000).select("img[alt]").get(0).attr("abs:src"), ""));
+                result.add(new Data("", Jsoup.connect(url).timeout(6000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2")
+                        .get().select("img[alt]").get(0).attr("abs:src"), ""));
                 listener.onSuccess(result, "");
             }
         });
@@ -298,35 +278,54 @@ public class HttpUtil {
         }.start();
     }
 
-    private static String handlerString(String src) {
+    private static String handleString(String src) {
         return src.replaceAll("点击播放", "");
     }
 
-    private static String handlerString2(String text) {
+    private static String handleString2(String text) {
         int pos = text.indexOf("'", 19);
         return text.substring(19, pos);
     }
 
-    private static String handlerString3(String src) {
+    private static String handleString3(String src) {
         return src.replaceAll("邪恶漫画", "");
     }
 
-    private static String handlerNovelContent(String src) {
-        return src.replaceAll("<br>", "\n").replaceAll("<p>", "").replaceAll("</p>", "\n")
-                .replaceAll("&nbsp;", "").replaceAll("<b>", "").replaceAll("</b>", "");
+    private static String handleString4(String src) {
+        return src.substring(5);
     }
 
-    private static String getChinaVideoUrlByUrl(String url) {
+    private static String handleString5(String src) {
+        return src.substring(src.indexOf("l+\'") + 3, src.indexOf('\'', src.indexOf("l+\'") + 4));
+    }
+
+    private static String handleNovelContent(String src) {
+        return src.replaceAll("\n", "").replaceAll("<br/>", "").replaceAll("<br>", "")
+                .replaceAll("<p>", "").replaceAll("</p>", "\n\n")
+                .replaceAll("<script type=\"text/javascript\">document\\.write\\(picFootAds\\);</script>", "")
+                .replaceAll("<script type=\"text/javascript\">document\\.write\\(picTopAds\\);</script> \\.", "");
+    }
+
+    public static void getChinaVideoUrlByUrl(final String url, final HttpRequestCallbackListener listener) {
+        runOnBackground(listener, new BackgroundLogic() {
+            @Override
+            public void run() throws Exception {
+                Document document = Jsoup.connect(url).timeout(6000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                String script = document.select("script").get(5).html();
+                listener.onSuccess(null, getChinaVideoPlayerUrl() + handleString5(script));
+            }
+        });
+    }
+
+    private static String getChinaVideoPlayerUrl() {
         int count = 0, count2 = 0;
         while (true) {
             try {
-                Document document = Jsoup.parse(new URL(url), 6000);
-                Elements links = document.select("source");
-                for (Element element : links) {
-                    if (element.attr("type").equals("video/mp4"))
-                        return element.attr("abs:src");
-                }
-                break;
+                Document document = Jsoup.connect("https://www.vmfh.info/g/playerurl/geturl.php").timeout(6000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                String html = document.body().html();
+                return html.substring(14, html.length() - 2);
             } catch (Exception e) {
                 e.printStackTrace();
                 if (e instanceof ConnectException) {
@@ -353,7 +352,8 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                Document document = Jsoup.parse(new URL(url), 6000);
+                Document document = Jsoup.connect(url).timeout(6000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements elements = document.select("a[class]");
                 for (Element tmp : elements)
                     if (tmp.attr("class").equals("play"))

@@ -17,6 +17,6 @@ public class FamilyPhotoAdapter extends EuropePictureAdapter {
 
     @Override
     protected String getUrl() {
-        return "http://0pmp.com/html/9/";
+        return "https://www.dd99aa.com/htm/piclist9/";
     }
 }

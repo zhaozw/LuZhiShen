@@ -3,5 +3,5 @@
     android:drawable="@drawable/card_foreground_selector"
     android:insetLeft="@dimen/dp_3"
     android:insetRight="@dimen/dp_3"
-    android:insetTop="@dimen/dp_5"
-    android:insetBottom="@dimen/dp_5"/>
+    android:insetTop="@dimen/dp_4"
+    android:insetBottom="@dimen/dp_4"/>

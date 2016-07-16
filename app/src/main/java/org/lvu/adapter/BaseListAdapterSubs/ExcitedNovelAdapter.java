@@ -20,7 +20,7 @@ public class ExcitedNovelAdapter extends EuropePictureAdapter {
 
     @Override
     protected String getUrl(){
-        return "http://23eeee.com/t01/index.html";
+        return "https://www.dd99aa.com/htm/novellist1/";
     }
 
     @Override

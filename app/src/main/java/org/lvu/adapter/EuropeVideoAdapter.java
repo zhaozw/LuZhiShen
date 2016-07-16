@@ -22,11 +22,44 @@ import java.util.List;
  */
 public class EuropeVideoAdapter extends BasePictureListAdapter {
 
-    private final String URL = "http://m.fapple.com/videos";
+    protected final String URL;
     private static final int GET_URL_SUCCESS = 6, GET_URL_FAILURE = 7;
+    private ProgressDialog mDialog;
+
+    protected HttpUtil.HttpRequestCallbackListener mCallBackListener = new HttpUtil.HttpRequestCallbackListener() {
+        @Override
+        public void onSuccess(List<Data> data, String nextPage) {
+            mDialog.dismiss();
+            Message message = new Message();
+            message.obj = nextPage;
+            message.what = GET_URL_SUCCESS;
+            mHandler.sendMessage(message);
+        }
+
+        @Override
+        public void onFailure(Exception e, String reason) {
+            mDialog.dismiss();
+            Message message = new Message();
+            message.obj = reason;
+            message.what = GET_URL_FAILURE;
+            mHandler.sendMessage(message);
+        }
+    };
 
     public EuropeVideoAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
+        URL = getUrl();
+        initDialog();
+    }
+
+    private void initDialog(){
+        mDialog = new ProgressDialog(mContext);
+        mDialog.setMessage(mContext.getString(R.string.resolving_video_address));
+        mDialog.setCancelable(false);
+    }
+
+    protected String getUrl() {
+        return "http://m.fapple.com/videos";
     }
 
     @Override
@@ -48,34 +81,17 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                 holder.root.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final ProgressDialog dialog = new ProgressDialog(mContext);
-                        dialog.setMessage(mContext.getString(R.string.resolving_video_address));
-                        dialog.setCancelable(false);
-                        dialog.show();
-                        HttpUtil.getEuropeVideoUrlByUrl(
-                                mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
-                                        mData.size() - 1 : holder.getAdapterPosition()).getUrl(), new HttpUtil.HttpRequestCallbackListener() {
-                                    @Override
-                                    public void onSuccess(List<Data> data, String nextPage) {
-                                        dialog.dismiss();
-                                        Message message = new Message();
-                                        message.obj = nextPage;
-                                        message.what = GET_URL_SUCCESS;
-                                        mHandler.sendMessage(message);
-                                    }
-
-                                    @Override
-                                    public void onFailure(Exception e, String reason) {
-                                        dialog.dismiss();
-                                        Message message = new Message();
-                                        message.obj = reason;
-                                        message.what = GET_URL_FAILURE;
-                                        mHandler.sendMessage(message);
-                                    }
-                                });
+                        mDialog.show();
+                        getVideoUrlByUrl(holder);
                     }
                 });
         }
+    }
+
+    protected void getVideoUrlByUrl(final BaseListAdapter.ViewHolder holder) {
+        HttpUtil.getEuropeVideoUrlByUrl(
+                mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
+                        mData.size() - 1 : holder.getAdapterPosition()).getUrl(), mCallBackListener);
     }
 
     @Override
