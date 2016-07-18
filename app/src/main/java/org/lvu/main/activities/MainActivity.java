@@ -195,14 +195,17 @@ public class MainActivity extends BaseActivity {
     }
 
     private AlertDialog skinDialog;
+    private List<Menu> mSkinData;
 
     private void changeSkin() {
+        if (mSkinData == null)
+            mSkinData = getSkinData();
         skinDialog = new AlertDialog.Builder(this, Application.getCurrentSkin()
                 .equals(getString(R.string.skin_black)) ?
                 R.style.CustomDialogTheme2 : R.style.CustomDialogTheme)
                 .setTitle(R.string.choose_skin)
-                .setAdapter(new SkinChooseAdapter(this, R.layout.menu_list_item, initData())
-                        .setOnItemClickListener(new SkinChooseAdapter.OnItemClickListener() {
+                .setAdapter(new SkinChooseAdapter(this, R.layout.menu_list_item, mSkinData)
+                        /*.setOnItemClickListener(new SkinChooseAdapter.OnItemClickListener() {
                             @Override
                             public void onClick(int stringId) {
                                 String skin = getString(stringId);
@@ -211,12 +214,21 @@ public class MainActivity extends BaseActivity {
                                 skinDialog.dismiss();
                                 recreate();
                             }
-                        }), null).setNegativeButton(R.string.cancel, null).show();
+                        })*/, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String skin = getString(mSkinData.get(which).getNameId());
+                                getSharedPreferences(MainActivity.class.getName(),
+                                        MODE_PRIVATE).edit().putString(SKIN, skin).apply();
+                                skinDialog.dismiss();
+                                recreate();
+                            }
+                        }).setNegativeButton(R.string.cancel, null).show();
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
     }
 
-    private List<Menu> initData() {
+    private List<Menu> getSkinData() {
         String curSkin = getSharedPreferences(MainActivity.class.getName(),
                 MODE_PRIVATE).getString(SKIN, null);
         if (curSkin == null)

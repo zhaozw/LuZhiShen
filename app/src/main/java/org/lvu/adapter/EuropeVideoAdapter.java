@@ -1,13 +1,15 @@
 package org.lvu.adapter;
 
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
@@ -24,16 +26,19 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
 
     protected final String URL;
     private static final int GET_URL_SUCCESS = 6, GET_URL_FAILURE = 7;
-    private ProgressDialog mDialog;
+    private AlertDialog mDialog;
+    private boolean isUserCanceled;
 
     protected HttpUtil.HttpRequestCallbackListener mCallBackListener = new HttpUtil.HttpRequestCallbackListener() {
         @Override
         public void onSuccess(List<Data> data, String nextPage) {
-            mDialog.dismiss();
-            Message message = new Message();
-            message.obj = nextPage;
-            message.what = GET_URL_SUCCESS;
-            mHandler.sendMessage(message);
+            if (!isUserCanceled) {
+                mDialog.dismiss();
+                Message message = new Message();
+                message.obj = nextPage;
+                message.what = GET_URL_SUCCESS;
+                mHandler.sendMessage(message);
+            }
         }
 
         @Override
@@ -52,10 +57,19 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
         initDialog();
     }
 
-    private void initDialog(){
-        mDialog = new ProgressDialog(mContext);
-        mDialog.setMessage(mContext.getString(R.string.resolving_video_address));
-        mDialog.setCancelable(false);
+    private void initDialog() {
+        mDialog = new AlertDialog.Builder(mContext, Application.getCurrentSkin()
+                .equals(mContext.getString(R.string.skin_black)) ?
+                R.style.CustomDialogTheme2 : R.style.CustomDialogTheme)
+                .setCancelable(false).setNegativeButton(mContext.getString(R.string.cancel),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mDialog.dismiss();
+                                isUserCanceled = true;
+                            }
+                        })
+                .setView(R.layout.dialog_resolving_video_address_view).create();
     }
 
     protected String getUrl() {
@@ -81,6 +95,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                 holder.root.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        isUserCanceled = false;
                         mDialog.show();
                         getVideoUrlByUrl(holder);
                     }

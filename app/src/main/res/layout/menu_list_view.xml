@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="?attr/colorAccent">
+    android:background="?attr/colorAccent"
+    android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -12,64 +13,76 @@
         android:layout_weight="1"
         android:scrollbars="vertical" />
 
-    <LinearLayout
-        android:id="@+id/change_skin"
+    <com.balysv.materialripple.MaterialRippleLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/menu_selector"
-        android:clickable="true"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/dp_3"
-        android:paddingTop="@dimen/dp_3">
+        app:mrl_rippleColor="@color/ripple_color">
 
-        <ImageView
-            android:layout_width="@dimen/dp_45"
-            android:layout_height="@dimen/dp_45"
-            android:layout_marginLeft="@dimen/dp_12"
-            android:layout_marginRight="@dimen/dp_6"
-            android:padding="@dimen/dp_8"
-            android:src="@drawable/ic_skin" />
-
-        <TextView
+        <LinearLayout
+            android:id="@+id/change_skin"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginRight="@dimen/dp_42"
-            android:gravity="center_vertical"
-            android:text="@string/change_skin"
-            android:textColor="@color/menu_text_color"
-            android:textSize="@dimen/sp_18" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:background="?attr/menu_selector"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/dp_3"
+            android:paddingTop="@dimen/dp_3">
 
-    <LinearLayout
-        android:id="@+id/exit"
+            <ImageView
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
+                android:layout_marginLeft="@dimen/dp_12"
+                android:layout_marginRight="@dimen/dp_6"
+                android:padding="@dimen/dp_8"
+                android:src="@drawable/ic_skin" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/dp_42"
+                android:gravity="center_vertical"
+                android:text="@string/change_skin"
+                android:textColor="@color/menu_text_color"
+                android:textSize="@dimen/sp_18" />
+        </LinearLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
+
+    <com.balysv.materialripple.MaterialRippleLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/menu_selector"
-        android:clickable="true"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/dp_3"
-        android:paddingTop="@dimen/dp_3">
+        app:mrl_rippleColor="@color/ripple_color">
 
-        <ImageView
-            android:layout_width="@dimen/dp_45"
-            android:layout_height="@dimen/dp_45"
-            android:layout_marginLeft="@dimen/dp_12"
-            android:layout_marginRight="@dimen/dp_6"
-            android:padding="@dimen/dp_8"
-            android:src="@drawable/ic_menu_exit" />
-
-        <TextView
+        <LinearLayout
+            android:id="@+id/exit"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginRight="@dimen/dp_42"
-            android:gravity="center_vertical"
-            android:text="@string/exit"
-            android:textColor="@color/menu_text_color"
-            android:textSize="@dimen/sp_18" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:background="?attr/menu_selector"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/dp_3"
+            android:paddingTop="@dimen/dp_3">
+
+            <ImageView
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
+                android:layout_marginLeft="@dimen/dp_12"
+                android:layout_marginRight="@dimen/dp_6"
+                android:padding="@dimen/dp_8"
+                android:src="@drawable/ic_menu_exit" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/dp_42"
+                android:gravity="center_vertical"
+                android:text="@string/exit"
+                android:textColor="@color/menu_text_color"
+                android:textSize="@dimen/sp_18" />
+        </LinearLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
 
     <View
         android:id="@+id/bottom_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        android:layout_height="0dp" />
 </LinearLayout>

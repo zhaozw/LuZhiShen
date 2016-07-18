@@ -8,6 +8,7 @@
     <color name="redPrimary">#f44336</color>
     <color name="redAccent">#ef5350</color>
     <color name="light_red">#ef9a9a</color>
+    <color name="li45ght_red">#019587</color>
 
     <color name="purplePrimaryDark">#5e35b1</color>
     <color name="purplePrimary">#673ab7</color>
@@ -57,4 +58,5 @@
     <color name="videoViewBBG">#90424242</color>
     <color name="menu_text_color">#fafafa</color>
     <color name="menu_text_color_dark">#212121</color>
+    <color name="ripple_color">#30ffffff</color>
 </resources>
