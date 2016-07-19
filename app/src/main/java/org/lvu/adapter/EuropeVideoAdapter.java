@@ -87,27 +87,37 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
         } else {
             if (mData.isEmpty())
                 return;
-            holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ?
-                    mData.size() - 1 : position).getBitmap());
-            holder.text.setText(mData.get(position != 0 && position >= mData.size() ?
-                    mData.size() - 1 : position).getText());
-            if (mOnItemClickListener != null)
-                holder.root.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        isUserCanceled = false;
-                        mDialog.show();
-                        getVideoUrlByUrl(holder);
-                    }
-                });
-        }
+            try {
+                holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ?
+                        mData.size() - 1 : position).getBitmap());
+                holder.text.setText(mData.get(position != 0 && position >= mData.size() ?
+                        mData.size() - 1 : position).getText());
+                if (mOnItemClickListener != null)
+                    holder.root.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            isUserCanceled = false;
+                            mDialog.show();
+                            getVideoUrlByUrl(holder);
+                        }
+                    });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+         }
     }
 
     protected void getVideoUrlByUrl(final BaseListAdapter.ViewHolder holder) {
-        HttpUtil.getEuropeVideoUrlByUrl(
-                mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
-                        mData.size() - 1 : holder.getAdapterPosition()).getUrl(), mCallBackListener);
-    }
+        if (mData.isEmpty())
+            return;
+        try {
+            HttpUtil.getEuropeVideoUrlByUrl(
+                    mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
+                            mData.size() - 1 : holder.getAdapterPosition()).getUrl(), mCallBackListener);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+     }
 
     @Override
     public void syncData(@NonNull String url) {

@@ -51,19 +51,23 @@
 
         <activity
             android:name=".main.activities.PicturesViewActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask"/>
 
         <activity
             android:name=".main.activities.ComicsViewActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask" />
 
         <activity
             android:name=".main.activities.GifViewActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask" />
 
         <activity
             android:name=".main.activities.NovelViewActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask" />
 
         <activity
             android:name=".main.activities.ErrorActivity"

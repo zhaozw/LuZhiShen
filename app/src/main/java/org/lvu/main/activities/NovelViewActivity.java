@@ -180,6 +180,7 @@ public class NovelViewActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        mContent.setText("");
         mContent = null;
         System.gc();
         super.onBackPressed();

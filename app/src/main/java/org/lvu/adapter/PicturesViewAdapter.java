@@ -33,8 +33,12 @@ public class PicturesViewAdapter extends BasePictureListAdapter {
         } else {
             if (mData.isEmpty())
                 return;
-            holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ?
-                    mData.size() - 1 : position).getBitmap());
+            try {
+                holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ?
+                        mData.size() - 1 : position).getBitmap());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

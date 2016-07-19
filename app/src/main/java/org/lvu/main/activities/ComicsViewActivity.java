@@ -3,6 +3,8 @@ package org.lvu.main.activities;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -181,6 +183,7 @@ public class ComicsViewActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        releaseImageViewResource(mContent);
         mContent = null;
         System.gc();
         super.onBackPressed();
@@ -197,6 +200,23 @@ public class ComicsViewActivity extends BaseActivity {
         return true;
     }
 
+    public void releaseImageViewResource(ImageView imageView) {
+        if (imageView == null) return;
+        try {
+            Drawable drawable = imageView.getDrawable();
+            if (drawable != null && drawable instanceof BitmapDrawable) {
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+                Bitmap bitmap = bitmapDrawable.getBitmap();
+                if (bitmap != null && !bitmap.isRecycled()) {
+                    imageView.setImageBitmap(null);
+                    bitmap.recycle();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private static class MyHandler extends Handler {
 
         private WeakReference<ComicsViewActivity> mClass;
@@ -210,7 +230,7 @@ public class ComicsViewActivity extends BaseActivity {
             if (mClass.get().mContent != null) {
                 mClass.get().mContent.setImageBitmap((Bitmap) msg.obj);
                 mClass.get().hideLoadMoreBar();
-            }else{
+            } else {
                 msg.obj = null;
                 System.gc();
             }

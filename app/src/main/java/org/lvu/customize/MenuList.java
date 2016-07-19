@@ -23,7 +23,7 @@ public class MenuList extends LinearLayout {
 
     private RecyclerView mRecyclerView;
     private MenuListAdapter mAdapter;
-    private View mSkin,mExit,mBottomView;
+    private View mChangeSkinButton, mExitButton, mBottomView;
     private Context mContext;
 
     public MenuList(Context context) {
@@ -45,8 +45,8 @@ public class MenuList extends LinearLayout {
         mContext = context;
         View view = LayoutInflater.from(context).inflate(R.layout.menu_list_view, this);
         mBottomView = view.findViewById(R.id.bottom_view);
-        mSkin = view.findViewById(R.id.change_skin);
-        mExit = view.findViewById(R.id.exit);
+        mChangeSkinButton = view.findViewById(R.id.change_skin);
+        mExitButton = view.findViewById(R.id.exit);
 
         if (ImmerseUtil.isAboveKITKAT() && ImmerseUtil.isHasNavigationBar(context)) {
             LayoutParams bottomLP = new LayoutParams(
@@ -97,13 +97,13 @@ public class MenuList extends LinearLayout {
         }
     }
 
-    public void setOnItemListener(MenuListAdapter.OnItemClickListener listener) {
+    public void setOnItemClickListener(MenuListAdapter.OnItemClickListener listener) {
         mAdapter.setOnItemClickListener(listener);
     }
 
-    public void setOnClickListener(OnClickListener listener){
-        mSkin.setOnClickListener(listener);
-        mExit.setOnClickListener(listener);
+    public void setOnClickListener(OnClickListener listener) {
+        mChangeSkinButton.setOnClickListener(listener);
+        mExitButton.setOnClickListener(listener);
     }
 
 }

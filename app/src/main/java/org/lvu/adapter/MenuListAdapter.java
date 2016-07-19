@@ -25,7 +25,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHold
     private LayoutInflater mLayoutInflater;
     private int mLayoutId;
     private List<Menu> mData;
-    private OnItemClickListener mListener;
+    private OnItemClickListener onItemClickListener;
     private View mLastSelected, mPosView;
     private int mLastSelectedPos = -1;
 
@@ -56,8 +56,8 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHold
                 holder.root.setSelected(true);
                 mLastSelected = holder.root;
                 if (mLastSelectedPos != holder.getAdapterPosition()) {
-                    if (mListener != null)
-                        mListener.onClick(menu.getNameId());
+                    if (onItemClickListener != null)
+                        onItemClickListener.onClick(menu.getNameId());
                     mLastSelectedPos = holder.getAdapterPosition();
                 }
             }
@@ -93,7 +93,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHold
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
-        mListener = listener;
+        onItemClickListener = listener;
     }
 
     public interface OnItemClickListener {

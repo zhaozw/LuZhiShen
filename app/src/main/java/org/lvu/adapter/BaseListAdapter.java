@@ -131,16 +131,24 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         } else {
             if (mData.isEmpty())
                 return;
-            holder.text.setText(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getText());
-            if (mOnItemClickListener != null)
-                holder.root.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Data data = mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
-                                mData.size() - 1 : holder.getAdapterPosition());
-                        mOnItemClickListener.onClick(data.getUrl(), data.getText());
-                    }
-                });
+            try {
+                holder.text.setText(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getText());
+                if (mOnItemClickListener != null)
+                    holder.root.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                Data data = mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
+                                        mData.size() - 1 : holder.getAdapterPosition());
+                                mOnItemClickListener.onClick(data.getUrl(), data.getText());
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 

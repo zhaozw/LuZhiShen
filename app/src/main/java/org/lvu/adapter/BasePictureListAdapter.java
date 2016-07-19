@@ -34,8 +34,12 @@ public abstract class BasePictureListAdapter extends BaseListAdapter {
         super.onBindViewHolder(holder, position);
         if (mData.isEmpty())
             return;
-        holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getBitmap());
-    }
+        try {
+            holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getBitmap());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+     }
 
     protected static class ViewHolder extends BaseListAdapter.ViewHolder {
 

@@ -124,7 +124,7 @@ public class MainActivity extends BaseActivity {
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         mMenuList = (MenuList) findViewById(R.id.menu_list);
-        mMenuList.setOnItemListener(new MenuListAdapter.OnItemClickListener() {
+        mMenuList.setOnItemClickListener(new MenuListAdapter.OnItemClickListener() {
             @Override
             public void onClick(int stringId) {
                 Fragment fragment;
@@ -175,7 +175,7 @@ public class MainActivity extends BaseActivity {
                 if (fragment != null)
                     showFragment(fragment);
                 mToolbar.setTitle(stringId);
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                closeDrawer();
             }
         });
         mMenuList.setOnClickListener(new View.OnClickListener() {
@@ -195,16 +195,17 @@ public class MainActivity extends BaseActivity {
     }
 
     private AlertDialog skinDialog;
-    private List<Menu> mSkinData;
+    private List<Menu> skinData;
 
     private void changeSkin() {
-        if (mSkinData == null)
-            mSkinData = getSkinData();
-        skinDialog = new AlertDialog.Builder(this, Application.getCurrentSkin()
-                .equals(getString(R.string.skin_black)) ?
-                R.style.CustomDialogTheme2 : R.style.CustomDialogTheme)
-                .setTitle(R.string.choose_skin)
-                .setAdapter(new SkinChooseAdapter(this, R.layout.menu_list_item, mSkinData)
+        if (skinData == null)
+            skinData = getSkinData();
+        if (skinDialog == null) {
+            skinDialog = new AlertDialog.Builder(this, Application.getCurrentSkin()
+                    .equals(getString(R.string.skin_black)) ?
+                    R.style.CustomDialogTheme2 : R.style.CustomDialogTheme)
+                    .setTitle(R.string.choose_skin)
+                    .setAdapter(new SkinChooseAdapter(this, R.layout.menu_list_item, skinData)
                         /*.setOnItemClickListener(new SkinChooseAdapter.OnItemClickListener() {
                             @Override
                             public void onClick(int stringId) {
@@ -215,17 +216,20 @@ public class MainActivity extends BaseActivity {
                                 recreate();
                             }
                         })*/, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String skin = getString(mSkinData.get(which).getNameId());
-                                getSharedPreferences(MainActivity.class.getName(),
-                                        MODE_PRIVATE).edit().putString(SKIN, skin).apply();
-                                skinDialog.dismiss();
-                                recreate();
-                            }
-                        }).setNegativeButton(R.string.cancel, null).show();
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
-            mDrawerLayout.closeDrawer(GravityCompat.START);
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String skin = getString(skinData.get(which).getNameId());
+                                    getSharedPreferences(MainActivity.class.getName(),
+                                            MODE_PRIVATE).edit().putString(SKIN, skin).apply();
+                                    skinDialog.dismiss();
+                                    recreate();
+                                }
+                            }).setNegativeButton(R.string.cancel, null).create();
+        }
+        if (skinDialog.isShowing())
+            return;
+        skinDialog.show();
+        closeDrawer();
     }
 
     private List<Menu> getSkinData() {
@@ -318,21 +322,38 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    private AlertDialog exitDialog;
+
     private void exit() {
-        new AlertDialog.Builder(this, Application.getCurrentSkin()
-                .equals(getString(R.string.skin_black)) ?
-                R.style.CustomDialogTheme2 : R.style.CustomDialogTheme)
-                .setMessage(R.string.confirm_exit)
-                .setPositiveButton(R.string.yes,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                finish();
-                            }
-                        }).setNegativeButton(R.string.no, null).show();
+        if (exitDialog == null) {
+            exitDialog = new AlertDialog.Builder(this, Application.getCurrentSkin()
+                    .equals(getString(R.string.skin_black)) ?
+                    R.style.CustomDialogTheme2 : R.style.CustomDialogTheme)
+                    .setMessage(R.string.confirm_exit)
+                    .setPositiveButton(R.string.yes,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            }).setNegativeButton(R.string.no, null).create();
+        }
+        if (exitDialog.isShowing())
+            return;
+        exitDialog.show();
+        closeDrawer();
+    }
+
+    private void closeDrawer(){
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     @Override

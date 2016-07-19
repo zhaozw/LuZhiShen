@@ -47,9 +47,15 @@ public class ChinaVideoAdapter extends EuropeVideoAdapter {
 
     @Override
     protected void getVideoUrlByUrl(final BaseListAdapter.ViewHolder holder) {
-        HttpUtil.getChinaVideoUrlByUrl(
-                mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
-                        mData.size() - 1 : holder.getAdapterPosition()).getUrl(), mCallBackListener);
-    }
+        if (mData.isEmpty())
+            return;
+        try {
+            HttpUtil.getChinaVideoUrlByUrl(
+                    mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
+                            mData.size() - 1 : holder.getAdapterPosition()).getUrl(), mCallBackListener);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+     }
 
 }
