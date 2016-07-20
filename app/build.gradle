@@ -31,7 +31,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.9.1'
     compile 'cat.ereza:customactivityoncrash:1.5.0'
     compile 'com.tencent.bugly:crashreport:latest.release'
-    compile 'com.pnikosis:materialish-progress:1.7'
+    //compile 'com.pnikosis:materialish-progress:1.7'
     compile 'com.balysv:material-ripple:1.0.2'
     compile project(':vitamio')
 }

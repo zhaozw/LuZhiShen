@@ -264,8 +264,12 @@ public class HttpUtil {
                                 e instanceof SocketTimeoutException) {
                             count++;
                             if (count > 5) {
-                                listener.onFailure(e, !isNetWorkAvailable() ?
-                                        REASON_NO_INTERNET_CONNECT : REASON_INTERNET_NO_GOOD);
+                                String reason = REASON_CONNECT_SERVER_FAILURE;
+                                if (e instanceof SocketTimeoutException)
+                                    reason = REASON_INTERNET_NO_GOOD;
+                                if (!isNetWorkAvailable())
+                                    reason = REASON_NO_INTERNET_CONNECT;
+                                listener.onFailure(e, reason);
                                 break;
                             }
                             continue;

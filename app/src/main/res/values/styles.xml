@@ -14,20 +14,12 @@
         <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
     </style>
 
-    <style name="CustomDialogTheme" parent="Theme.AppCompat.Light.Dialog">
-        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
-    </style>
-
-    <style name="CustomDialogTheme2" parent="Theme.AppCompat.Dialog">
-        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
-    </style>
-
-    <style name="AppTheme.Black" parent="Theme.AppCompat.NoActionBar" >
-        <item name="colorPrimary">@color/blackPrimary</item>
-        <item name="colorPrimaryDark">@color/blackPrimaryDark</item>
-        <item name="colorAccent">@color/blackAccent</item>
-        <item name="menu_selector">@drawable/menu_item_selector_black</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    <style name="AppTheme.Blue" parent="AppTheme.Base">
+        <item name="colorPrimary">@color/bluePrimary</item>
+        <item name="colorPrimaryDark">@color/bluePrimaryDark</item>
+        <item name="colorAccent">@color/blueAccent</item>
+        <item name="menu_selector">@drawable/menu_item_selector_blue</item>
+        <item name="alertDialogTheme">@style/DialogTheme.Blue</item>
     </style>
 
     <style name="AppTheme.Red" parent="AppTheme.Base">
@@ -35,6 +27,7 @@
         <item name="colorPrimaryDark">@color/redPrimaryDark</item>
         <item name="colorAccent">@color/redAccent</item>
         <item name="menu_selector">@drawable/menu_item_selector_red</item>
+        <item name="alertDialogTheme">@style/DialogTheme.Red</item>
     </style>
 
     <style name="AppTheme.Purple" parent="AppTheme.Base">
@@ -42,20 +35,7 @@
         <item name="colorPrimaryDark">@color/purplePrimaryDark</item>
         <item name="colorAccent">@color/purpleAccent</item>
         <item name="menu_selector">@drawable/menu_item_selector_purple</item>
-    </style>
-
-    <style name="AppTheme.Blue" parent="AppTheme.Base">
-        <item name="colorPrimary">@color/bluePrimary</item>
-        <item name="colorPrimaryDark">@color/bluePrimaryDark</item>
-        <item name="colorAccent">@color/blueAccent</item>
-        <item name="menu_selector">@drawable/menu_item_selector_blue</item>
-    </style>
-
-    <style name="AppTheme.Green" parent="AppTheme.Base">
-        <item name="colorPrimary">@color/greenPrimary</item>
-        <item name="colorPrimaryDark">@color/greenPrimaryDark</item>
-        <item name="colorAccent">@color/greenAccent</item>
-        <item name="menu_selector">@drawable/menu_item_selector_green</item>
+        <item name="alertDialogTheme">@style/DialogTheme.Purple</item>
     </style>
 
     <style name="AppTheme.Deep_Orange" parent="AppTheme.Base">
@@ -63,6 +43,15 @@
         <item name="colorPrimaryDark">@color/deepOrangePrimaryDark</item>
         <item name="colorAccent">@color/deepOrangeAccent</item>
         <item name="menu_selector">@drawable/menu_item_selector_orange</item>
+        <item name="alertDialogTheme">@style/DialogTheme.Deep_Orange</item>
+    </style>
+
+    <style name="AppTheme.Green" parent="AppTheme.Base">
+        <item name="colorPrimary">@color/greenPrimary</item>
+        <item name="colorPrimaryDark">@color/greenPrimaryDark</item>
+        <item name="colorAccent">@color/greenAccent</item>
+        <item name="menu_selector">@drawable/menu_item_selector_green</item>
+        <item name="alertDialogTheme">@style/DialogTheme.Green</item>
     </style>
 
     <style name="AppTheme.Brown" parent="AppTheme.Base">
@@ -70,6 +59,7 @@
         <item name="colorPrimaryDark">@color/brownPrimaryDark</item>
         <item name="colorAccent">@color/brownAccent</item>
         <item name="menu_selector">@drawable/menu_item_selector_brown</item>
+        <item name="alertDialogTheme">@style/DialogTheme.Brown</item>
     </style>
 
     <style name="AppTheme.Pink" parent="AppTheme.Base">
@@ -77,6 +67,7 @@
         <item name="colorPrimaryDark">@color/pinkPrimaryDark</item>
         <item name="colorAccent">@color/pinkAccent</item>
         <item name="menu_selector">@drawable/menu_item_selector_pink</item>
+        <item name="alertDialogTheme">@style/DialogTheme.Pink</item>
     </style>
 
     <style name="AppTheme.Teal" parent="AppTheme.Base">
@@ -84,6 +75,7 @@
         <item name="colorPrimaryDark">@color/tealPrimaryDark</item>
         <item name="colorAccent">@color/tealAccent</item>
         <item name="menu_selector">@drawable/menu_item_selector_teal</item>
+        <item name="alertDialogTheme">@style/DialogTheme.Teal</item>
     </style>
 
     <style name="AppTheme.Grey" parent="AppTheme.Base">
@@ -91,6 +83,61 @@
         <item name="colorPrimaryDark">@color/greyPrimaryDark</item>
         <item name="colorAccent">@color/greyAccent</item>
         <item name="menu_selector">@drawable/menu_item_selector_grey</item>
+        <item name="alertDialogTheme">@style/DialogTheme.Grey</item>
+    </style>
+
+    <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/darkPrimary</item>
+        <item name="colorPrimaryDark">@color/darkPrimaryDark</item>
+        <item name="colorAccent">@color/darkAccent</item>
+        <item name="menu_selector">@drawable/menu_item_selector_black</item>
+        <item name="alertDialogTheme">@style/DialogTheme.Dark</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    </style>
+
+    <style name="BaseDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    </style>
+
+    <style name="DialogTheme.Blue" parent="BaseDialogTheme">
+        <item name="colorAccent">@color/blueAccent</item>
+    </style>
+
+    <style name="DialogTheme.Red" parent="BaseDialogTheme">
+        <item name="colorAccent">@color/redAccent</item>
+    </style>
+
+    <style name="DialogTheme.Purple" parent="BaseDialogTheme">
+        <item name="colorAccent">@color/purpleAccent</item>
+    </style>
+
+    <style name="DialogTheme.Deep_Orange" parent="BaseDialogTheme">
+        <item name="colorAccent">@color/deepOrangeAccent</item>
+    </style>
+
+    <style name="DialogTheme.Green" parent="BaseDialogTheme">
+        <item name="colorAccent">@color/greenAccent</item>
+    </style>
+
+    <style name="DialogTheme.Brown" parent="BaseDialogTheme">
+        <item name="colorAccent">@color/brownAccent</item>
+    </style>
+
+    <style name="DialogTheme.Pink" parent="BaseDialogTheme">
+        <item name="colorAccent">@color/pinkAccent</item>
+    </style>
+
+    <style name="DialogTheme.Teal" parent="BaseDialogTheme">
+        <item name="colorAccent">@color/tealAccent</item>
+    </style>
+
+    <style name="DialogTheme.Grey" parent="BaseDialogTheme">
+        <item name="colorAccent">@color/greyAccent</item>
+    </style>
+
+    <style name="DialogTheme.Dark" parent="Theme.AppCompat.Dialog">
+        <item name="colorAccent">@color/darkAccent</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

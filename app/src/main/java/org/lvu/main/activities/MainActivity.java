@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.adapter.MenuListAdapter;
 import org.lvu.adapter.SkinChooseAdapter;
@@ -201,10 +200,7 @@ public class MainActivity extends BaseActivity {
         if (skinData == null)
             skinData = getSkinData();
         if (skinDialog == null) {
-            skinDialog = new AlertDialog.Builder(this, Application.getCurrentSkin()
-                    .equals(getString(R.string.skin_black)) ?
-                    R.style.CustomDialogTheme2 : R.style.CustomDialogTheme)
-                    .setTitle(R.string.choose_skin)
+            skinDialog = new AlertDialog.Builder(this).setTitle(R.string.choose_skin)
                     .setAdapter(new SkinChooseAdapter(this, R.layout.menu_list_item, skinData)
                         /*.setOnItemClickListener(new SkinChooseAdapter.OnItemClickListener() {
                             @Override
@@ -258,7 +254,7 @@ public class MainActivity extends BaseActivity {
         if (!curSkin.equals(getString(R.string.skin_grey)))
             result.add(new Menu(R.color.greyPrimary, R.string.skin_grey));
         if (!curSkin.equals(getString(R.string.skin_black)))
-            result.add(new Menu(R.color.blackPrimary, R.string.skin_black));
+            result.add(new Menu(R.color.darkPrimary, R.string.skin_black));
         return result;
     }
 
@@ -326,10 +322,7 @@ public class MainActivity extends BaseActivity {
 
     private void exit() {
         if (exitDialog == null) {
-            exitDialog = new AlertDialog.Builder(this, Application.getCurrentSkin()
-                    .equals(getString(R.string.skin_black)) ?
-                    R.style.CustomDialogTheme2 : R.style.CustomDialogTheme)
-                    .setMessage(R.string.confirm_exit)
+            exitDialog = new AlertDialog.Builder(this).setMessage(R.string.confirm_exit)
                     .setPositiveButton(R.string.yes,
                             new DialogInterface.OnClickListener() {
                                 @Override

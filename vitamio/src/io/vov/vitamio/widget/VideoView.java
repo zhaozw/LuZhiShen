@@ -29,13 +29,16 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.util.SparseArray;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.vov.vitamio.MediaFormat;
 import io.vov.vitamio.MediaPlayer;
@@ -48,14 +51,8 @@ import io.vov.vitamio.MediaPlayer.OnSeekCompleteListener;
 import io.vov.vitamio.MediaPlayer.OnTimedTextListener;
 import io.vov.vitamio.MediaPlayer.OnVideoSizeChangedListener;
 import io.vov.vitamio.MediaPlayer.TrackInfo;
-import io.vov.vitamio.Vitamio;
 import io.vov.vitamio.utils.Log;
 import io.vov.vitamio.utils.ScreenResolution;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Displays a video file. The VideoView class can load images from various
@@ -221,18 +218,40 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
             }
 
             if (getWindowToken() != null) {
-                int message = framework_err == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK ? getResources().getIdentifier("VideoView_error_text_invalid_progressive_playback", "string", mContext.getPackageName()) : getResources().getIdentifier("VideoView_error_text_unknown", "string", mContext.getPackageName());
+                if (mOnPrepareErrorListener == null) {
+                    int message = framework_err == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK ? getResources().getIdentifier("VideoView_error_text_invalid_progressive_playback", "string", mContext.getPackageName()) : getResources().getIdentifier("VideoView_error_text_unknown", "string", mContext.getPackageName());
 
-                new AlertDialog.Builder(mContext).setTitle(getResources().getIdentifier("VideoView_error_title", "string", mContext.getPackageName())).setMessage(message).setPositiveButton(getResources().getIdentifier("VideoView_error_button", "string", mContext.getPackageName()), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        if (mOnCompletionListener != null)
-                            mOnCompletionListener.onCompletion(mMediaPlayer);
-                    }
-                }).setCancelable(false).show();
+                    new AlertDialog.Builder(mContext)
+                            .setTitle(getResources()
+                                    .getIdentifier("VideoView_error_title", "string",
+                                            mContext.getPackageName()))
+                            .setMessage(message)
+                            .setPositiveButton(
+                                    getResources()
+                                            .getIdentifier("VideoView_error_button", "string",
+                                                    mContext.getPackageName()),
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int whichButton) {
+                                            if (mOnCompletionListener != null)
+                                                mOnCompletionListener.onCompletion(mMediaPlayer);
+                                        }
+                                    }).setCancelable(false).show();
+                }else mOnPrepareErrorListener.onError();
             }
             return true;
         }
     };
+
+    private OnPrepareErrorListener mOnPrepareErrorListener;
+
+    public void setOnPrepareErrorListener(OnPrepareErrorListener listener){
+        mOnPrepareErrorListener = listener;
+    }
+
+    public interface OnPrepareErrorListener{
+        void onError();
+    }
+
     private OnBufferingUpdateListener mBufferingUpdateListener = new OnBufferingUpdateListener() {
         public void onBufferingUpdate(MediaPlayer mp, int percent) {
             mCurrentBufferPercentage = percent;

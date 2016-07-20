@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
@@ -58,9 +57,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
     }
 
     private void initDialog() {
-        mDialog = new AlertDialog.Builder(mContext, Application.getCurrentSkin()
-                .equals(mContext.getString(R.string.skin_black)) ?
-                R.style.CustomDialogTheme2 : R.style.CustomDialogTheme)
+        mDialog = new AlertDialog.Builder(mContext)
                 .setCancelable(false).setNegativeButton(mContext.getString(R.string.cancel),
                         new DialogInterface.OnClickListener() {
                             @Override

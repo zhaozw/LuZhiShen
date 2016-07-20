@@ -52,8 +52,7 @@ public class BaseActivity extends AppCompatActivity {
         data.put(getString(R.string.skin_pink), R.style.AppTheme_Pink);
         data.put(getString(R.string.skin_teal), R.style.AppTheme_Teal);
         data.put(getString(R.string.skin_grey), R.style.AppTheme_Grey);
-        data.put(getString(R.string.skin_black), R.style.AppTheme_Black);
+        data.put(getString(R.string.skin_black), R.style.AppTheme_Dark);
         return data.get(name);
     }
-
 }

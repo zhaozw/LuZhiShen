@@ -43,6 +43,8 @@
     <string name="cancel">取消</string>
     <string name="resolving_video_address">解析视频地址中，请稍等。。。</string>
     <string name="loading_please_wait">加载中，请稍等。。。</string>
+    <string name="play_video_failure">播放失败</string>
+    <string name="get_video_data_failure">获取视频数据失败。</string>
 
     <string name="customactivityoncrash_error_activity_error_occurred_explanation">╮(╯Д╰)╭ 撸至深出了点小情况\n可爱的小虫说翻就翻</string>
     <string name="customactivityoncrash_error_activity_unknown_exception">未知异常</string>

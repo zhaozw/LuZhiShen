@@ -1,14 +1,11 @@
 package org.lvu.test;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
@@ -115,14 +112,14 @@ public class TestActivity2 extends AppCompatActivity {
                 player.setVisibility(View.VISIBLE);
             }
         });*/
-        mDialog = new ProgressDialog.Builder(this)
+        /*mDialog = new ProgressDialog.Builder(this)
                 .setView(LayoutInflater.from(this).inflate(R.layout.progress_dialog_view, null))
                 .setPositiveButton("如果你等了好久还没加载出来请按下这个按钮", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         recreate();
                     }
-                }).setCancelable(false).show();
+                }).setCancelable(false).show();*/
     }
 
     @Override

@@ -3,17 +3,14 @@ package org.lvu.customize;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
-import android.graphics.PorterDuff;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,8 +22,6 @@ import android.widget.TextView;
 import org.lvu.R;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.widget.VideoView;
@@ -52,6 +47,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     private float mStartX, mEndX;
     private int mMoveDistance, mTotalWidth = -1, mResult;
     private String mLastUrl = "";
+    private AlertDialog mErrorTips;
 
     public VideoPlayer(Context context) {
         super(context);
@@ -79,7 +75,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
 
     @SuppressWarnings("deprecation")
     private void initProgressBar() {
-        List<Integer> data = new ArrayList<>();
+        /*List<Integer> data = new ArrayList<>();
         int[] array = R.styleable.AppCompatTheme;
         for (int tmp : array)
             data.add(tmp);
@@ -105,7 +101,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
-        a.recycle();
+        a.recycle();*/
         mProgressbar.setEnabled(false);
     }
 
@@ -197,9 +193,18 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
                 }
             }
         });
-        /*mPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+        mPlayer.setOnPrepareErrorListener(new VideoView.OnPrepareErrorListener() {
+            @Override
+            public void onError() {
+                if (mErrorTips == null)
+                    initErrorDialog();
+                mErrorTips.show();
+            }
+        });
+       /*mPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
+                LogUtil.print(percent);
                 double tmp = percent * 0.01;
                 mProgressbar.setSecondaryProgress((int) (mProgressbar.getMax() * tmp));
             }
@@ -330,6 +335,16 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         }
     }*/
 
+    private void initErrorDialog(){
+        mErrorTips = new AlertDialog.Builder(mContext).setTitle(R.string.play_video_failure)
+                .setMessage(R.string.get_video_data_failure).setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        exit();
+                    }
+                }).create();
+    }
+
     private void startTimingThread() {
         new Thread() {
             @Override
@@ -369,10 +384,10 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     }
 
     public void setUrlPlay(String url) {
-        isExited = false;
         mOriginallyOrientation = mActivity.getResources().getConfiguration().orientation;
         changeToLandscape();
         mLoadingBar.setVisibility(VISIBLE);
+        isExited = false;
         if (url.equals(mLastUrl)) {
             mProgressbar.setEnabled(true);
             play();
@@ -442,7 +457,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
 
     private void changeToLandscape() {
         if (mActivity == null)
-            Log.e("changeToLandscape", "please setActivity first!");
+            throw new RuntimeException("please setActivity first!");
         if (mActivity.getResources().getConfiguration().orientation
                 != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             mActivity.setRequestedOrientation(

@@ -14,8 +14,8 @@
     <string name="VideoView_error_text_invalid_progressive_playback">Sorry, this video is not valid for streaming to
         this device.
     </string>
-    <string name="VideoView_error_text_unknown">Sorry, this video cannot be played.</string>
-    <string name="VideoView_error_button">OK</string>
+    <string name="VideoView_error_text_unknown">视频文件已损坏，无法播放</string>
+    <string name="VideoView_error_button">好吧</string>
     <string name="mediacontroller_play_pause">Play/Pause</string>
 
 </resources>
