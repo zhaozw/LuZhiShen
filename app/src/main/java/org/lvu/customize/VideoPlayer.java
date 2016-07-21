@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
@@ -46,7 +47,6 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     private Handler mHandler;
     private float mStartX, mEndX;
     private int mMoveDistance, mTotalWidth = -1, mResult;
-    private String mLastUrl = "";
     private AlertDialog mErrorTips;
 
     public VideoPlayer(Context context) {
@@ -139,6 +139,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                if (mPlayer == null) return;
                 isOriginallyPlaying = mPlayer.isPlaying();
             }
 
@@ -165,6 +166,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 if (!isExited) {
+                    mPlayer.setBackgroundColor(Color.TRANSPARENT);
                     mp.setPlaybackSpeed(1.0f);
                     mProgressbar.setEnabled(true);
                     mTotalWidth = mPlayer.getWidth();
@@ -335,7 +337,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         }
     }*/
 
-    private void initErrorDialog(){
+    private void initErrorDialog() {
         mErrorTips = new AlertDialog.Builder(mContext).setTitle(R.string.play_video_failure)
                 .setMessage(R.string.get_video_data_failure).setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
                     @Override
@@ -388,18 +390,14 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         changeToLandscape();
         mLoadingBar.setVisibility(VISIBLE);
         isExited = false;
-        if (url.equals(mLastUrl)) {
-            mProgressbar.setEnabled(true);
-            play();
-        } else
-            mPlayer.setVideoPath(url);
-        mLastUrl = url;
+        mPlayer.setVideoPath(url);
         if (mRootView.getVisibility() == GONE)
             mRootView.setVisibility(VISIBLE);
         //mPlayer.setDataSource(mContext, Uri.parse("android:resource://org.lvu/"+R.raw.media));
     }
 
     public void play() {
+        if (mPlayer == null) return;
         if (!mPlayer.isPlaying())
             mPlayer.start();
         if (!isTimingThreadRunning)
@@ -407,11 +405,13 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     }
 
     public void pause() {
+        if (mPlayer == null) return;
         if (mPlayer.isPlaying())
             mPlayer.pause();
     }
 
     public void replay() {
+        if (mPlayer == null) return;
         if (!mPlayer.isPlaying())
             mPlayer.start();
         startTimingThread();
@@ -423,6 +423,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         mRootView.setVisibility(GONE);
         mProgressbar.setEnabled(false);
         mPlayer.destroyDrawingCache();
+        mPlayer.setBackgroundColor(Color.BLACK);
         if (mOriginallyOrientation == Configuration.ORIENTATION_PORTRAIT)
             changeToPortrait();
         if (mOnPlayCompleteListener != null)
@@ -511,6 +512,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
                 exit();
                 break;
             case R.id.play_status:
+                if (mPlayer == null) return;
                 if (mPlayer.isPlaying()) {
                     pause();
                     mPlayStatus.setImageResource(R.drawable.ic_continue);
