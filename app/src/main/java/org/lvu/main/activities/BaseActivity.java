@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
+import android.view.View;
 
 import org.lvu.R;
 
@@ -54,5 +56,44 @@ public class BaseActivity extends AppCompatActivity {
         data.put(getString(R.string.skin_grey), R.style.AppTheme_Grey);
         data.put(getString(R.string.skin_black), R.style.AppTheme_Dark);
         return data.get(name);
+    }
+
+    private float mDownX, mDownY, mCurrentX, mCurrentY;
+    private boolean mRightSlideFlag, isFlagChanged;
+
+    protected void enableSwipeBack(View v) {
+        v.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mDownX = event.getX();
+                        mDownY = event.getY();
+                        mRightSlideFlag = false;
+                        isFlagChanged = false;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        mCurrentX = event.getX();
+                        mCurrentY = event.getY();
+                        if (isRightSlide() && !isFlagChanged) {
+                            mRightSlideFlag = true;
+                            isFlagChanged = true;
+                        } else if (!isRightSlide() && mRightSlideFlag)
+                            mRightSlideFlag = false;
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (isRightSlide() && mRightSlideFlag)
+                            onBackPressed();
+                        break;
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
+    }
+
+    private boolean isRightSlide() {
+        return mCurrentX - mDownX > 160 && mCurrentY - mDownY < 25 && mCurrentY - mDownY > -25;
     }
 }

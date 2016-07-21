@@ -35,6 +35,7 @@ import java.util.List;
 /**
  * Created by wuyr on 6/23/16 11:35 PM.
  */
+@SuppressWarnings("ConstantConditions")
 public class ComicsViewActivity extends BaseActivity {
 
     private View mTopView, mBottomView;
@@ -51,7 +52,6 @@ public class ComicsViewActivity extends BaseActivity {
         initImmerse();
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void initViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(getIntent().getStringExtra(PicturesViewActivity.TITLE));
@@ -70,7 +70,13 @@ public class ComicsViewActivity extends BaseActivity {
             @Override
             public void onFailure(Exception e, String reason) {
                 hideLoadMoreBar();
-                MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
+                MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
+                        getString(R.string.back), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                onBackPressed();
+                            }
+                        });
             }
         });
 
@@ -144,7 +150,11 @@ public class ComicsViewActivity extends BaseActivity {
 
             }
         });
-        mLoadMoreBar.startAnimation(animation);
+        try{
+            mLoadMoreBar.startAnimation(animation);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void changeToLandscape() {

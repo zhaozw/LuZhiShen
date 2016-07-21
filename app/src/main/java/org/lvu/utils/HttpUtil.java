@@ -217,7 +217,7 @@ public class HttpUtil {
                 if (content.isEmpty())
                     listener.onFailure(new Exception("novel content is empty!"), REASON_SERVER_404);
                 else
-                    listener.onSuccess(null, "\n\n\t\t" + handleNovelContent(content));
+                    listener.onSuccess(null, "\n\t\t" + handleNovelContent(content));
             }
         });
     }

@@ -245,7 +245,11 @@ public abstract class BaseListFragment extends Fragment {
 
             }
         });
-        mLoadMoreBar.startAnimation(animation);
+        try{
+            mLoadMoreBar.startAnimation(animation);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void hideLoadMoreBar() {
@@ -272,7 +276,11 @@ public abstract class BaseListFragment extends Fragment {
 
                 }
             });
-            mLoadMoreBar.startAnimation(animation);
+            try{
+                mLoadMoreBar.startAnimation(animation);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
         }
     }
 

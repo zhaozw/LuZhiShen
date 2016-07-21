@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="selector">
         <attr name="menu_selector" format="reference"/>
+        <attr name="color_light" format="color"/>
     </declare-styleable>
     <declare-styleable name="CircleProgressBar">
         <attr name="inner_radius" format="dimension"/>

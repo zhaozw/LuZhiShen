@@ -41,6 +41,7 @@
     <string name="no">谁说的我打死他</string>
     <string name="ok">OK</string>
     <string name="cancel">取消</string>
+    <string name="back">返回</string>
     <string name="resolving_video_address">解析视频地址中，请稍等。。。</string>
     <string name="loading_please_wait">加载中，请稍等。。。</string>
     <string name="play_video_failure">播放失败</string>

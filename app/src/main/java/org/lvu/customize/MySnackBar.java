@@ -55,8 +55,19 @@ public class MySnackBar {
         a.recycle();
         ((TextView) root.findViewById(R.id.snackbar_text)).setTextColor(
                 view.getResources().getColor(R.color.menu_text_color));
-        if (actionText != null && listener != null)
-            snackbar.setAction(actionText, listener);
+        if (actionText != null && listener != null) {
+            List<Integer> data2 = new ArrayList<>();
+            int[] array2 = R.styleable.selector;
+            for (int tmp : array2)
+                data2.add(tmp);
+            TypedArray a2 = view.getContext()
+                    .obtainStyledAttributes(R.styleable.selector);
+            int color2 = a2.getColor(data2.indexOf(R.attr.color_light), view.getContext()
+                    .getResources().getColor(R.color.light_blue));
+
+            a2.recycle();
+            snackbar.setAction(actionText, listener).setActionTextColor(color2);
+        }
         snackbar.show();
     }
 }

@@ -31,6 +31,7 @@ import java.util.List;
 /**
  * Created by wuyr on 6/23/16 11:23 PM.
  */
+@SuppressWarnings("ConstantConditions")
 public class PicturesViewActivity extends BaseActivity {
 
     public static final String URL = "url", TITLE = "title";
@@ -46,7 +47,6 @@ public class PicturesViewActivity extends BaseActivity {
         initImmerse();
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void initViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(getIntent().getStringExtra(TITLE));
@@ -65,7 +65,13 @@ public class PicturesViewActivity extends BaseActivity {
             @Override
             public void onFailure(String reason) {
                 hideLoadMoreBar();
-                MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
+                MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
+                        getString(R.string.back), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                onBackPressed();
+                            }
+                        });
             }
         });
         mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
@@ -131,7 +137,11 @@ public class PicturesViewActivity extends BaseActivity {
 
             }
         });
-        mLoadMoreBar.startAnimation(animation);
+        try {
+            mLoadMoreBar.startAnimation(animation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void changeToLandscape() {

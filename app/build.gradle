@@ -33,5 +33,6 @@ dependencies {
     compile 'com.tencent.bugly:crashreport:latest.release'
     //compile 'com.pnikosis:materialish-progress:1.7'
     compile 'com.balysv:material-ripple:1.0.2'
+    compile 'me.imid.swipebacklayout.lib:library:1.0.0'
     compile project(':vitamio')
 }
