@@ -1,6 +1,7 @@
 package org.lvu.main.activities;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -30,9 +31,9 @@ import org.lvu.main.fragments.EvilComicsFragment;
 import org.lvu.main.fragments.ExcitedNovelFragment;
 import org.lvu.main.fragments.FamilyMessNovelFragment;
 import org.lvu.main.fragments.FamilyPhotoFragment;
+import org.lvu.main.fragments.FunnyJokeFragment;
 import org.lvu.main.fragments.JapanVideoFragment;
 import org.lvu.main.fragments.LewdWifeNovelFragment;
-import org.lvu.main.fragments.NavigationFragment;
 import org.lvu.main.fragments.SchoolNovelFragment;
 import org.lvu.model.Menu;
 import org.lvu.utils.ImmerseUtil;
@@ -47,7 +48,7 @@ import io.vov.vitamio.Vitamio;
  */
 
 @SuppressWarnings("ConstantConditions")
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements MenuListAdapter.OnItemClickListener{
 
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
@@ -65,7 +66,13 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initFragment() {
-        showFragment(new NavigationFragment());
+        Intent intent = getIntent();
+        int position = intent.getIntExtra(NavigationActivity.POSITION, -1),
+                stringId = intent.getIntExtra(NavigationActivity.STRING_ID, -1);
+        if (position != -1 && stringId != -1) {
+            mMenuList.setSelectedPos(position);
+            onClick(stringId);
+        }
     }
 
     private void showFragment(Fragment fragment) {
@@ -123,60 +130,7 @@ public class MainActivity extends BaseActivity {
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         mMenuList = (MenuList) findViewById(R.id.menu_list);
-        mMenuList.setOnItemClickListener(new MenuListAdapter.OnItemClickListener() {
-            @Override
-            public void onClick(int stringId) {
-                Fragment fragment;
-                switch (stringId) {
-                    case R.string.menu_navigation:
-                        fragment = new NavigationFragment();
-                        break;
-                    case R.string.menu_china_video:
-                        fragment = new ChinaVideoFragment();
-                        break;
-                    case R.string.menu_europe_video:
-                        fragment = new EuropeVideoFragment();
-                        break;
-                    case R.string.menu_japan_video:
-                        fragment = new JapanVideoFragment();
-                        break;
-                    case R.string.menu_family_pic:
-                        fragment = new FamilyPhotoFragment();
-                        break;
-                    case R.string.menu_asia_pic:
-                        fragment = new AsiaPictureFragment();
-                        break;
-                    case R.string.menu_europe_pic:
-                        fragment = new EuropePictureFragment();
-                        break;
-                    case R.string.menu_evil_pics:
-                        fragment = new EvilComicsFragment();
-                        break;
-                    case R.string.menu_gif:
-                        fragment = new NavigationFragment();
-                        break;
-                    case R.string.menu_excited_novel:
-                        fragment = new ExcitedNovelFragment();
-                        break;
-                    case R.string.menu_family_mess_novel:
-                        fragment = new FamilyMessNovelFragment();
-                        break;
-                    case R.string.menu_school_novel:
-                        fragment = new SchoolNovelFragment();
-                        break;
-                    case R.string.menu_lewd_wife_novel:
-                        fragment = new LewdWifeNovelFragment();
-                        break;
-                    default:
-                        fragment = null;
-                        break;
-                }
-                if (fragment != null)
-                    showFragment(fragment);
-                mToolbar.setTitle(stringId);
-                closeDrawer();
-            }
-        });
+        mMenuList.setOnItemClickListener(this);
         mMenuList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -296,6 +250,60 @@ public class MainActivity extends BaseActivity {
         mOnBackPressedListener = listener;
     }
 
+    @Override
+    public void onClick(int stringId) {
+        Fragment fragment;
+        switch (stringId) {
+            case R.string.menu_china_video:
+                fragment = new ChinaVideoFragment();
+                break;
+            case R.string.menu_europe_video:
+                fragment = new EuropeVideoFragment();
+                break;
+            case R.string.menu_japan_video:
+                fragment = new JapanVideoFragment();
+                break;
+            case R.string.menu_family_pic:
+                fragment = new FamilyPhotoFragment();
+                break;
+            case R.string.menu_asia_pic:
+                fragment = new AsiaPictureFragment();
+                break;
+            case R.string.menu_europe_pic:
+                fragment = new EuropePictureFragment();
+                break;
+            case R.string.menu_evil_pics:
+                fragment = new EvilComicsFragment();
+                break;
+            case R.string.menu_gif:
+                // FIXME: 7/26/16
+                fragment = new EvilComicsFragment();
+                break;
+            case R.string.menu_excited_novel:
+                fragment = new ExcitedNovelFragment();
+                break;
+            case R.string.menu_family_mess_novel:
+                fragment = new FamilyMessNovelFragment();
+                break;
+            case R.string.menu_school_novel:
+                fragment = new SchoolNovelFragment();
+                break;
+            case R.string.menu_lewd_wife_novel:
+                fragment = new LewdWifeNovelFragment();
+                break;
+            case R.string.menu_funny_joke:
+                fragment = new FunnyJokeFragment();
+                break;
+            default:
+                fragment = null;
+                break;
+        }
+        if (fragment != null)
+            showFragment(fragment);
+        mToolbar.setTitle(stringId);
+        closeDrawer();
+    }
+
     public interface OnBackPressedListener {
         boolean onBackPressed();
     }
@@ -338,7 +346,7 @@ public class MainActivity extends BaseActivity {
         closeDrawer();
     }
 
-    private void closeDrawer(){
+    private void closeDrawer() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
     }

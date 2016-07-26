@@ -5,6 +5,9 @@
     <string name="blank" />
 
     <string name="menu_navigation">导航</string>
+    <string name="area_video">视频区</string>
+    <string name="area_picture">图片区</string>
+    <string name="area_text">文字区</string>
     <string name="menu_china_video">国产自拍</string>
     <string name="menu_europe_video">欧美视频</string>
     <string name="menu_japan_video">日本电影</string>
@@ -17,6 +20,7 @@
     <string name="menu_family_mess_novel">乱伦文学</string>
     <string name="menu_school_novel">校园春色</string>
     <string name="menu_lewd_wife_novel">淫荡人妻</string>
+    <string name="menu_funny_joke">茶余饭后</string>
     <string name="change_skin">更换皮肤</string>
     <string name="settings">设置</string>
     <string name="about">关于我们</string>

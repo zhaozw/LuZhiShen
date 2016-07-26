@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="NavigationList">
+        <attr name="area_title" format="string"/>
+    </declare-styleable>
     <declare-styleable name="selector">
         <attr name="menu_selector" format="reference"/>
         <attr name="color_light" format="color"/>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <View
+            android:id="@+id/status_bar_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="?attr/colorPrimaryDark"
+            app:layout_scrollFlags="scroll|enterAlways" />
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="@string/menu_navigation" />
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <org.lvu.customize.NavigationList
+                android:id="@+id/area_video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:area_title="@string/area_video" />
+
+            <org.lvu.customize.NavigationList
+                android:id="@+id/area_picture"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:area_title="@string/area_picture" />
+
+            <org.lvu.customize.NavigationList
+                android:id="@+id/area_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:area_title="@string/area_text" />
+
+            <View
+                android:id="@+id/navigation_bar_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>

@@ -36,7 +36,7 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String currentPage, nextPageUrl = "", previousPageUrl;
-                Document document = Jsoup.connect(url).timeout(6000)
+                Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements li = document.select("ul").last().children();
                 for (Element tmp : li) {
@@ -65,7 +65,7 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
-                Document document = Jsoup.connect(url).timeout(6000)
+                Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements src = document.select("img[src]"), links = new Elements(), texts = document.select("h2"),
                         nextPageTmp = document.select("link[rel]");
@@ -91,7 +91,7 @@ public class HttpUtil {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                Document document = Jsoup.connect(url).timeout(6000)
+                Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements links = document.select("p[class]"),
                         src = document.select("img[data-original]");
@@ -128,7 +128,7 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String currentPage, nextPageUrl = "", previousPageUrl;
-                Document document = Jsoup.connect(url).timeout(6000)
+                Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements div = document.select("div[class]");
                 Elements pagination = new Elements(), items = new Elements(), a = new Elements();
@@ -159,7 +159,7 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
-                Document document = Jsoup.connect(url).timeout(6000)
+                Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements elements = document.select("ul[class]"),
                         li = new Elements(), a, img, next = document.select("a");
@@ -190,7 +190,7 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPage = "";
-                Document document = Jsoup.connect(url).timeout(6000)
+                Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements elements = document.select("img");
                 for (Element tmp : elements) {
@@ -207,7 +207,7 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                Document document = Jsoup.connect(url).timeout(6000)
+                Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements div = document.select("div[class]");
                 String content = "";
@@ -227,7 +227,7 @@ public class HttpUtil {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                result.add(new Data("", Jsoup.connect(url).timeout(6000)
+                result.add(new Data("", Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2")
                         .get().select("img[alt]").get(0).attr("abs:src"), ""));
                 listener.onSuccess(result, "");
@@ -315,7 +315,7 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                Document document = Jsoup.connect(url).timeout(6000)
+                Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 String script = document.select("script").get(5).html();
                 listener.onSuccess(null, getChinaVideoPlayerUrl() + handleString5(script));
@@ -327,7 +327,7 @@ public class HttpUtil {
         int count = 0, count2 = 0;
         while (true) {
             try {
-                Document document = Jsoup.connect("https://www.vmfh.info/g/playerurl/geturl.php").timeout(6000)
+                Document document = Jsoup.connect("https://www.vmfh.info/g/playerurl/geturl.php").timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 String html = document.body().html();
                 return html.substring(14, html.length() - 2);
@@ -357,7 +357,7 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                Document document = Jsoup.connect(url).timeout(6000)
+                Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements elements = document.select("a[class]");
                 for (Element tmp : elements)

@@ -58,14 +58,12 @@ public class MenuList extends LinearLayout {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         mRecyclerView.setAdapter(mAdapter =
                 new MenuListAdapter(context, R.layout.menu_list_item, initData()));
-        mAdapter.setSelectedPos(0);
         if (ImmerseUtil.isAboveKITKAT())
             mRecyclerView.setPadding(0, ImmerseUtil.getStatusBarHeight(context), 0, 0);
     }
 
     private List<Menu> initData() {
         List<Menu> result = new ArrayList<>();
-        result.add(new Menu(R.drawable.ic_navigation, R.string.menu_navigation));
         result.add(new Menu(R.drawable.ic_video, R.string.menu_china_video));
         result.add(new Menu(R.drawable.ic_video, R.string.menu_europe_video));
         result.add(new Menu(R.drawable.ic_video, R.string.menu_japan_video));
@@ -78,7 +76,12 @@ public class MenuList extends LinearLayout {
         result.add(new Menu(R.drawable.ic_book, R.string.menu_family_mess_novel));
         result.add(new Menu(R.drawable.ic_book, R.string.menu_school_novel));
         result.add(new Menu(R.drawable.ic_book, R.string.menu_lewd_wife_novel));
+        result.add(new Menu(R.drawable.ic_book, R.string.menu_funny_joke));
         return result;
+    }
+
+    public void setSelectedPos(int position) {
+        mAdapter.setSelectedPos(position);
     }
 
     public void changeToLandscape() {

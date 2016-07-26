@@ -36,8 +36,9 @@
         android:theme="@style/AppTheme.Red">
 
         <activity
-            android:name=".main.activities.MainActivity"
-            android:configChanges="orientation|screenSize">
+            android:name=".main.activities.NavigationActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,9 +51,14 @@
         </activity>
 
         <activity
+            android:name=".main.activities.MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop" />
+
+        <activity
             android:name=".main.activities.PicturesViewActivity"
             android:configChanges="orientation|screenSize"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop" />
 
         <activity
             android:name=".main.activities.ComicsViewActivity"
@@ -73,6 +79,7 @@
             android:name=".main.activities.ErrorActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/customactivityoncrash_error_activity_error_details_title"
+            android:launchMode="singleTop"
             android:process=":error_activity">
             <intent-filter>
                 <action android:name="cat.ereza.customactivityoncrash.ERROR" />
