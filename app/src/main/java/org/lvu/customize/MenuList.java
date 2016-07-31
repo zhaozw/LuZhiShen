@@ -82,6 +82,7 @@ public class MenuList extends LinearLayout {
 
     public void setSelectedPos(int position) {
         mAdapter.setSelectedPos(position);
+        mRecyclerView.scrollToPosition(position);
     }
 
     public void changeToLandscape() {

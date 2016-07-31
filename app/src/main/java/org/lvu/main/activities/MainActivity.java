@@ -20,7 +20,6 @@ import android.view.WindowManager;
 
 import org.lvu.R;
 import org.lvu.adapter.MenuListAdapter;
-import org.lvu.adapter.SkinChooseAdapter;
 import org.lvu.customize.MenuList;
 import org.lvu.customize.MySnackBar;
 import org.lvu.main.fragments.AsiaPictureFragment;
@@ -35,11 +34,7 @@ import org.lvu.main.fragments.FunnyJokeFragment;
 import org.lvu.main.fragments.JapanVideoFragment;
 import org.lvu.main.fragments.LewdWifeNovelFragment;
 import org.lvu.main.fragments.SchoolNovelFragment;
-import org.lvu.model.Menu;
 import org.lvu.utils.ImmerseUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import io.vov.vitamio.Vitamio;
 
@@ -147,69 +142,10 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
         });
     }
 
-    private AlertDialog skinDialog;
-    private List<Menu> skinData;
-
-    private void changeSkin() {
-        if (skinData == null)
-            skinData = getSkinData();
-        if (skinDialog == null) {
-            skinDialog = new AlertDialog.Builder(this).setTitle(R.string.choose_skin)
-                    .setAdapter(new SkinChooseAdapter(this, R.layout.menu_list_item, skinData)
-                        /*.setOnItemClickListener(new SkinChooseAdapter.OnItemClickListener() {
-                            @Override
-                            public void onClick(int stringId) {
-                                String skin = getString(stringId);
-                                getSharedPreferences(MainActivity.class.getName(),
-                                        MODE_PRIVATE).edit().putString(SKIN, skin).apply();
-                                skinDialog.dismiss();
-                                recreate();
-                            }
-                        })*/, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String skin = getString(skinData.get(which).getNameId());
-                                    getSharedPreferences(MainActivity.class.getName(),
-                                            MODE_PRIVATE).edit().putString(SKIN, skin).apply();
-                                    skinDialog.dismiss();
-                                    recreate();
-                                }
-                            }).setNegativeButton(R.string.cancel, null).create();
-        }
-        if (skinDialog.isShowing())
-            return;
-        skinDialog.show();
+    @Override
+    protected void changeSkin() {
+        super.changeSkin();
         closeDrawer();
-    }
-
-    private List<Menu> getSkinData() {
-        String curSkin = getSharedPreferences(MainActivity.class.getName(),
-                MODE_PRIVATE).getString(SKIN, null);
-        if (curSkin == null)
-            curSkin = getString(R.string.skin_red);
-
-        List<Menu> result = new ArrayList<>();
-        if (!curSkin.equals(getString(R.string.skin_blue)))
-            result.add(new Menu(R.color.bluePrimary, R.string.skin_blue));
-        if (!curSkin.equals(getString(R.string.skin_red)))
-            result.add(new Menu(R.color.redPrimary, R.string.skin_red));
-        if (!curSkin.equals(getString(R.string.skin_purple)))
-            result.add(new Menu(R.color.purplePrimary, R.string.skin_purple));
-        if (!curSkin.equals(getString(R.string.skin_deepOrange)))
-            result.add(new Menu(R.color.deepOrangePrimary, R.string.skin_deepOrange));
-        if (!curSkin.equals(getString(R.string.skin_green)))
-            result.add(new Menu(R.color.greenPrimary, R.string.skin_green));
-        if (!curSkin.equals(getString(R.string.skin_brown)))
-            result.add(new Menu(R.color.brownPrimary, R.string.skin_brown));
-        if (!curSkin.equals(getString(R.string.skin_pink)))
-            result.add(new Menu(R.color.pinkPrimary, R.string.skin_pink));
-        if (!curSkin.equals(getString(R.string.skin_teal)))
-            result.add(new Menu(R.color.tealPrimary, R.string.skin_teal));
-        if (!curSkin.equals(getString(R.string.skin_grey)))
-            result.add(new Menu(R.color.greyPrimary, R.string.skin_grey));
-        if (!curSkin.equals(getString(R.string.skin_black)))
-            result.add(new Menu(R.color.darkPrimary, R.string.skin_black));
-        return result;
     }
 
     @Override

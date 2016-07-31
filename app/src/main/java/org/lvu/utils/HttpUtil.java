@@ -93,12 +93,8 @@ public class HttpUtil {
                 List<Data> result = new ArrayList<>();
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                Elements links = document.select("p[class]"),
+                Elements link = document.select("p[class=content]"),
                         src = document.select("img[data-original]");
-                Elements link = new Elements();
-                for (Element tmp : links)
-                    if (tmp.attr("class").equals("content"))
-                        link.add(tmp);
                 int flag = result.size();
                 for (int i = currentSize; i < link.size(); i++) {
                     if (flag < 10) {
@@ -130,13 +126,8 @@ public class HttpUtil {
                 String currentPage, nextPageUrl = "", previousPageUrl;
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                Elements div = document.select("div[class]");
-                Elements pagination = new Elements(), items = new Elements(), a = new Elements();
-                for (Element tmp : div)
-                    if (tmp.attr("class").equals("box list channel")) {
-                        items = tmp.child(0).children();
-                        pagination = tmp.child(2).children();
-                    }
+                Element div = document.select("div[class=box list channel]").get(0);
+                Elements pagination = div.child(2).children(), items = div.child(0).children(), a = new Elements();
                 for (Element tmp : items)
                     if (tmp.tagName().equals("li"))
                         a.add(tmp.child(0));
@@ -161,11 +152,7 @@ public class HttpUtil {
                 String nextPage = "";
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                Elements elements = document.select("ul[class]"),
-                        li = new Elements(), a, img, next = document.select("a");
-                for (Element tmp : elements)
-                    if (tmp.attr("class").equals("piclist listcon"))
-                        li = tmp.children();
+                Elements li = document.select("ul[class=piclist listcon]").get(0).children(), a, img, next = document.select("a");
                 a = li.select("a");
                 img = li.select("img");
 
@@ -209,11 +196,7 @@ public class HttpUtil {
             public void run() throws Exception {
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                Elements div = document.select("div[class]");
-                String content = "";
-                for (Element tmp : div)
-                    if (tmp.attr("class").equals("content"))
-                        content = tmp.html();
+                String content = document.select("div[class=content]").get(0).html();
                 if (content.isEmpty())
                     listener.onFailure(new Exception("novel content is empty!"), REASON_SERVER_404);
                 else
@@ -359,10 +342,7 @@ public class HttpUtil {
             public void run() throws Exception {
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                Elements elements = document.select("a[class]");
-                for (Element tmp : elements)
-                    if (tmp.attr("class").equals("play"))
-                        listener.onSuccess(null, tmp.attr("href"));
+                listener.onSuccess(null, document.select("a[class=play]").get(0).attr("href"));
             }
         });
     }

@@ -15,34 +15,38 @@ import java.net.UnknownHostException;
  */
 public class HttpTest {
     public static void main(String[] args) {
-        String url = args[0];
-        System.out.println("connecting " + url);
+        String url = "http://www.laifudao.com/wangwen/index_1728.htm";
         int count = 0;
         while (true) {
             try {
-                //script 5
-                Document document = Jsoup.connect(url).timeout(6000)
+                // TODO: 7/28/16 查看全部内容 >>
+
+                //<section class="article-content">
+                //<div class="mobile-pagenavi">
+                String currentPage = "", previousPageUrl = "", nextPageUrl = "";
+                System.out.println("start resolve url: " + url);
+                Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                String script = document.select("script").get(5).html();
-                System.out.println(script);
-                System.out.println(getChinaVideoPlayerUrl() + handleString5(script));
-                /*String currentPage, nextPageUrl, previousPageUrl;
-                Document document = Jsoup.connect(url).timeout(6000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                Elements li = document.select("ul").last().children();
-                for (Element tmp : li) {
-                    Elements items = tmp.child(0).children();
-                    System.out.printf("%s\t%s\t%s\n", items.get(1).select("a").attr("abs:href"),
-                            items.select("img").get(0).attr("abs:src"),
-                            items.get(1).child(0).text());
+                System.out.println("resolve url finish");
+                Elements elements = document.select("section[class=article-content]");
+                for (Element tmp : elements)
+                    System.out.println(handleString(tmp.text()) + "\n\n");
+                Elements page = document.select("div[class=mobile-pagenavi]").get(0).children();
+                /*
+                  <a href="/wangwen/index_127.htm" class="mnext">上一页</a>
+                  <span class="mpages">128/1728</span>
+                  <a href="/wangwen/index_129.htm" class="mprev">下一页</a>
+                 */
+                for (Element tmp : page) {
+                    if (tmp.tagName().equals("span"))
+                        currentPage = handleString2(tmp.text());
+                    else if (tmp.attr("class").equals("mnext"))
+                        previousPageUrl = tmp.attr("abs:href");
+                    else if ((tmp.attr("class").equals("mprev")))
+                        nextPageUrl = tmp.attr("abs:href");
                 }
-                Elements page = document.select("div[id]").last().children();
-                currentPage = page.select("span").get(0).text();
-                previousPageUrl = page.get(1).tagName().equals("em") ? "" : page.get(1).attr("abs:href");
-                nextPageUrl = page.get(page.size() - 4).tagName().equals("em") ? "" :
-                        page.get(page.size() - 4).attr("abs:href");
-                System.out.printf("currentPage: %s\nnextPageUrl: %s\npreviousPageUrl: %s\n",
-                        currentPage, nextPageUrl, previousPageUrl);*/
+                System.out.printf("currentPage: %s\npreviousPageUrl: %s\nnextPageUrl: %s\n",
+                        currentPage, previousPageUrl, nextPageUrl);
                 break;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -61,37 +65,11 @@ public class HttpTest {
         }
     }
 
-    private static String handleString5(String src) {
-        return src.substring(src.indexOf("l+\'") + 3, src.indexOf('\'',src.indexOf("l+\'") + 4));
+    private static String handleString(String src) {
+        return src.replaceAll("\\s+", "\n");
     }
 
-    private static String getChinaVideoPlayerUrl() {
-        int count = 0, count2 = 0;
-        while (true) {
-            try {
-                Document document = Jsoup.connect("https://www.vmfh.info/g/playerurl/geturl.php").timeout(6000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                String html = document.body().html();
-                return html.substring(14, html.length() - 2);
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof ConnectException) {
-                    count2++;
-                    if (count2 > 5)
-                        break;
-                    continue;
-                }
-                if (e instanceof SocketException ||
-                        e instanceof UnknownHostException ||
-                        e instanceof SocketTimeoutException) {
-                    count++;
-                    if (count > 5)
-                        break;
-                    continue;
-                }
-                break;
-            }
-        }
-        return "";
+    private static String handleString2(String src) {
+        return src.split("/")[0];
     }
 }

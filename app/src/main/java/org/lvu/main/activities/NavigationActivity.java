@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -38,6 +40,8 @@ public class NavigationActivity extends BaseActivity {
     }
 
     private void initViews() {
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+
         NavigationList videoArea = (NavigationList) findViewById(R.id.area_video),
                 pictureArea = (NavigationList) findViewById(R.id.area_picture),
                 textArea = (NavigationList) findViewById(R.id.area_text);
@@ -243,5 +247,23 @@ public class NavigationActivity extends BaseActivity {
         mLastTime = System.currentTimeMillis();
         MySnackBar.show(findViewById(R.id.coordinator),
                 getString(R.string.press_back_exit), Snackbar.LENGTH_SHORT);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_navigation,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.change_skin:
+                changeSkin();
+                return true;
+            default:
+                break;
+        }
+        return false;
     }
 }

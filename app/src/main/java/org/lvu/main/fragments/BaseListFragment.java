@@ -129,6 +129,7 @@ public abstract class BaseListFragment extends Fragment {
             @Override
             public void onFinish() {
                 mRefreshLayout.setRefreshing(false);
+                hideLoadMoreBar();
             }
 
             @Override
