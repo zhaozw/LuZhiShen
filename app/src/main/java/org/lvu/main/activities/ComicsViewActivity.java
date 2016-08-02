@@ -69,7 +69,14 @@ public class ComicsViewActivity extends BaseActivity {
 
             @Override
             public void onFailure(Exception e, String reason) {
-                hideLoadMoreBar();
+                if (reason.equals("无可用网络。\t(向右滑动清除)")) {
+                    try {
+                        mLoadMoreBar.setVisibility(View.GONE);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                } else
+                    hideLoadMoreBar();
                 MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
                         getString(R.string.back), new View.OnClickListener() {
                             @Override
@@ -150,9 +157,9 @@ public class ComicsViewActivity extends BaseActivity {
 
             }
         });
-        try{
+        try {
             mLoadMoreBar.startAnimation(animation);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -222,7 +229,7 @@ public class ComicsViewActivity extends BaseActivity {
                     bitmap.recycle();
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

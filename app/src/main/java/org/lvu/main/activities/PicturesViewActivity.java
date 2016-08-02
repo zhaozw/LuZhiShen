@@ -64,7 +64,14 @@ public class PicturesViewActivity extends BaseActivity {
 
             @Override
             public void onFailure(String reason) {
-                hideLoadMoreBar();
+                if (reason.equals("无可用网络。\t(向右滑动清除)")) {
+                    try {
+                        mLoadMoreBar.setVisibility(View.GONE);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                } else
+                    hideLoadMoreBar();
                 MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
                         getString(R.string.back), new View.OnClickListener() {
                             @Override

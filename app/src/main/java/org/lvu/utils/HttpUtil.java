@@ -26,8 +26,8 @@ public class HttpUtil {
 
     public static final String REASON_NO_INTERNET_CONNECT = "无可用网络。\t(向右滑动清除)",
             REASON_SERVER_404 = "无法找到资源。(服务器404)\t(向右滑动清除)",
-            REASON_CONNECT_SERVER_FAILURE = "连接服务器失败。\t(向右滑动清除)",
-            REASON_INTERNET_NO_GOOD = "网络不给力。\t(向右滑动清除)";
+            REASON_CONNECT_SERVER_FAILURE = "连接服务器失败，请检查网络后重试。\t(向右滑动清除)",
+            REASON_INTERNET_NO_GOOD = "网络不给力，请重试。\t(向右滑动清除)";
 
     // TODO: 7/17/16 if nextPageUrl == null show is last page if previousPageUrl == null show is first page
     public static void getChinaVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
@@ -235,7 +235,7 @@ public class HttpUtil {
                                 break;
                             } else {
                                 count2++;
-                                if (count2 > 5) {
+                                if (count2 > 3) {
                                     listener.onFailure(e, REASON_INTERNET_NO_GOOD);
                                     break;
                                 }
@@ -246,7 +246,7 @@ public class HttpUtil {
                                 e instanceof UnknownHostException ||
                                 e instanceof SocketTimeoutException) {
                             count++;
-                            if (count > 5) {
+                            if (count > 3) {
                                 String reason = REASON_CONNECT_SERVER_FAILURE;
                                 if (e instanceof SocketTimeoutException)
                                     reason = REASON_INTERNET_NO_GOOD;
@@ -318,7 +318,7 @@ public class HttpUtil {
                 e.printStackTrace();
                 if (e instanceof ConnectException) {
                     count2++;
-                    if (count2 > 5)
+                    if (count2 > 3)
                         break;
                     continue;
                 }
@@ -326,7 +326,7 @@ public class HttpUtil {
                         e instanceof UnknownHostException ||
                         e instanceof SocketTimeoutException) {
                     count++;
-                    if (count > 5)
+                    if (count > 3)
                         break;
                     continue;
                 }

@@ -198,6 +198,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         mPlayer.setOnPrepareErrorListener(new VideoView.OnPrepareErrorListener() {
             @Override
             public void onError() {
+                if (isExited) return;
                 if (mErrorTips == null)
                     initErrorDialog();
                 mErrorTips.show();
@@ -435,6 +436,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
             if (mMediaPlayer != null)
                 mMediaPlayer.stop();
             mCurrentTime.setText("00:00");
+            mTotalTime.setText("00:00");
             mPlayStatus.setImageResource(R.drawable.ic_pause);
             mPlayer.seekTo(1);
             mProgressbar.setProgress(1);

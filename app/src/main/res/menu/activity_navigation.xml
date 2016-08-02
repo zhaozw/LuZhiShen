@@ -4,6 +4,6 @@
     <item
         android:id="@+id/change_skin"
         android:title="@string/change_skin"
-        android:icon="@drawable/ic_skin"
+        android:icon="@drawable/ic_menu_skin"
         app:showAsAction="ifRoom"/>
 </menu>

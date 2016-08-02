@@ -44,6 +44,7 @@ public abstract class BaseListFragment extends Fragment {
     protected boolean isLoadingMore = true, isLoadBarHiding;
     protected VideoPlayer mPlayer;
     private BaseListAdapter mAdapter;
+    private boolean flag = true;
 
     @Nullable
     @Override
@@ -109,8 +110,7 @@ public abstract class BaseListFragment extends Fragment {
 
             @Override
             public void onFailure(String reason) {
-                MySnackBar.show(mRootView.findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
-                hideLoadMoreBar();
+                handleOnFailure(reason);
             }
         });
         mAdapter.setOnLoadMoreFinishListener(new BaseListAdapter.OnLoadMoreFinishListener() {
@@ -121,8 +121,7 @@ public abstract class BaseListFragment extends Fragment {
 
             @Override
             public void onFailure(String reason) {
-                MySnackBar.show(mRootView.findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
-                hideLoadMoreBar();
+                handleOnFailure(reason);
             }
         });
         mAdapter.setOnRefreshDataFinishListener(new BaseListAdapter.OnRefreshDataFinishListener() {
@@ -134,8 +133,8 @@ public abstract class BaseListFragment extends Fragment {
 
             @Override
             public void onFailure(String reason) {
-                MySnackBar.show(mRootView.findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
                 mRefreshLayout.setRefreshing(false);
+                handleOnFailure(reason);
             }
         });
         mAdapter.setOnItemClickListener(getOnItemClickListener());
@@ -246,9 +245,9 @@ public abstract class BaseListFragment extends Fragment {
 
             }
         });
-        try{
+        try {
             mLoadMoreBar.startAnimation(animation);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -263,7 +262,6 @@ public abstract class BaseListFragment extends Fragment {
             animation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-
                 }
 
                 @Override
@@ -274,15 +272,33 @@ public abstract class BaseListFragment extends Fragment {
 
                 @Override
                 public void onAnimationRepeat(Animation animation) {
-
                 }
             });
-            try{
+            try {
                 mLoadMoreBar.startAnimation(animation);
-            }catch(Exception e){
+            } catch (Exception e) {
+                try {
+                    mLoadMoreBar.setVisibility(View.GONE);
+                } catch (Exception e2) {
+                    e2.printStackTrace();
+                }
                 e.printStackTrace();
             }
         }
+    }
+
+    private void handleOnFailure(String reason) {
+        if (flag && reason.equals("无可用网络。\t(向右滑动清除)")) {
+            try {
+                mLoadMoreBar.setVisibility(View.GONE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            isLoadingMore = false;
+        } else
+            hideLoadMoreBar();
+        flag = false;
+        MySnackBar.show(mRootView.findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
     }
 
     @Override
