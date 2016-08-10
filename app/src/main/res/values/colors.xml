@@ -19,10 +19,10 @@
     <color name="blueAccent">#42a5f5</color>
     <color name="light_blue">#90caf9</color>
 
-    <color name="greenPrimaryDark">#689f38</color>
-    <color name="greenPrimary">#8bc34a</color>
-    <color name="greenAccent">#9ccc65</color>
-    <color name="light_green">#c5e1a5</color>
+    <color name="greenPrimaryDark">#388e3c</color>
+    <color name="greenPrimary">#4caf50</color>
+    <color name="greenAccent">#66bb6a</color>
+    <color name="light_green">#a5d6a7</color>
 
     <color name="deepOrangePrimaryDark">#e64a19</color>
     <color name="deepOrangePrimary">#ff5722</color>
