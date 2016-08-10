@@ -10,6 +10,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -36,9 +37,9 @@ import java.util.List;
 public class NovelViewActivity extends BaseActivity {
 
     private View mTopView, mBottomView;
-    private CircleProgressBar mLoadMoreBar;
+    protected CircleProgressBar mLoadMoreBar;
     private TextView mContent;
-    private Handler mHandler;
+    protected Handler mHandler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,11 +52,34 @@ public class NovelViewActivity extends BaseActivity {
 
     private void initViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(getIntent().getStringExtra(PicturesViewActivity.TITLE));
+        String title = TextUtils.isEmpty(getIntent().getStringExtra(PicturesViewActivity.TITLE))?
+                        "全部内容" : getIntent().getStringExtra(PicturesViewActivity.TITLE);
+        getSupportActionBar().setTitle(title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mContent = (TextView) findViewById(R.id.text_view);
 
+        startSyncData();
+
+        mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
+        if (ImmerseUtil.isHasNavigationBar(this)) {
+            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
+            lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(this);
+            mLoadMoreBar.setLayoutParams(lp);
+        }
+        mLoadMoreBar.setColorSchemeResources(R.color.menu_text_color);
+        List<Integer> data = new ArrayList<>();
+        int[] array = R.styleable.AppCompatTheme;
+        for (int tmp : array)
+            data.add(tmp);
+        TypedArray a = obtainStyledAttributes(R.styleable.AppCompatTheme);
+        int color = a.getColor(data.indexOf(R.attr.colorPrimary),
+                getResources().getColor(R.color.bluePrimary));
+        mLoadMoreBar.setBackgroundColor(color);
+        a.recycle();
+    }
+
+    protected void startSyncData() {
         HttpUtil.getNovelContentAsync(getIntent().getStringExtra(PicturesViewActivity.URL), new HttpUtil.HttpRequestCallbackListener() {
             @Override
             public void onSuccess(List<Data> tmp, String textContent) {
@@ -83,23 +107,6 @@ public class NovelViewActivity extends BaseActivity {
                         });
             }
         });
-
-        mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
-        if (ImmerseUtil.isHasNavigationBar(this)) {
-            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
-            lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(this);
-            mLoadMoreBar.setLayoutParams(lp);
-        }
-        mLoadMoreBar.setColorSchemeResources(R.color.menu_text_color);
-        List<Integer> data = new ArrayList<>();
-        int[] array = R.styleable.AppCompatTheme;
-        for (int tmp : array)
-            data.add(tmp);
-        TypedArray a = obtainStyledAttributes(R.styleable.AppCompatTheme);
-        int color = a.getColor(data.indexOf(R.attr.colorPrimary),
-                getResources().getColor(R.color.bluePrimary));
-        mLoadMoreBar.setBackgroundColor(color);
-        a.recycle();
     }
 
     private void initImmerse() {
@@ -134,7 +141,7 @@ public class NovelViewActivity extends BaseActivity {
         }
     }
 
-    private void hideLoadMoreBar() {
+    protected void hideLoadMoreBar() {
         ScaleAnimation animation = new ScaleAnimation(
                 1, 0, 1, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         animation.setDuration(250);

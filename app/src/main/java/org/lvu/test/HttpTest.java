@@ -7,7 +7,6 @@ import org.jsoup.select.Elements;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.UnknownHostException;
 
 /**
@@ -35,7 +34,7 @@ public class HttpTest {
                 Elements elements = document.select("section[class=article-content]");
                 Elements readMore;
                 for (Element tmp : elements) {
-                    System.out.println(handleString(tmp.text()) + "\n\n");
+                    System.out.println(handleString6(tmp.text()) + "\n\n");
                     if (!(readMore = tmp.children().select("strong[class=reader-more]")).isEmpty()) {
                         System.out.println(readMore(readMore.get(0).child(0).attr("abs:href")));
                     }
@@ -45,10 +44,10 @@ public class HttpTest {
                   <a href="/wangwen/index_127.htm" class="mnext">上一页</a>
                   <span class="mpages">128/1728</span>
                   <a href="/wangwen/index_129.htm" class="mprev">下一页</a>
-                 */
+*/
                 for (Element tmp : page) {
                     if (tmp.tagName().equals("span"))
-                        currentPage = handleString2(tmp.text());
+                        currentPage = handleString7(tmp.text());
                     else if (tmp.attr("class").equals("mnext"))
                         previousPageUrl = tmp.attr("abs:href");
                     else if ((tmp.attr("class").equals("mprev")))
@@ -84,13 +83,13 @@ public class HttpTest {
                 Elements elements = document.select("section[class=article-content]");
                 StringBuilder sb = new StringBuilder();
                 for (Element tmp : elements)
-                    sb.append(handleString(tmp.text())).append("\n\n");
+                    sb.append(handleString6(tmp.text())).append("\n\n");
                 result += sb.toString();
                 try {
                     Element n = document.select("div[class=post-pagenavi]").get(0).children().get(0);
                     if (n.text().equals("下页"))
                         result += readMore(n.attr("abs:href"));
-                }catch (Exception ignored){
+                } catch (Exception ignored) {
                 }
                 break;
             } catch (Exception e) {
@@ -111,11 +110,14 @@ public class HttpTest {
         return result;
     }
 
-    private static String handleString(String src) {
+    private static String handleString6(String src) {
+        if (src.substring(0,2).equals("　　")) {
+            src = src.substring(2, src.length());
+        }
         return src.replaceAll("\\s+", "\n");
     }
 
-    private static String handleString2(String src) {
+    private static String handleString7(String src) {
         return src.split("/")[0];
     }
 }
