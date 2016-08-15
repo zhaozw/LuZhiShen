@@ -36,6 +36,8 @@ public class ChinaVideoFragment extends BaseListFragment {
                 }
                 if (mLoadMoreBar.getVisibility() == View.VISIBLE)
                     mLoadMoreBar.setVisibility(View.GONE);
+                if (getActivity() == null)
+                    return;
                 ((MainActivity) getActivity()).setDrawerLockMode(true);
                 ((MainActivity) getActivity()).hideToolbar();
                 mPlayer.setUrlPlay(url);

@@ -18,6 +18,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
 import org.lvu.R;
 import org.lvu.adapter.MenuListAdapter;
 import org.lvu.customize.MenuList;
@@ -31,10 +34,12 @@ import org.lvu.main.fragments.ExcitedNovelFragment;
 import org.lvu.main.fragments.FamilyMessNovelFragment;
 import org.lvu.main.fragments.FamilyPhotoFragment;
 import org.lvu.main.fragments.FunnyJokeFragment;
+import org.lvu.main.fragments.GifPictureFragment;
 import org.lvu.main.fragments.JapanVideoFragment;
 import org.lvu.main.fragments.LewdWifeNovelFragment;
 import org.lvu.main.fragments.SchoolNovelFragment;
 import org.lvu.utils.ImmerseUtil;
+import org.lvu.utils.LogUtil;
 
 import io.vov.vitamio.Vitamio;
 
@@ -212,8 +217,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                 fragment = new EvilComicsFragment();
                 break;
             case R.string.menu_gif:
-                // FIXME: 7/26/16
-                fragment = new EvilComicsFragment();
+                fragment = new GifPictureFragment();
                 break;
             case R.string.menu_excited_novel:
                 fragment = new ExcitedNovelFragment();

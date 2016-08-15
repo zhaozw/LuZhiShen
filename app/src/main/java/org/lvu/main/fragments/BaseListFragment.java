@@ -106,35 +106,45 @@ public abstract class BaseListFragment extends Fragment {
             @Override
             public void onFinish() {
                 hideLoadMoreBar();
+                if (mRefreshLayout.isRefreshing())
+                    mRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(String reason) {
                 handleOnFailure(reason);
+                if (mRefreshLayout.isRefreshing())
+                    mRefreshLayout.setRefreshing(false);
             }
         });
         mAdapter.setOnLoadMoreFinishListener(new BaseListAdapter.OnLoadMoreFinishListener() {
             @Override
             public void onFinish() {
                 hideLoadMoreBar();
+                if (mRefreshLayout.isRefreshing())
+                    mRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(String reason) {
                 handleOnFailure(reason);
+                if (mRefreshLayout.isRefreshing())
+                    mRefreshLayout.setRefreshing(false);
             }
         });
         mAdapter.setOnRefreshDataFinishListener(new BaseListAdapter.OnRefreshDataFinishListener() {
             @Override
             public void onFinish() {
-                mRefreshLayout.setRefreshing(false);
                 hideLoadMoreBar();
+                if (mRefreshLayout.isRefreshing())
+                    mRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(String reason) {
-                mRefreshLayout.setRefreshing(false);
                 handleOnFailure(reason);
+                if (mRefreshLayout.isRefreshing())
+                    mRefreshLayout.setRefreshing(false);
             }
         });
         mAdapter.setOnItemClickListener(getOnItemClickListener());

@@ -276,6 +276,69 @@ public class HttpUtil {
         return result.toString();
     }
 
+    public static void getGifList(final String url, final HttpRequestCallbackListener listener) {
+        runOnBackground(listener, new BackgroundLogic() {
+            @Override
+            public void run() throws Exception {
+                List<Data> result = new ArrayList<>();
+                String currentPage, previousPageUrl = "", nextPageUrl = "";
+                System.out.println("start resolve url: " + url);
+                Document document = Jsoup.connect(url).timeout(4000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                System.out.println("resolve url finish");
+                Elements items = document.select("div[class=lovefou]").get(0).children();
+                for (Element li : items) {
+                    Element tmp = li.children().get(0);
+                    result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"), tmp.child(0).attr("alt")));
+                    listener.onSuccess(result, "");
+                    result = new ArrayList<>();
+                }
+                Elements pagination = document.select("div[class=pagination]").get(0).child(0).children();
+                for (Element tmp : pagination) {
+                    if (tmp.tagName().equals("a")) {
+                        if (tmp.text().equals("上一页"))
+                            previousPageUrl = tmp.attr("abs:href");
+                        if (tmp.text().equals("下一页"))
+                            nextPageUrl = tmp.attr("abs:href");
+                    }
+                }
+                currentPage = pagination.select("span[class=thisclass]").text();
+                System.out.printf("currentPage: %s\npreviousPageUrl: %s\nnextPageUrl: %s\n",
+                        currentPage, previousPageUrl, nextPageUrl);
+                listener.onSuccess(null, nextPageUrl);
+            }
+        });
+    }
+
+    public static String getGifUrl(String url){
+        int count = 0, count2 = 0;
+        while (true) {
+            try {
+                Document document = Jsoup.connect(url).timeout(4000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                return document.select("div[class=dongtai]").get(0).select("img").get(0).attr("src");
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof ConnectException) {
+                    count2++;
+                    if (count2 > 3)
+                        break;
+                    continue;
+                }
+                if (e instanceof SocketException ||
+                        e instanceof UnknownHostException ||
+                        e instanceof SocketTimeoutException) {
+                    count++;
+                    if (count > 3)
+                        break;
+                    continue;
+                }
+                break;
+            }
+        }
+        return "";
+    }
+
     private static void runOnBackground(final HttpRequestCallbackListener listener, final BackgroundLogic backgroundLogic) {
         new Thread() {
             @Override
@@ -346,7 +409,7 @@ public class HttpUtil {
     }
 
     private static String handleString6(String src) {
-        if (src.substring(0,2).equals("　　")) {
+        if (src.substring(0, 2).equals("　　")) {
             src = src.substring(2, src.length());
         }
         return src.replaceAll("\\s+", "\n");
