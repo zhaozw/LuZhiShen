@@ -29,7 +29,7 @@ public class ChinaVideoFragment extends BaseListFragment {
     protected BaseListAdapter.OnItemClickListener getOnItemClickListener() {
         return new BaseListAdapter.OnItemClickListener() {
             @Override
-            public void onClick(String url, String title) {
+            public void onClick(String url, String title, int position) {
                 if (url.equals(HttpUtil.REASON_NO_INTERNET_CONNECT) || url.equals(HttpUtil.REASON_CONNECT_SERVER_FAILURE)) {
                     MySnackBar.show(mRootView.findViewById(R.id.coordinator), url, Snackbar.LENGTH_LONG);
                     return;

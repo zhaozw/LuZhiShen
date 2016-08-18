@@ -43,7 +43,7 @@ public abstract class BaseListFragment extends Fragment {
     protected CircleProgressBar mLoadMoreBar;
     protected boolean isLoadingMore = true, isLoadBarHiding;
     protected VideoPlayer mPlayer;
-    private BaseListAdapter mAdapter;
+    protected BaseListAdapter mAdapter;
     private boolean flag = true;
 
     @Nullable
@@ -162,30 +162,34 @@ public abstract class BaseListFragment extends Fragment {
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (recyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
-                    StaggeredGridLayoutManager manager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
+                if (recyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager
+                        && newState == RecyclerView.SCROLL_STATE_IDLE) {
                     // 当不滚动时
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        //获取最后一个完全显示的ItemPosition
-                        int[] lastVisiblePositions = manager.findLastVisibleItemPositions(new int[manager.getSpanCount()]);
-                        int lastVisiblePos = getMaxElem(lastVisiblePositions);
-                        int totalItemCount = manager.getItemCount();
+                    //获取最后一个完全显示的ItemPosition
+                    StaggeredGridLayoutManager manager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
+                    int[] lastVisiblePositions = manager.findLastVisibleItemPositions(new int[manager.getSpanCount()]);
+                    int lastVisiblePos = getMaxElem(lastVisiblePositions);
+                    int totalItemCount = manager.getItemCount();
 
-                        // 判断是否滚动到底部
-                        if (isSlidingToLast && !isLoadBarHiding && !isLoadingMore &&
-                                lastVisiblePos == (totalItemCount - 1)) {
-                            showLoadMoreBar();
-                            mAdapter.loadMore();
-                        }
+                    // 判断是否滚动到底部
+                    if (!mRefreshLayout.isRefreshing() && isSlidingToLast && !isLoadBarHiding && !isLoadingMore &&
+                            lastVisiblePos == (totalItemCount - 1)) {
+                        showLoadMoreBar();
+                        mAdapter.loadMore();
                     }
                 }
+                /*if (mAdapter instanceof GifPictureAdapter && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    int count = manager.findLastVisibleItemPosition() - manager.findFirstVisibleItemPosition();
+
+                }*/
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 isSlidingToLast = isScrollDown(dy);
                 if (recyclerView.getLayoutManager() instanceof LinearLayoutManager)
-                    if (isSlidingToLast && !isLoadBarHiding && !isLoadingMore &&
+                    if (!mRefreshLayout.isRefreshing() && isSlidingToLast && !isLoadBarHiding && !isLoadingMore &&
                             ((LinearLayoutManager) recyclerView.getLayoutManager())
                                     .findLastVisibleItemPosition() == mAdapter.getDataSize() - 1) {
                         showLoadMoreBar();

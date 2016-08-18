@@ -27,7 +27,7 @@ public class FunnyJokeFragment extends BaseListFragment {
     protected BaseListAdapter.OnItemClickListener getOnItemClickListener() {
         return new BaseListAdapter.OnItemClickListener() {
             @Override
-            public void onClick(String url, String title) {
+            public void onClick(String url, String title, int position) {
                 if (!TextUtils.isEmpty(url)) {
                     Intent intent = new Intent(getActivity(), MoreJokeActivity.class);
                     intent.putExtra(PicturesViewActivity.URL, url);

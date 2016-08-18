@@ -26,7 +26,7 @@ public class EvilComicsFragment extends BaseListFragment {
     protected BaseListAdapter.OnItemClickListener getOnItemClickListener() {
         return new BaseListAdapter.OnItemClickListener() {
             @Override
-            public void onClick(String url, String title) {
+            public void onClick(String url, String title, int position) {
                 Intent intent = new Intent(getActivity(), ComicsViewActivity.class);
                 intent.putExtra(PicturesViewActivity.URL, url);
                 intent.putExtra(PicturesViewActivity.TITLE, title);

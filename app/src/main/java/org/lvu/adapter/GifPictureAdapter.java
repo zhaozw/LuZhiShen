@@ -40,15 +40,16 @@ public class GifPictureAdapter extends EvilComicsAdapter {
                         @Override
                         public void onClick(View v) {
                             try {
-                                Data data = mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
-                                        mData.size() - 1 : holder.getAdapterPosition());
-                                mOnItemClickListener.onClick(data.getUrl(), data.getText());
-                            }catch (Exception e){
+                                int pos = holder.getAdapterPosition();
+                                Data data = mData.get(pos != 0 && pos >= mData.size() ?
+                                        mData.size() - 1 : pos);
+                                mOnItemClickListener.onClick(data.getUrl(), data.getText(), pos);
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
                     });
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -56,14 +57,14 @@ public class GifPictureAdapter extends EvilComicsAdapter {
             return;
         try {
             holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getBitmap());
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
     protected String getUrl() {
-        return "http://www.lovefou.com/dongtaitu/";
+        return "http://www.lovefou.com/dtt/";
     }
 
     @Override

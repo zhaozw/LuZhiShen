@@ -98,10 +98,10 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                             getVideoUrlByUrl(holder);
                         }
                     });
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-         }
+        }
     }
 
     protected void getVideoUrlByUrl(final BaseListAdapter.ViewHolder holder) {
@@ -111,10 +111,10 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
             HttpUtil.getEuropeVideoUrlByUrl(
                     mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
                             mData.size() - 1 : holder.getAdapterPosition()).getUrl(), mCallBackListener);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-     }
+    }
 
     @Override
     public void syncData(@NonNull String url) {
@@ -163,7 +163,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                     break;
                 case GET_URL_FAILURE:
                 case GET_URL_SUCCESS:
-                    mClass.get().mOnItemClickListener.onClick((String) msg.obj, "");
+                    mClass.get().mOnItemClickListener.onClick((String) msg.obj, "", -1);
                     break;
                 case SYNC_DATA_FAILURE:
                     if (mClass.get().mOnSyncDataFinishListener != null)

@@ -1,17 +1,12 @@
-<!---翻页开始--->
-<div class="pagination">
-    <ul>
-        <a>首页</a>
-        <span class="thisclass">1</span>
-        <a href='list_2.html'>2</a>
-        <a href='list_3.html'>3</a>
-        <a href='list_4.html'>4</a>
-        <a href='list_5.html'>5</a>
-        <a href='list_6.html'>6</a>
-        <a href='list_7.html'>7</a>
-        <a href='list_2.html'>下一页</a>
-        <a href='list_78.html'>末页</a>
-        <span class="pageinfo">共78页1387条</span>
-    </ul>
+<div class=pagination>
+    <strong>共818部1/69</strong>
+    <em class=prev>首页</em>
+    <em class=prev data=p-0>上一页</em>
+    <span class=current>1</span>
+    <a href="/Html/110/index-2.html" data=p-2>2</a>
+    <a href="/Html/110/index-3.html" data=p-3>3</a>
+    <a href="/Html/110/index-4.html" data=p-4>4</a>
+    <a href="/Html/110/index-2.html" class="next pagegbk" data=p-2>下一页</a>
+    <a href="/Html/110/index-69.html" class="next pagegbk" data=p-69>尾页</a></div>
 </div>
-<!---翻页结束--->
+</div>

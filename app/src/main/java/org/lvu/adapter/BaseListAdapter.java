@@ -138,9 +138,10 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
                         @Override
                         public void onClick(View v) {
                             try {
-                                Data data = mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
-                                        mData.size() - 1 : holder.getAdapterPosition());
-                                mOnItemClickListener.onClick(data.getUrl(), data.getText());
+                                int pos = holder.getAdapterPosition();
+                                Data data = mData.get(pos != 0 && pos >= mData.size() ?
+                                        mData.size() - 1 : pos);
+                                mOnItemClickListener.onClick(data.getUrl(), data.getText(), pos);
                             }catch (Exception e){
                                 e.printStackTrace();
                             }
@@ -237,6 +238,10 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         return mData.size();
     }
 
+    public Data getItem(int pos){
+        return mData.get(pos);
+    }
+
     public void clearData() {
         mData = null;
         mData = new ArrayList<>();
@@ -253,7 +258,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     }
 
     public interface OnItemClickListener {
-        void onClick(String url, String title);
+        void onClick(String url, String title, int position);
     }
 
     public void setOnSyncDataFinishListener(OnSyncDataFinishListener listener) {
@@ -282,9 +287,9 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
 
-        CardView root;
-        TextView text;
-        ImageView image;
+        public CardView root;
+        public TextView text;
+        public ImageView image;
 
         public ViewHolder(View itemView) {
             super(itemView);

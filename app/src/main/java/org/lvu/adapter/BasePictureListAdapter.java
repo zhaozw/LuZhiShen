@@ -41,7 +41,7 @@ public abstract class BasePictureListAdapter extends BaseListAdapter {
         }
      }
 
-    protected static class ViewHolder extends BaseListAdapter.ViewHolder {
+    public static class ViewHolder extends BaseListAdapter.ViewHolder {
 
         public ViewHolder(View itemView) {
             super(itemView);

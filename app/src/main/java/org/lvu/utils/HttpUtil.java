@@ -86,26 +86,32 @@ public class HttpUtil {
         });
     }
 
-    public static void getJapanVideoListAsync(final int currentSize, final String url, final HttpRequestCallbackListener listener) {
+    public static void getJapanVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
+                String currentPage, previousPageUrl = "", nextPageUrl = "";
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                Elements link = document.select("p[class=content]"),
-                        src = document.select("img[data-original]");
-                int flag = result.size();
-                for (int i = currentSize; i < link.size(); i++) {
-                    if (flag < 10) {
-                        result.add(new Data(handleString2(link.get(i).text()),
-                                src.get(i).attr("abs:data-original"), handleString(src.get(i).attr("alt"))));
-                        listener.onSuccess(result, "");
-                        result = new ArrayList<>();
-                        flag++;
-                    } else break;
+                Elements li = document.select("ul").get(0).children();
+                for (Element tmp : li) {
+                    result.add(new Data(tmp.child(0).attr("abs:href"),
+                            tmp.select("img").get(0).attr("src"), tmp.select("h3").text()));
+                    listener.onSuccess(result, nextPageUrl);
+                    result = new ArrayList<>();
                 }
-                listener.onSuccess(null, "");
+                Elements pagination = document.select("div[class=pagination]").get(0).children();
+                currentPage = pagination.select("span").text();
+                for (Element tmp : pagination) {
+                    if (tmp.text().equals("上一页") && tmp.tagName().equals("a"))
+                        previousPageUrl = tmp.attr("abs:href");
+                    if (tmp.text().equals("下一页") && tmp.tagName().equals("a"))
+                        nextPageUrl = tmp.attr("abs:href");
+                }
+                System.out.printf("currentPage: %s\npreviousPageUrl: %s\nnextPageUrl: %s\n",
+                        currentPage, previousPageUrl, nextPageUrl);
+                listener.onSuccess(null, nextPageUrl);
             }
         });
     }
@@ -132,7 +138,7 @@ public class HttpUtil {
                     if (tmp.tagName().equals("li"))
                         a.add(tmp.child(0));
                 for (Element tmp : a) {
-                    result.add(new Data(tmp.attr("abs:href"), handleString4(tmp.text())));
+                    result.add(new Data(tmp.attr("abs:href"), handleString2(tmp.text())));
                     listener.onSuccess(result, nextPageUrl);
                     result = new ArrayList<>();
                 }
@@ -158,7 +164,7 @@ public class HttpUtil {
 
                 for (int i = 0; i < a.size(); i++) {
                     result.add(new Data(a.get(i).attr("abs:href"),
-                            img.get(i).attr("abs:xSrc"), handleString3(a.get(i).attr("title"))));
+                            img.get(i).attr("abs:xSrc"), handleString(a.get(i).attr("title"))));
                     listener.onSuccess(result, nextPageUrl);
                     result = new ArrayList<>();
                 }
@@ -230,15 +236,15 @@ public class HttpUtil {
                 Elements readMore;
                 for (Element tmp : elements) {
                     result.add(!(readMore = tmp.children().select("strong[class=reader-more]")).isEmpty() ?
-                            new Data(readMore.get(0).child(0).attr("abs:href"), handleString6(tmp.text())) :
-                            new Data(null, handleString6(tmp.text())));
+                            new Data(readMore.get(0).child(0).attr("abs:href"), handleString4(tmp.text())) :
+                            new Data(null, handleString4(tmp.text())));
                     listener.onSuccess(result, "");
                     result = new ArrayList<>();
                 }
                 Elements page = document.select("div[class=mobile-pagenavi]").get(0).children();
                 for (Element tmp : page) {
                     if (tmp.tagName().equals("span"))
-                        currentPage = handleString7(tmp.text());
+                        currentPage = handleString5(tmp.text());
                     else if (tmp.attr("class").equals("mnext"))
                         previousPageUrl = tmp.attr("abs:href");
                     else if ((tmp.attr("class").equals("mprev")))
@@ -266,7 +272,7 @@ public class HttpUtil {
                 .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
         Elements elements = document.select("section[class=article-content]");
         for (Element tmp : elements)
-            result.append(handleString6(tmp.text()));
+            result.append(handleString4(tmp.text()));
         try {
             Element n = document.select("div[class=post-pagenavi]").get(0).children().get(0);
             if (n.text().equals("下页"))
@@ -310,7 +316,7 @@ public class HttpUtil {
         });
     }
 
-    public static String getGifUrl(String url){
+    public static String getGifUrl(String url) {
         int count = 0, count2 = 0;
         while (true) {
             try {
@@ -388,35 +394,31 @@ public class HttpUtil {
     }
 
     private static String handleString(String src) {
-        return src.replaceAll("点击播放", "");
-    }
-
-    private static String handleString2(String text) {
-        int pos = text.indexOf("'", 19);
-        return text.substring(19, pos);
-    }
-
-    private static String handleString3(String src) {
         return src.replaceAll("邪恶漫画", "");
     }
 
-    private static String handleString4(String src) {
+    private static String handleString2(String src) {
         return src.substring(5);
     }
 
-    private static String handleString5(String src) {
+    private static String handleString3(String src) {
         return src.substring(src.indexOf("l+\'") + 3, src.indexOf('\'', src.indexOf("l+\'") + 4));
     }
 
-    private static String handleString6(String src) {
-        if (src.substring(0, 2).equals("　　")) {
+    private static String handleString4(String src) {
+        if (src.substring(0, 2).equals("　　"))
             src = src.substring(2, src.length());
-        }
         return src.replaceAll("\\s+", "\n");
     }
 
-    private static String handleString7(String src) {
+    private static String handleString5(String src) {
         return src.split("/")[0];
+    }
+
+    private static String handleString6(String src){
+        src = new StringBuilder(src).reverse().toString();
+        return "http://v2.14mp4.com" + new StringBuilder(
+                src.substring(src.indexOf("8u3m."),src.indexOf("-va/") + 4)).reverse().toString();
     }
 
     private static String handleNovelContent(String src) {
@@ -433,7 +435,7 @@ public class HttpUtil {
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 String script = document.select("script").get(5).html();
-                listener.onSuccess(null, getChinaVideoPlayerUrl() + handleString5(script));
+                listener.onSuccess(null, getChinaVideoPlayerUrl() + handleString3(script));
             }
         });
     }
@@ -477,6 +479,49 @@ public class HttpUtil {
                 listener.onSuccess(null, document.select("a[class=play]").get(0).attr("href"));
             }
         });
+    }
+
+    public static void getJapanVideoUrlByUrl(final String url, final HttpRequestCallbackListener listener) {
+        runOnBackground(listener, new BackgroundLogic() {
+            @Override
+            public void run() throws Exception {
+                Document document = Jsoup.connect(url).timeout(4000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                listener.onSuccess(null,getJapanVideoUrlByUrl2(document.select("a[title=在线播放]").get(0).attr("abs:href")));
+            }
+        });
+    }
+
+    private static String getJapanVideoUrlByUrl2(String url){
+        int count = 0, count2 = 0;
+        while (true) {
+            try {
+                Document document = Jsoup.connect(url).timeout(4000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                /*
+                <script type="text/javascript"
+                 */
+                return handleString6(document.select("script[type=text/javascript]").get(9).html());
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof ConnectException) {
+                    count2++;
+                    if (count2 > 3)
+                        break;
+                    continue;
+                }
+                if (e instanceof SocketException ||
+                        e instanceof UnknownHostException ||
+                        e instanceof SocketTimeoutException) {
+                    count++;
+                    if (count > 3)
+                        break;
+                    continue;
+                }
+                break;
+            }
+        }
+        return "";
     }
 
     public static boolean isNetWorkAvailable() {
