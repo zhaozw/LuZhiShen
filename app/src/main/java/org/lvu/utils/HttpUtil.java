@@ -97,7 +97,7 @@ public class HttpUtil {
                 Elements li = document.select("ul").get(0).children();
                 for (Element tmp : li) {
                     result.add(new Data(tmp.child(0).attr("abs:href"),
-                            tmp.select("img").get(0).attr("src"), tmp.select("h3").text()));
+                            tmp.select("img").get(0).attr("src"), tmp.select("h3").text(),3));
                     listener.onSuccess(result, nextPageUrl);
                     result = new ArrayList<>();
                 }
@@ -187,7 +187,7 @@ public class HttpUtil {
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements elements = document.select("img");
                 for (Element tmp : elements) {
-                    result.add(new Data("", tmp.attr("abs:src"), ""));
+                    result.add(new Data("", tmp.attr("abs:src"), "",4));
                     listener.onSuccess(result, nextPageUrl);
                     result = new ArrayList<>();
                 }
@@ -418,7 +418,7 @@ public class HttpUtil {
     private static String handleString6(String src){
         src = new StringBuilder(src).reverse().toString();
         return "http://v2.14mp4.com" + new StringBuilder(
-                src.substring(src.indexOf("8u3m."),src.indexOf("-va/") + 4)).reverse().toString();
+                src.substring(src.indexOf("8u3m."),src.indexOf("-eivom/") + 7)).reverse().toString();
     }
 
     private static String handleNovelContent(String src) {

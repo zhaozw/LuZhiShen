@@ -24,7 +24,7 @@ import pl.droidsonroids.gif.GifDrawable;
 public class GifPictureFragment extends BaseListFragment {
     @Override
     protected BaseListAdapter getAdapter() {
-        return new GifPictureAdapter(getActivity(), R.layout.adapter_gif_item, new ArrayList<Data>());
+        return new GifPictureAdapter(getActivity(), R.layout.adapter_picture_list_item, new ArrayList<Data>());
     }
 
     @Override
