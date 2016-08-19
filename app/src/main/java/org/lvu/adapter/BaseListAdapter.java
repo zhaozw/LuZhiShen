@@ -290,6 +290,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         public CardView root;
         public TextView text;
         public ImageView image;
+        public View progress;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -298,7 +299,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         }
     }
 
-    protected static class FooterHolder extends BasePictureListAdapter.ViewHolder {
+    protected static class FooterHolder extends GifPictureAdapter.ViewHolder {
 
         View bottomView;
 

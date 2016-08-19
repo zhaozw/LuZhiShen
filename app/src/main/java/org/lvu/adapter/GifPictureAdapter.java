@@ -3,8 +3,10 @@ package org.lvu.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import org.lvu.R;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
@@ -19,6 +21,15 @@ public class GifPictureAdapter extends EvilComicsAdapter {
 
     public GifPictureAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == ITEM_TYPE_BOTTOM && ImmerseUtil.isAboveKITKAT()
+                && ImmerseUtil.isHasNavigationBar(mContext))
+            return new FooterHolder(mLayoutInflater.inflate(
+                    R.layout.recycler_view_item_footer, parent, false));
+        return new ViewHolder(mLayoutInflater.inflate(mLayoutId, parent, false));
     }
 
     @Override
@@ -87,5 +98,13 @@ public class GifPictureAdapter extends EvilComicsAdapter {
         HttpUtil.getGifList(URL, mRefreshDataCallbackListener);
         mData = new ArrayList<>();
         notifyDataSetChanged();
+    }
+
+    public static class ViewHolder extends BasePictureListAdapter.ViewHolder {
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            progress = itemView.findViewById(R.id.progress_bar);
+        }
     }
 }

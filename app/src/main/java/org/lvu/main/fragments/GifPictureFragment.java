@@ -24,7 +24,7 @@ import pl.droidsonroids.gif.GifDrawable;
 public class GifPictureFragment extends BaseListFragment {
     @Override
     protected BaseListAdapter getAdapter() {
-        return new GifPictureAdapter(getActivity(), R.layout.adapter_picture_list_item, new ArrayList<Data>());
+        return new GifPictureAdapter(getActivity(), R.layout.adapter_gif_item, new ArrayList<Data>());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class GifPictureFragment extends BaseListFragment {
                     if (null != mRecyclerView.getChildViewHolder(view)) {
 
                         final BasePictureListAdapter.ViewHolder holder = (BasePictureListAdapter.ViewHolder) mRecyclerView.getChildViewHolder(view);
-
+                        holder.progress.setVisibility(View.VISIBLE);
                         AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
                         asyncHttpClient.get(mAdapter.getItem(position).getUrl(), new AsyncHttpResponseHandler() {
                             @Override
@@ -47,6 +47,7 @@ public class GifPictureFragment extends BaseListFragment {
                                 try {
                                     GifDrawable gd = new GifDrawable(responseBody);
                                     holder.image.setImageDrawable(gd);
+                                    holder.progress.setVisibility(View.GONE);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }

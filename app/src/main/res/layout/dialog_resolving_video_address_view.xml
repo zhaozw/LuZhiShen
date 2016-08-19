@@ -9,6 +9,7 @@
 
     <!--app:background and android:background different???-->
     <org.lvu.customize.CircleProgressBar
+        android:layout_marginRight="@dimen/dp_4"
         android:layout_width="@dimen/dp_54"
         android:layout_height="@dimen/dp_54"
         app:inner_radius="@dimen/dp_16"
@@ -16,7 +17,6 @@
         app:enable_circle_background="false"/>
 
     <TextView
-        android:layout_margin="@dimen/dp_8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
