@@ -75,7 +75,7 @@ public class GifPictureAdapter extends EvilComicsAdapter {
 
     @Override
     protected String getUrl() {
-        return "http://www.lovefou.com/dtt/";
+        return "http://www.lovefou.com/dongtaitu/";
     }
 
     @Override
