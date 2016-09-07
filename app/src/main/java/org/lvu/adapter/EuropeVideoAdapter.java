@@ -27,6 +27,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
     private static final int GET_URL_SUCCESS = 6, GET_URL_FAILURE = 7;
     private AlertDialog mDialog;
     private boolean isUserCanceled;
+    private int clickedPosition;
 
     protected HttpUtil.HttpRequestCallbackListener mCallBackListener = new HttpUtil.HttpRequestCallbackListener() {
         @Override
@@ -95,6 +96,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                         public void onClick(View v) {
                             isUserCanceled = false;
                             mDialog.show();
+                            clickedPosition = holder.getAdapterPosition();
                             getVideoUrlByUrl(holder);
                         }
                     });
@@ -163,7 +165,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                     break;
                 case GET_URL_FAILURE:
                 case GET_URL_SUCCESS:
-                    mClass.get().mOnItemClickListener.onClick((String) msg.obj, "", -1);
+                    mClass.get().mOnItemClickListener.onClick((String) msg.obj, "", mClass.get().clickedPosition);
                     break;
                 case SYNC_DATA_FAILURE:
                     if (mClass.get().mOnSyncDataFinishListener != null)

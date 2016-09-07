@@ -1,8 +1,8 @@
 package org.lvu.main.fragments;
 
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 
 import org.lvu.R;
@@ -49,6 +49,7 @@ public class ChinaVideoFragment extends BaseListFragment {
 
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        //return new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        return new LinearLayoutManager(getActivity());
     }
 }

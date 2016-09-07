@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,8 +58,8 @@ public abstract class BaseListFragment extends Fragment {
         initRefreshLayout();
         initAdapter();
         if (mAdapter instanceof ChinaVideoAdapter ||
-                mAdapter instanceof EuropeVideoAdapter ||
-                mAdapter instanceof JapanVideoAdapter)
+                mAdapter instanceof JapanVideoAdapter ||
+                mAdapter instanceof EuropeVideoAdapter)
             initPlayer();
         initRecyclerView();
         ((MainActivity) getActivity()).setOnBackPressedListener(new MainActivity.OnBackPressedListener() {
@@ -162,7 +161,7 @@ public abstract class BaseListFragment extends Fragment {
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (recyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager
+                /*if (recyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager
                         && newState == RecyclerView.SCROLL_STATE_IDLE) {
                     // 当不滚动时
                     //获取最后一个完全显示的ItemPosition
@@ -199,13 +198,13 @@ public abstract class BaseListFragment extends Fragment {
         });
     }
 
-    private int getMaxElem(int[] arr) {
+    /*private int getMaxElem(int[] arr) {
         int maxVal = Integer.MIN_VALUE;
         for (int anArr : arr)
             if (anArr > maxVal)
                 maxVal = anArr;
         return maxVal;
-    }
+    }*/
 
     protected boolean isScrollDown(int y) {
         return y > 0;
@@ -325,17 +324,17 @@ public abstract class BaseListFragment extends Fragment {
     }
 
     public void changeToLandscape() {
-        if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
+        /*if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
             mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
-                    3, StaggeredGridLayoutManager.VERTICAL));
+                    3, StaggeredGridLayoutManager.VERTICAL));*/
         if (mAdapter != null)
             mAdapter.changeToLandscape();
     }
 
     public void changeToPortrait() {
-        if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
+        /*if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
             mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
-                    2, StaggeredGridLayoutManager.VERTICAL));
+                    2, StaggeredGridLayoutManager.VERTICAL));*/
         if (mAdapter != null)
             mAdapter.changeToPortrait();
     }
