@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class HttpUtil {
 
-    public static final String REASON_NO_INTERNET_CONNECT = "无可用网络。\t(向右滑动清除)",
+    private static final String REASON_NO_INTERNET_CONNECT = "无可用网络。\t(向右滑动清除)",
             REASON_SERVER_404 = "无法找到资源。(服务器404)\t(向右滑动清除)",
             REASON_CONNECT_SERVER_FAILURE = "连接服务器失败，请检查网络后重试。\t(向右滑动清除)",
             REASON_INTERNET_NO_GOOD = "网络不给力，请重试。\t(向右滑动清除)";
@@ -124,7 +124,7 @@ public class HttpUtil {
         getResourcesList(url, listener);
     }
 
-    public static void getResourcesList(final String url, final HttpRequestCallbackListener listener) {
+    private static void getResourcesList(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
@@ -316,7 +316,7 @@ public class HttpUtil {
         });
     }
 
-    public static String getGifUrl(String url) {
+    private static String getGifUrl(String url) {
         int count = 0, count2 = 0;
         while (true) {
             try {
@@ -416,9 +416,8 @@ public class HttpUtil {
     }
 
     private static String handleString6(String src) {
-        src = new StringBuilder(src).reverse().toString();
-        return "http://v2.14mp4.com" + new StringBuilder(
-                src.substring(src.indexOf("8u3m."), src.indexOf("-eivom/") + 7)).reverse().toString();
+        return src.substring(src.indexOf("thunder_url = \"http:") + 15,
+            src.indexOf(".mp4\";") + 4);
     }
 
     private static String handleNovelContent(String src) {
@@ -487,44 +486,12 @@ public class HttpUtil {
             public void run() throws Exception {
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                listener.onSuccess(null, getJapanVideoUrlByUrl2(document.select("a[title=在线播放]").get(0).attr("abs:href")));
+                listener.onSuccess(null, handleString6(document.select("script[language=javascript]").html()));
             }
         });
     }
 
-    private static String getJapanVideoUrlByUrl2(String url) {
-        int count = 0, count2 = 0;
-        while (true) {
-            try {
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                /*
-                <script type="text/javascript"
-                 */
-                return handleString6(document.select("script[type=text/javascript]").get(9).html());
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof ConnectException) {
-                    count2++;
-                    if (count2 > 3)
-                        break;
-                    continue;
-                }
-                if (e instanceof SocketException ||
-                        e instanceof UnknownHostException ||
-                        e instanceof SocketTimeoutException) {
-                    count++;
-                    if (count > 3)
-                        break;
-                    continue;
-                }
-                break;
-            }
-        }
-        return "";
-    }
-
-    public static boolean isNetWorkAvailable() {
+    private static boolean isNetWorkAvailable() {
         ConnectivityManager manager = (ConnectivityManager) Application.getContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         if (manager == null)

@@ -20,7 +20,7 @@ public class JapanVideoAdapter extends EuropeVideoAdapter {
 
     @Override
     protected String getUrl() {
-        return "http://854hu.com/Html/100/";
+        return "http://www.4hu11.com/Html/110/";
     }
 
     @Override
