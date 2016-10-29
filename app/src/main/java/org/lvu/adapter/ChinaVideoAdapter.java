@@ -20,7 +20,7 @@ public class ChinaVideoAdapter extends EuropeVideoAdapter {
 
     @Override
     protected String getUrl() {
-        return "https://www.vmfh.info/sj/vod-show-id-1-p-1.html";
+        return "https://haoxxoo08.com/category/1.html";
     }
 
     @Override

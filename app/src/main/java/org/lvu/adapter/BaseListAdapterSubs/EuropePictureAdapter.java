@@ -26,7 +26,7 @@ public class EuropePictureAdapter extends BaseListAdapter {
     }
 
     protected String getUrl() {
-        return "https://www.dd99aa.com/htm/piclist2/";
+        return "https://se.haoav24.com/listhtml/3.html";
     }
 
     @Override

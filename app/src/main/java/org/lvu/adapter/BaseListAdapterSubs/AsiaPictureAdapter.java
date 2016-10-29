@@ -17,6 +17,6 @@ public class AsiaPictureAdapter extends EuropePictureAdapter {
 
     @Override
     protected String getUrl() {
-        return "https://www.dd99aa.com/htm/piclist1/";
+        return "https://se.haoav24.com/listhtml/2.html";
     }
 }

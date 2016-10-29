@@ -17,21 +17,25 @@ public class HttpTest {
         if (args.length != 0)
             url = args[0];
         else
-            url = "http://www.4hu11.com/Html/100/";
+            url = "http://55ex.com/htm/2016/10/29/t02/364979.html";
         int count = 0, count2 = 0;
         while (true) {
             try {
+                //print
                 String currentPage, previousPageUrl = "", nextPageUrl = "";
                 System.out.println("start resolve url: " + url);
-                Document document = Jsoup.connect(url).timeout(4000).get();
+                //start
+                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000).get();
                 System.out.println("resolve url finish");
-                Elements li = document.select("ul").get(0).children();
-                for (Element tmp : li) {
-                    System.out.printf("%s\t%s\t%s\n", getJapanVideoUrlByUrl(tmp.child(0).attr("abs:href")),
-                            tmp.select("img").get(0).attr("src"), tmp.select("h3").text());
-                }
-                Elements pagination = document.select("div[class=pagination]").get(0).children();
-                currentPage = pagination.select("span").text();
+                //<div id="view2" class="mtop">
+                Element li = document.select("div[class=mtop]").get(0);
+                System.out.println(handleString2(li.html()));
+                System.out.println(document.select("font[color]").get(0).html().isEmpty());
+                //handle
+                /*//pagination
+                //<div class="right">
+                Elements pagination = document.select("div[class=right]").get(0).children().get(1).children();
+                currentPage = pagination.select("font").get(0).text();
                 for (Element tmp : pagination) {
                     if (tmp.text().equals("上一页") && tmp.tagName().equals("a"))
                         previousPageUrl = tmp.attr("abs:href");
@@ -39,7 +43,7 @@ public class HttpTest {
                         nextPageUrl = tmp.attr("abs:href");
                 }
                 System.out.printf("currentPage: %s\npreviousPageUrl: %s\nnextPageUrl: %s\n",
-                        currentPage, previousPageUrl, nextPageUrl);
+                        currentPage, previousPageUrl, nextPageUrl);*/
                 break;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -59,80 +63,12 @@ public class HttpTest {
                 }
                 break;
             }
+
         }
     }
 
     // TODO: 8/18/16 less than 50k no need to compress
-/*
-    private static String getJapanVideoUrlByUrl(String url) {
-        System.out.printf("url = : %s",url);
-        int count = 0, count2 = 0;
-        while (true) {
-            try {
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                /*
-                <script type="text/javascript"
-
-                System.out.println(document.select("a[title=在线播放]").get(0).attr("abs:href"));
-                return getJapanVideoUrlByUrl2(document.select("a[title=在线播放]").get(0).attr("abs:href"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof ConnectException) {
-                    count2++;
-                    if (count2 > 3)
-                        break;
-                    continue;
-                }
-                if (e instanceof SocketException ||
-                        e instanceof UnknownHostException ||
-                        e instanceof SocketTimeoutException) {
-                    count++;
-                    if (count > 3)
-                        break;
-                    continue;
-                }
-                break;
-            }
-        }
-        return "";
-    }*/
-
-    private static String getJapanVideoUrlByUrl(String url) {
-        int count = 0, count2 = 0;
-        while (true) {
-            try {
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                /*
-                script language="javascript"
-                 */
-
-                return handleString8(document.select("script[language=javascript]").html());
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof ConnectException) {
-                    count2++;
-                    if (count2 > 3)
-                        break;
-                    continue;
-                }
-                if (e instanceof SocketException ||
-                        e instanceof UnknownHostException ||
-                        e instanceof SocketTimeoutException) {
-                    count++;
-                    if (count > 3)
-                        break;
-                    continue;
-                }
-                break;
-            }
-        }
-        return "";
-    }
-
-    private static String handleString8(String src) {
-        return src.substring(src.indexOf("thunder_url = \"http:") + 15,
-                src.indexOf(".mp4\";") + 4);
+    private static String handleString2(String src){
+        return src.replaceAll("<p>","\n").replaceAll("</p>","\n").replaceAll("&quot;","").replaceAll("&nbsp;","");
     }
 }
