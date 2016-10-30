@@ -2,7 +2,7 @@ package org.lvu;
 
 import android.content.Context;
 
-import com.tencent.bugly.crashreport.CrashReport;
+import com.tencent.bugly.Bugly;
 
 import org.lvu.main.activities.ErrorActivity;
 import org.lvu.main.activities.MainActivity;
@@ -26,7 +26,7 @@ public class Application extends android.app.Application {
         //Now initialize your error handlers as normal
         //i.e., ACRA.init(this);
         //or Fabric.with(this, new Crashlytics())
-        CrashReport.initCrashReport(getApplicationContext(), "900037586", false);
+        Bugly.init(getApplicationContext(), "900037586", false);
     }
 
     public static Context getContext(){
