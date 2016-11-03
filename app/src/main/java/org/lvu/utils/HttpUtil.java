@@ -101,7 +101,8 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String currentPage = "", previousPageUrl = "", nextPageUrl = "";
-                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000).get();
+                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements li = document.select("div[class=list]").get(0).children().get(1).children();
                 for (Element tmp : li) {
                     result.add(new Data(tmp.child(1).attr("abs:href"),tmp.child(1).text()));
@@ -129,17 +130,19 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String currentPage, previousPageUrl = "", nextPageUrl = "";
-                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000).get();
-                Elements li = document.select("div[class=typelist]").get(0).children();
-                for (Element tmp : li) {
-                    Element a = tmp.select("a").get(0);
-                    result.add(new Data(a.attr("abs:href"),a.text()));
+                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+
+                Elements li = document.select("ul[class=textList]").get(0).children().select("li");
+                //handle
+                for (Element tmp : li){
+                    result.add(new Data(tmp.child(0).attr("abs:href"),tmp.child(0).ownText()));
                     listener.onSuccess(result,nextPageUrl);
                     result = new ArrayList<>();
                 }
                 //pagination
-                Elements pagination = document.select("div[class=right]").get(0).children().get(1).children();
-                currentPage = pagination.select("font").get(0).text();
+                Elements pagination = document.select("div[class=pageList]").get(0).children();
+                currentPage = pagination.select("strong").get(0).text();
                 for (Element tmp : pagination) {
                     if (tmp.text().equals("上一页") && tmp.tagName().equals("a"))
                         previousPageUrl = tmp.attr("abs:href");
@@ -184,7 +187,8 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPageUrl = "";
-                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000).get();
+                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements li = document.select("div[class=center margintop border clear main]").get(0).children().select("img");
                 li.remove(0);
                 li.remove(li.size() - 1);
@@ -203,15 +207,10 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000).get();
+                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
 
-                String content;
-                try {
-                    content = handleNovelContent(document.select("font[color]").get(1).html());
-                }catch (IndexOutOfBoundsException e){
-                    e.printStackTrace();
-                    content = handleNovelContent2(document.select("div[class=mtop]").get(0).html());
-                }
+                String content = handleString2(document.select("div[class=novelContent]").get(0).html());
                 if (content.isEmpty())
                     listener.onFailure(new Exception("novel content is empty!"), REASON_SERVER_404);
                 else
@@ -402,6 +401,10 @@ public class HttpUtil {
 
     private static String handleString(String src) {
         return src.replaceAll("邪恶漫画", "");
+    }
+
+    private static String handleString2(String src){
+        return src.replaceAll("<br>","\n").replaceAll("&nbsp;","");
     }
 
     private static String handleString3(String src) {
