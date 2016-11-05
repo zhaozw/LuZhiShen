@@ -17,6 +17,6 @@ public class LewdWifeNovelAdapter extends ExcitedNovelAdapter {
 
     @Override
     protected String getUrl(){
-        return "https://www.580hu.com/htm/novellist2/";
+        return "https://www.560hu.com/htm/novellist2/";
     }
 }
