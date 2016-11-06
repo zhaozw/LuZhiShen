@@ -3,6 +3,7 @@ package org.lvu.main.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
@@ -17,9 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.lvu.R;
 import org.lvu.adapter.MenuListAdapter;
@@ -39,7 +37,6 @@ import org.lvu.main.fragments.JapanVideoFragment;
 import org.lvu.main.fragments.LewdWifeNovelFragment;
 import org.lvu.main.fragments.SchoolNovelFragment;
 import org.lvu.utils.ImmerseUtil;
-import org.lvu.utils.LogUtil;
 
 import io.vov.vitamio.Vitamio;
 
@@ -48,7 +45,7 @@ import io.vov.vitamio.Vitamio;
  */
 
 @SuppressWarnings("ConstantConditions")
-public class MainActivity extends BaseActivity implements MenuListAdapter.OnItemClickListener{
+public class MainActivity extends BaseActivity implements MenuListAdapter.OnItemClickListener {
 
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
@@ -76,6 +73,8 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
     }
 
     private void showFragment(Fragment fragment) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && this.isDestroyed())
+            return;
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.wait_replace, fragment).commitAllowingStateLoss();
     }

@@ -17,6 +17,6 @@ public class FamilyMessNovelAdapter extends ExcitedNovelAdapter {
 
     @Override
     protected String getUrl(){
-        return "https://www.560hu.com/htm/novellist5/";
+        return "https://www.558hu.com/htm/novellist5/";
     }
 }
