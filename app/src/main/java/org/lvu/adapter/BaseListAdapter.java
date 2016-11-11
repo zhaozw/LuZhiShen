@@ -98,14 +98,14 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     private void sendSuccessMessage(int what, List<Data> data, String nextPage) {
         mNextPageUrl = nextPage;
-        Message message = new Message();
+        Message message = Message.obtain();
         message.obj = data;
         message.what = what;
         mHandler.sendMessage(message);
     }
 
     private void sendFailureMessage(int what, String reason) {
-        Message message = new Message();
+        Message message = Message.obtain();
         message.what = what;
         message.obj = reason;
         mHandler.sendMessage(message);

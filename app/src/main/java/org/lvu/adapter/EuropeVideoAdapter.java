@@ -34,7 +34,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
         public void onSuccess(List<Data> data, String nextPage) {
             if (!isUserCanceled) {
                 mDialog.dismiss();
-                Message message = new Message();
+                Message message = Message.obtain();
                 message.obj = nextPage;
                 message.what = GET_URL_SUCCESS;
                 mHandler.sendMessage(message);
@@ -44,7 +44,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
         @Override
         public void onFailure(Exception e, String reason) {
             mDialog.dismiss();
-            Message message = new Message();
+            Message message = Message.obtain();
             message.obj = reason;
             message.what = GET_URL_FAILURE;
             mHandler.sendMessage(message);

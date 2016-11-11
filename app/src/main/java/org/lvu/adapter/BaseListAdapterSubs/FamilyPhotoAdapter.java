@@ -17,6 +17,6 @@ public class FamilyPhotoAdapter extends EuropePictureAdapter {
 
     @Override
     protected String getUrl() {
-        return "https://se.haoav25.com/listhtml/1.html";
+        return "http://fv3333.com/html/part/10.html";
     }
 }
