@@ -1,8 +1,11 @@
 package org.lvu.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -44,9 +47,7 @@ public class HttpUtil {
                         break;
                     result.add(new Data(/*video url*/tmp.child(0).attr("abs:href"),
                                         /*img url*/tmp.child(0).child(0).attr("src"),
-                                        /*title*/tmp.child(0).child(0).attr("alt"), true));
-                    listener.onSuccess(result, nextPageUrl);
-                    result = new ArrayList<>();
+                                        /*title*/tmp.child(0).child(0).attr("alt")));
                 }
                 //pagination
                 Elements pagination = document.select("div[class=pagebar]").get(0).children();
@@ -59,7 +60,7 @@ public class HttpUtil {
                         nextPageUrl = tmp.attr("abs:href");
                     }
                 }
-                listener.onSuccess(null, nextPageUrl);
+                listener.onSuccess(result, nextPageUrl);
             }
         });
     }
@@ -80,13 +81,11 @@ public class HttpUtil {
                 src.remove(0);
                 for (int i = 0; i < links.size(); i++) {
                     result.add(new Data(links.get(i).attr("abs:href"), src.get(i).attr("abs:src"), texts.get(i).text()));
-                    listener.onSuccess(result, nextPageUrl);
-                    result = new ArrayList<>();
                 }
                 for (Element tmp : nextPageTmp)
                     if (tmp.attr("rel").equals("next"))
                         nextPageUrl = tmp.attr("abs:href");
-                listener.onSuccess(null, nextPageUrl);
+                listener.onSuccess(result, nextPageUrl);
             }
         });
     }
@@ -108,8 +107,6 @@ public class HttpUtil {
                 li.remove(0);
                 for (Element tmp : li) {
                     result.add(new Data(tmp.child(0).attr("abs:href"), tmp.child(0).ownText()));
-                    listener.onSuccess(result, nextPageUrl);
-                    result = new ArrayList<>();
                 }
                 //<div class="pagination">
                 Elements pagination = document.select("div[class=pagination").get(0).children();
@@ -120,7 +117,7 @@ public class HttpUtil {
                     if (tmp.text().equals("下一页") && tmp.tagName().equals("a"))
                         nextPageUrl = tmp.attr("abs:href");
                 }
-                listener.onSuccess(null, nextPageUrl);
+                listener.onSuccess(result, nextPageUrl);
             }
         });
     }
@@ -144,14 +141,12 @@ public class HttpUtil {
                 for (int i = 0; i < a.size(); i++) {
                     result.add(new Data(a.get(i).attr("abs:href"),
                             img.get(i).attr("abs:xSrc"), handleString(a.get(i).attr("title"))));
-                    listener.onSuccess(result, nextPageUrl);
-                    result = new ArrayList<>();
                 }
 
                 for (Element tmp : next)
                     if (tmp.text().equals("下一页"))
                         nextPageUrl = tmp.attr("abs:href");
-                listener.onSuccess(null, nextPageUrl);
+                listener.onSuccess(result, nextPageUrl);
             }
         });
     }
@@ -168,11 +163,9 @@ public class HttpUtil {
                 Elements li = document.select("div[class=content]").get(0).children();
                 Elements li2 = li.select("img[src]");
                 for (Element tmp : li2) {
-                    result.add(new Data("", tmp.attr("abs:src"), "", 4));
-                    listener.onSuccess(result, nextPageUrl);
-                    result = new ArrayList<>();
+                    result.add(new Data("", tmp.attr("abs:src"), ""));
                 }
-                listener.onSuccess(null, nextPageUrl);
+                listener.onSuccess(result, nextPageUrl);
             }
         });
     }
@@ -197,11 +190,9 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                List<Data> result = new ArrayList<>();
-                result.add(new Data("", Jsoup.connect(url).timeout(4000)
+                listener.onSuccess(ImageLoader.getInstance().loadImageSync(Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2")
-                        .get().select("img[alt]").get(0).attr("abs:src"), ""));
-                listener.onSuccess(result, "");
+                        .get().select("img[alt]").get(0).attr("abs:src")));
             }
         });
     }
@@ -220,8 +211,6 @@ public class HttpUtil {
                     result.add(!(readMore = tmp.children().select("strong[class=reader-more]")).isEmpty() ?
                             new Data(readMore.get(0).child(0).attr("abs:href"), handleString3(tmp.text())) :
                             new Data(null, handleString3(tmp.text())));
-                    listener.onSuccess(result, "");
-                    result = new ArrayList<>();
                 }
                 Elements page = document.select("div[class=mobile-pagenavi]").get(0).children();
                 for (Element tmp : page) {
@@ -234,7 +223,7 @@ public class HttpUtil {
                 }
                 System.out.printf("currentPage: %s\npreviousPageUrl: %s\nnextPageUrl: %s\n",
                         currentPage, previousPageUrl, nextPageUrl);
-                listener.onSuccess(null, nextPageUrl);
+                listener.onSuccess(result, nextPageUrl);
             }
         });
     }
@@ -276,8 +265,6 @@ public class HttpUtil {
                 for (Element li : items) {
                     Element tmp = li.children().get(0);
                     result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"), tmp.child(0).attr("alt")));
-                    listener.onSuccess(result, "");
-                    result = new ArrayList<>();
                 }
                 Elements pagination = document.select("div[class=pagination]").get(0).child(0).children();
                 for (Element tmp : pagination) {
@@ -291,7 +278,7 @@ public class HttpUtil {
                 currentPage = pagination.select("span[class=thisclass]").text();
                 System.out.printf("currentPage: %s\npreviousPageUrl: %s\nnextPageUrl: %s\n",
                         currentPage, previousPageUrl, nextPageUrl);
-                listener.onSuccess(null, nextPageUrl);
+                listener.onSuccess(result, nextPageUrl);
             }
         });
     }
@@ -433,6 +420,8 @@ public class HttpUtil {
     public interface HttpRequestCallbackListener {
 
         void onSuccess(List<Data> data, String args);
+
+        void onSuccess(Bitmap bitmap);
 
         void onFailure(Exception e, String reason);
     }

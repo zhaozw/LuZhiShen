@@ -1,5 +1,6 @@
 package org.lvu.main.activities;
 
+import android.graphics.Bitmap;
 import android.os.Message;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -24,6 +25,11 @@ public class MoreJokeActivity extends NovelViewActivity {
                 Message message = new Message();
                 message.obj = textContent;
                 mHandler.sendMessage(message);
+            }
+
+            @Override
+            public void onSuccess(Bitmap bitmap) {
+
             }
 
             @Override

@@ -24,8 +24,8 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHold
     private LayoutInflater mLayoutInflater;
     private int mLayoutId;
     protected List<Menu> mData;
-    protected OnItemClickListener mOnItemClickListener;
-    protected View mLastSelectedView, mPosView;
+    OnItemClickListener mOnItemClickListener;
+    private View mLastSelectedView, mPosView;
     private int mLastSelectedPos = -1;
 
     public MenuListAdapter(Context context, @LayoutRes int layoutId, List<Menu> data) {
@@ -81,13 +81,13 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHold
         mLastSelectedPos = position;
     }
 
-    protected static class MyHolder extends RecyclerView.ViewHolder {
+    static class MyHolder extends RecyclerView.ViewHolder {
 
-        public View root;
+        View root;
         public ImageView icon;
         public TextView name;
 
-        public MyHolder(View itemView) {
+        MyHolder(View itemView) {
             super(itemView);
             root = itemView.findViewById(R.id.root);
             icon = (ImageView) itemView.findViewById(R.id.icon);

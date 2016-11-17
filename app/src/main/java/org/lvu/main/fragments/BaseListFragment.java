@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,8 @@ import org.lvu.utils.ImmerseUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by wuyr on 4/6/16 2:22 PM.
@@ -49,7 +52,6 @@ public abstract class BaseListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_list_view, container, false);
-        //((TextView) mRootView.findViewById(R.id.text)).setText(String.valueOf(((char) (getArguments().getInt(LIST_TYPE) + 19968))));
         init();
         return mRootView;
     }
@@ -161,7 +163,7 @@ public abstract class BaseListFragment extends Fragment {
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                /*if (recyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager
+                if (recyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager
                         && newState == RecyclerView.SCROLL_STATE_IDLE) {
                     // 当不滚动时
                     //获取最后一个完全显示的ItemPosition
@@ -177,11 +179,6 @@ public abstract class BaseListFragment extends Fragment {
                         mAdapter.loadMore();
                     }
                 }
-                /*if (mAdapter instanceof GifPictureAdapter && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                    int count = manager.findLastVisibleItemPosition() - manager.findFirstVisibleItemPosition();
-
-                }*/
             }
 
             @Override
@@ -189,8 +186,10 @@ public abstract class BaseListFragment extends Fragment {
                 isSlidingToLast = isScrollDown(dy);
                 if (recyclerView.getLayoutManager() instanceof LinearLayoutManager)
                     if (!mRefreshLayout.isRefreshing() && isSlidingToLast && !isLoadBarHiding && !isLoadingMore &&
-                            ((LinearLayoutManager) recyclerView.getLayoutManager())
-                                    .findLastVisibleItemPosition() == mAdapter.getDataSize() - 1) {
+                            (((LinearLayoutManager) recyclerView.getLayoutManager())
+                                    .findLastVisibleItemPosition() == mAdapter.getDataSize() - 1 ||
+                                    ((LinearLayoutManager) recyclerView.getLayoutManager())
+                                            .findLastVisibleItemPosition() == mAdapter.getDataSize() - 2)) {
                         showLoadMoreBar();
                         mAdapter.loadMore();
                     }
@@ -198,19 +197,18 @@ public abstract class BaseListFragment extends Fragment {
         });
     }
 
-    /*private int getMaxElem(int[] arr) {
+    private int getMaxElem(int[] arr) {
         int maxVal = Integer.MIN_VALUE;
         for (int anArr : arr)
             if (anArr > maxVal)
                 maxVal = anArr;
         return maxVal;
-    }*/
+    }
 
     protected boolean isScrollDown(int y) {
         return y > 0;
     }
 
-    // TODO: 6/18/16 img load failure set a default img
     private void initRefreshLayout() {
         mLoadMoreBar = (CircleProgressBar) mRootView.findViewById(R.id.progressbar);
         if (ImmerseUtil.isHasNavigationBar(getActivity())) {
@@ -239,6 +237,8 @@ public abstract class BaseListFragment extends Fragment {
     }
 
     private void showLoadMoreBar() {
+        if (isLoadBarHiding)
+            return;
         isLoadingMore = true;
         TranslateAnimation animation = new TranslateAnimation(0, 0, 150, 0);
         animation.setDuration(250);
@@ -265,6 +265,34 @@ public abstract class BaseListFragment extends Fragment {
         }
     }
 
+    private boolean isAnimationNormalEnd;
+
+    private class HideLoadMoreBarThread extends Thread {
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (!isAnimationNormalEnd) {
+                try {
+                    mLoadMoreBar.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mLoadMoreBar.setVisibility(View.GONE);
+                            isLoadBarHiding = false;
+                        }
+                    });
+                } catch (Exception e2) {
+                    e2.printStackTrace();
+                }
+            }
+        }
+    }
+
+    ExecutorService threadPool = Executors.newSingleThreadExecutor();
+
     private void hideLoadMoreBar() {
         if (isLoadingMore || mLoadMoreBar.getVisibility() == View.VISIBLE) {
             isLoadingMore = false;
@@ -281,6 +309,7 @@ public abstract class BaseListFragment extends Fragment {
                 public void onAnimationEnd(Animation animation) {
                     mLoadMoreBar.setVisibility(View.GONE);
                     isLoadBarHiding = false;
+                    isAnimationNormalEnd = true;
                 }
 
                 @Override
@@ -288,7 +317,9 @@ public abstract class BaseListFragment extends Fragment {
                 }
             });
             try {
+                isAnimationNormalEnd = false;
                 mLoadMoreBar.startAnimation(animation);
+                threadPool.execute(new HideLoadMoreBarThread());
             } catch (Exception e) {
                 try {
                     mLoadMoreBar.setVisibility(View.GONE);
@@ -324,17 +355,31 @@ public abstract class BaseListFragment extends Fragment {
     }
 
     public void changeToLandscape() {
-        /*if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
-            mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
-                    3, StaggeredGridLayoutManager.VERTICAL));*/
+        /*if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+            StaggeredGridLayoutManager manager = ((StaggeredGridLayoutManager) mRecyclerView.getLayoutManager());
+            //int spanCount = manager.getSpanCount()
+            int[] firstVisiblePositions = manager.findFirstVisibleItemPositions(new int[manager.getSpanCount()]);
+            int currentPos = getMaxElem(firstVisiblePositions);
+
+            StaggeredGridLayoutManager manager2 = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+            mRecyclerView.setLayoutManager(manager2);
+            manager2.scrollToPosition(currentPos);
+        }*/
         if (mAdapter != null)
             mAdapter.changeToLandscape();
+
     }
 
     public void changeToPortrait() {
-        /*if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)
-            mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
-                    2, StaggeredGridLayoutManager.VERTICAL));*/
+        /*if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+            StaggeredGridLayoutManager manager = ((StaggeredGridLayoutManager) mRecyclerView.getLayoutManager());
+            int[] lastVisiblePositions = manager.findLastVisibleItemPositions(new int[manager.getSpanCount()]);
+            int currentPos = getMaxElem(lastVisiblePositions);
+
+            StaggeredGridLayoutManager manager2 = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            mRecyclerView.setLayoutManager(manager2);
+            manager2.scrollToPosition(currentPos);
+        }*/
         if (mAdapter != null)
             mAdapter.changeToPortrait();
     }
@@ -351,5 +396,4 @@ public abstract class BaseListFragment extends Fragment {
     protected abstract BaseListAdapter.OnItemClickListener getOnItemClickListener();
 
     protected abstract RecyclerView.LayoutManager getLayoutManager();
-
 }

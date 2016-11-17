@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import org.lvu.R;
 import org.lvu.model.Data;
@@ -30,47 +29,6 @@ public class GifPictureAdapter extends EvilComicsAdapter {
             return new FooterHolder(mLayoutInflater.inflate(
                     R.layout.recycler_view_item_footer, parent, false));
         return new ViewHolder(mLayoutInflater.inflate(mLayoutId, parent, false));
-    }
-
-    @Override
-    public void onBindViewHolder(final BaseListAdapter.ViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
-        if (holder instanceof FooterHolder) {
-            FooterHolder footerHolder = (FooterHolder) holder;
-            LinearLayout.LayoutParams bottomLP = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    ImmerseUtil.getNavigationBarHeight(mContext));
-            footerHolder.bottomView.setLayoutParams(bottomLP);
-        } else {
-            if (mData.isEmpty())
-                return;
-            try {
-                holder.text.setText(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getText());
-                if (mOnItemClickListener != null)
-                    holder.root.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            try {
-                                int pos = holder.getAdapterPosition();
-                                Data data = mData.get(pos != 0 && pos >= mData.size() ?
-                                        mData.size() - 1 : pos);
-                                mOnItemClickListener.onClick(data.getUrl(), data.getText(), pos);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (mData.isEmpty())
-            return;
-        try {
-            holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getBitmap());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

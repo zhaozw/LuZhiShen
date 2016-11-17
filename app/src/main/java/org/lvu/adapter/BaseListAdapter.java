@@ -1,6 +1,7 @@
 package org.lvu.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -27,25 +28,26 @@ import java.util.List;
  */
 public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapter.ViewHolder> {
 
-    protected static final int SYNC_DATA_SUCCESS = 0, LOAD_MORE_SUCCESS = 1, REFRESH_DATA_SUCCESS = 2,
+    public static final int SYNC_DATA_SUCCESS = 0, LOAD_MORE_SUCCESS = 1, REFRESH_DATA_SUCCESS = 2,
             SYNC_DATA_FAILURE = 3, LOAD_MORE_FAILURE = 4, REFRESH_DATA_FAILURE = 5;
+    protected final String URL;
 
     //item类型
     protected static final int ITEM_TYPE_CONTENT = 0, ITEM_TYPE_BOTTOM = 1;
-    protected int mBottomCount;//底部View个数
+    private int mBottomCount;//底部View个数
     protected Context mContext;
-    protected LayoutInflater mLayoutInflater;
-    protected int mLayoutId;
+    LayoutInflater mLayoutInflater;
+    int mLayoutId;
     protected List<Data> mData;
-    protected OnItemClickListener mOnItemClickListener;
+    OnItemClickListener mOnItemClickListener;
     protected OnLoadMoreFinishListener mOnLoadMoreFinishListener;
     protected OnSyncDataFinishListener mOnSyncDataFinishListener;
     protected OnRefreshDataFinishListener mOnRefreshDataFinishListener;
     protected String mNextPageUrl;
     protected HttpUtil.HttpRequestCallbackListener mSyncDataCallbackListener,
             mLoadMoreCallbackListener, mRefreshDataCallbackListener;
-    protected Handler mHandler;
-    protected boolean isOwnerDestroyed;
+    Handler mHandler;
+    private boolean isOwnerDestroyed;
 
     public BaseListAdapter(Context context, int layoutId, List<Data> data) {
         mContext = context;
@@ -53,12 +55,18 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         mData = data;
         mHandler = getHandler();
         mLayoutInflater = LayoutInflater.from(context);
+        URL = getUrl();
         mSyncDataCallbackListener = new HttpUtil.HttpRequestCallbackListener() {
 
             @Override
             public void onSuccess(List<Data> data, String nextPage) {
                 if (!isOwnerDestroyed)
                     sendSuccessMessage(SYNC_DATA_SUCCESS, data, nextPage);
+            }
+
+            @Override
+            public void onSuccess(Bitmap bitmap) {
+
             }
 
             @Override
@@ -76,6 +84,11 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             }
 
             @Override
+            public void onSuccess(Bitmap bitmap) {
+
+            }
+
+            @Override
             public void onFailure(Exception e, String reason) {
                 if (!isOwnerDestroyed)
                     sendFailureMessage(LOAD_MORE_FAILURE, reason);
@@ -86,6 +99,11 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             public void onSuccess(List<Data> data, String nextPage) {
                 if (!isOwnerDestroyed)
                     sendSuccessMessage(REFRESH_DATA_SUCCESS, data, nextPage);
+            }
+
+            @Override
+            public void onSuccess(Bitmap bitmap) {
+
             }
 
             @Override
@@ -142,12 +160,12 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
                                 Data data = mData.get(pos != 0 && pos >= mData.size() ?
                                         mData.size() - 1 : pos);
                                 mOnItemClickListener.onClick(data.getUrl(), data.getText(), pos);
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
                     });
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -172,12 +190,12 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             handleLayoutIfStaggeredGridLayout(holder, holder.getLayoutPosition());
     }
 
-    protected boolean isStaggeredGridLayout(RecyclerView.ViewHolder holder) {
+    private boolean isStaggeredGridLayout(RecyclerView.ViewHolder holder) {
         ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
         return layoutParams != null && layoutParams instanceof StaggeredGridLayoutManager.LayoutParams;
     }
 
-    protected void handleLayoutIfStaggeredGridLayout(RecyclerView.ViewHolder holder, int position) {
+    private void handleLayoutIfStaggeredGridLayout(RecyclerView.ViewHolder holder, int position) {
         if (isFooter(position)) {
             StaggeredGridLayoutManager.LayoutParams p =
                     (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
@@ -185,12 +203,12 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         }
     }
 
-    public boolean isFooter(int position) {
+    private boolean isFooter(int position) {
         return mBottomCount != 0 && position == getContentItemCount();
     }
 
     //内容长度
-    public int getContentItemCount() {
+    private int getContentItemCount() {
         return mData.size();
     }
 
@@ -202,11 +220,10 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         mBottomCount = ImmerseUtil.isAboveKITKAT() && ImmerseUtil.isHasNavigationBar(mContext) ? 1 : 0;
     }
 
-    protected void addData(List<Data> data, int what) {
+    public void addData(List<Data> data, int what) {
         if (data != null) {
             mData.addAll(data);
             notifyItemRangeChanged(getDataSize(), data.size());
-        } else {
             switch (what) {
                 case SYNC_DATA_SUCCESS:
                     if (mOnSyncDataFinishListener != null)
@@ -232,13 +249,15 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     public abstract void refreshData();
 
+    protected abstract String getUrl();
+
     protected abstract Handler getHandler();
 
     public int getDataSize() {
         return mData.size();
     }
 
-    public Data getItem(int pos){
+    public Data getItem(int pos) {
         return mData.get(pos);
     }
 
@@ -287,7 +306,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public CardView root;
+        CardView root;
         public TextView text;
         public ImageView image;
         public View progress;
@@ -299,11 +318,11 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         }
     }
 
-    protected static class FooterHolder extends GifPictureAdapter.ViewHolder {
+    static class FooterHolder extends GifPictureAdapter.ViewHolder {
 
         View bottomView;
 
-        public FooterHolder(View itemView) {
+        FooterHolder(View itemView) {
             super(itemView);
             bottomView = itemView.findViewById(R.id.navigation_bar_view);
         }

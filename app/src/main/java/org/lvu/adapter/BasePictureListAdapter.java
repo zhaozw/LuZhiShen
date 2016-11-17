@@ -5,6 +5,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import org.lvu.R;
 import org.lvu.model.Data;
 import org.lvu.utils.ImmerseUtil;
@@ -16,8 +19,11 @@ import java.util.List;
  */
 public abstract class BasePictureListAdapter extends BaseListAdapter {
 
-    public BasePictureListAdapter(Context context, int layoutId, List<Data> data) {
+    ImageLoader mImageLoader;
+
+    BasePictureListAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
+        mImageLoader = ImageLoader.getInstance();
     }
 
     @Override
@@ -30,16 +36,22 @@ public abstract class BasePictureListAdapter extends BaseListAdapter {
     }
 
     @Override
-    public void onBindViewHolder(BaseListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final BaseListAdapter.ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         if (mData.isEmpty())
             return;
         try {
-            holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getBitmap());
-        }catch (Exception e){
+            mImageLoader.displayImage(mData.get(position != 0 && position >= mData.size() ?
+                            mData.size() - 1 : position).getSrc(), holder.image,
+                    new DisplayImageOptions.Builder()
+                            .showImageOnFail(R.drawable.ic_pic_bad)
+                            .showImageOnLoading(R.drawable.ic_pic_loading)
+                            .showImageForEmptyUri(R.drawable.ic_pic_bad)
+                            .cacheInMemory(true).cacheOnDisk(true).build());
+        } catch (Exception e) {
             e.printStackTrace();
         }
-     }
+    }
 
     public static class ViewHolder extends BaseListAdapter.ViewHolder {
 

@@ -2,6 +2,7 @@ package org.lvu.main.activities;
 
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -86,6 +87,11 @@ public class NovelViewActivity extends BaseActivity {
                 Message message = new Message();
                 message.obj = textContent;
                 mHandler.sendMessage(message);
+            }
+
+            @Override
+            public void onSuccess(Bitmap bitmap) {
+
             }
 
             @Override

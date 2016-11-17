@@ -1,15 +1,16 @@
-
 import org.jsoup.HttpStatusException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,12 +23,12 @@ public class HttpTest {
             REASON_CONNECT_SERVER_FAILURE = "连接服务器失败，请检查网络后重试。\t(向右滑动清除)",
             REASON_INTERNET_NO_GOOD = "网络不给力，请重试。\t(向右滑动清除)";
 
-    public static void main(String[] args) {
-        final String url;
+    public static void main(String[] args) throws Exception{
+        /*final String url;
         if (args.length != 0)
             url = args[0];
         else
-            url = "http://fv3333.com/html/part/10.html";
+            url = "http://fv3333.com/html/part/9.html";
 
         runOnBackground(listener, new BackgroundLogic() {
             @Override
@@ -37,10 +38,16 @@ public class HttpTest {
                 Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 //<div class="content">
-                println(handleString2(document.select("div[class=content]").get(0).html()));
-
+                Elements li = document.select("div[class=content]").get(0).children();
+                Elements li2 = li.select("img[src]");
+                for (Element tmp : li2) {
+                    result.add(new Data("", tmp.attr("abs:src"), "", 4));
+                    listener.onSuccess(result, nextPageUrl);
+                    result = new ArrayList<>();
+                }
+                listener.onSuccess(null, nextPageUrl);
             }
-        });
+        });*/
     }
 
     // TODO: 8/18/16 less than 50k no need to compress
@@ -53,7 +60,7 @@ public class HttpTest {
         public void onSuccess(List<Data> data, String args) {
             if (data != null)
                 for (Data tmp : data)
-                    printf("%s\t%s\n", tmp.getUrl(), tmp.getText());
+                    printf("%s\t%s\n", tmp.getSrc(), tmp.getText());
             else
                 println("args: " + args + "\n");
         }

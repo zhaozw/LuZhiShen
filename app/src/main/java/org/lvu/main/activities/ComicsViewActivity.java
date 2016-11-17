@@ -62,8 +62,12 @@ public class ComicsViewActivity extends BaseActivity {
         HttpUtil.getComicsContentAsync(getIntent().getStringExtra(PicturesViewActivity.URL), new HttpUtil.HttpRequestCallbackListener() {
             @Override
             public void onSuccess(List<Data> data, String nextPage) {
+            }
+
+            @Override
+            public void onSuccess(Bitmap bitmap) {
                 Message message = new Message();
-                message.obj = data.get(0).getBitmap();
+                message.obj = bitmap;
                 mHandler.sendMessage(message);
             }
 
@@ -238,7 +242,7 @@ public class ComicsViewActivity extends BaseActivity {
 
         private WeakReference<ComicsViewActivity> mClass;
 
-        public MyHandler(ComicsViewActivity clazz) {
+        MyHandler(ComicsViewActivity clazz) {
             mClass = new WeakReference<>(clazz);
         }
 

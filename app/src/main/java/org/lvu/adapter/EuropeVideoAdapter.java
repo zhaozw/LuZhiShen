@@ -2,12 +2,15 @@ package org.lvu.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import org.lvu.R;
 import org.lvu.model.Data;
@@ -29,7 +32,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
     private boolean isUserCanceled;
     private int clickedPosition;
 
-    protected HttpUtil.HttpRequestCallbackListener mCallBackListener = new HttpUtil.HttpRequestCallbackListener() {
+    HttpUtil.HttpRequestCallbackListener mCallBackListener = new HttpUtil.HttpRequestCallbackListener() {
         @Override
         public void onSuccess(List<Data> data, String nextPage) {
             if (!isUserCanceled) {
@@ -39,6 +42,11 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                 message.what = GET_URL_SUCCESS;
                 mHandler.sendMessage(message);
             }
+        }
+
+        @Override
+        public void onSuccess(Bitmap bitmap) {
+
         }
 
         @Override
@@ -86,8 +94,13 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
             if (mData.isEmpty())
                 return;
             try {
-                holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ?
-                        mData.size() - 1 : position).getBitmap());
+                mImageLoader.displayImage(mData.get(position != 0 && position >= mData.size() ?
+                                mData.size() - 1 : position).getSrc(), holder.image,
+                        new DisplayImageOptions.Builder()
+                                .showImageOnFail(R.drawable.ic_pic_bad)
+                                .showImageOnLoading(R.drawable.ic_pic_loading)
+                                .showImageForEmptyUri(R.drawable.ic_pic_bad)
+                                .cacheInMemory(true).cacheOnDisk(true).build());
                 holder.text.setText(mData.get(position != 0 && position >= mData.size() ?
                         mData.size() - 1 : position).getText());
                 if (mOnItemClickListener != null)
@@ -149,7 +162,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
 
         private WeakReference<EuropeVideoAdapter> mClass;
 
-        public MyHandler(EuropeVideoAdapter clazz) {
+        MyHandler(EuropeVideoAdapter clazz) {
             mClass = new WeakReference<>(clazz);
         }
 

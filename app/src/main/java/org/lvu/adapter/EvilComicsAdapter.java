@@ -17,13 +17,11 @@ import java.util.List;
  */
 public class EvilComicsAdapter extends BasePictureListAdapter {
 
-    protected final String URL;
-
     public EvilComicsAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
-        URL = getUrl();
     }
 
+    @Override
     protected String getUrl() {
         return "http://www.52kkm.org/xieemanhua/";
     }
@@ -55,11 +53,11 @@ public class EvilComicsAdapter extends BasePictureListAdapter {
         return new MyHandler(this);
     }
 
-    protected static class MyHandler extends Handler {
+    private static class MyHandler extends Handler {
 
         private WeakReference<EvilComicsAdapter> mClass;
 
-        public MyHandler(EvilComicsAdapter clazz) {
+        MyHandler(EvilComicsAdapter clazz) {
             mClass = new WeakReference<>(clazz);
         }
 

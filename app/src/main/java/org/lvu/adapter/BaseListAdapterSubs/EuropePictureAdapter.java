@@ -18,13 +18,11 @@ import java.util.List;
  */
 public class EuropePictureAdapter extends BaseListAdapter {
 
-    protected final String URL;
-
     public EuropePictureAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
-        URL = getUrl();
     }
 
+    @Override
     protected String getUrl() {
         return "http://fv3333.com/html/part/11.html";
     }
@@ -60,7 +58,7 @@ public class EuropePictureAdapter extends BaseListAdapter {
 
         private WeakReference<EuropePictureAdapter> mClass;
 
-        public MyHandler(EuropePictureAdapter clazz) {
+        MyHandler(EuropePictureAdapter clazz) {
             mClass = new WeakReference<>(clazz);
         }
 

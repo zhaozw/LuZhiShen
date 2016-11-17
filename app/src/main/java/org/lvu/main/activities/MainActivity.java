@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import org.lvu.R;
 import org.lvu.adapter.MenuListAdapter;
 import org.lvu.customize.MenuList;
@@ -293,6 +295,16 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
     @Override
     public void finish() {
         super.finish();
+        /*if (Environment.isExternalStorageEmulated() && getExternalCacheDir() != null) {
+            try {
+                java.lang.Process process = Runtime.getRuntime().exec("rm -r " + getExternalCacheDir().toString());
+                process.waitFor();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }*/
+        ImageLoader.getInstance().clearMemoryCache();
+        ImageLoader.getInstance().clearDiskCache();
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 

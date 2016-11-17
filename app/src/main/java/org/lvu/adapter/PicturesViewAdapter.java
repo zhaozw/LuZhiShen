@@ -6,6 +6,9 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.widget.LinearLayout;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+
+import org.lvu.R;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
@@ -34,8 +37,13 @@ public class PicturesViewAdapter extends BasePictureListAdapter {
             if (mData.isEmpty())
                 return;
             try {
-                holder.image.setImageBitmap(mData.get(position != 0 && position >= mData.size() ?
-                        mData.size() - 1 : position).getBitmap());
+                mImageLoader.displayImage(mData.get(position != 0 && position >= mData.size() ?
+                                mData.size() - 1 : position).getSrc(), holder.image,
+                        new DisplayImageOptions.Builder()
+                                .showImageOnFail(R.drawable.ic_pic_bad)
+                                .showImageOnLoading(R.drawable.ic_pic_loading)
+                                .showImageForEmptyUri(R.drawable.ic_pic_bad)
+                                .cacheInMemory(true).cacheOnDisk(true).build());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -56,7 +64,7 @@ public class PicturesViewAdapter extends BasePictureListAdapter {
 
         private WeakReference<PicturesViewAdapter> mClass;
 
-        public MyHandler(PicturesViewAdapter clazz) {
+        MyHandler(PicturesViewAdapter clazz) {
             mClass = new WeakReference<>(clazz);
         }
 
@@ -65,11 +73,8 @@ public class PicturesViewAdapter extends BasePictureListAdapter {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case SYNC_DATA_SUCCESS:
-                    if (msg.obj == null) {
-                        if (mClass.get().mOnSyncDataFinishListener != null)
-                            mClass.get().mOnSyncDataFinishListener.onFinish();
-                        return;
-                    }
+                    if (mClass.get().mOnSyncDataFinishListener != null)
+                        mClass.get().mOnSyncDataFinishListener.onFinish();
                     mClass.get().mData.addAll((List<Data>) msg.obj);
                     mClass.get().notifyItemRangeChanged(
                             mClass.get().getDataSize(), ((List) msg.obj).size());
@@ -92,5 +97,11 @@ public class PicturesViewAdapter extends BasePictureListAdapter {
     @Override
     public void refreshData() {
         //do nothing
+    }
+
+    @Override
+    protected String getUrl() {
+        //do nothing
+        return null;
     }
 }
