@@ -9,7 +9,6 @@ import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,6 +25,7 @@ import org.lvu.adapter.MenuListAdapter;
 import org.lvu.customize.MenuList;
 import org.lvu.customize.MySnackBar;
 import org.lvu.main.fragments.AsiaPictureFragment;
+import org.lvu.main.fragments.BaseListFragment;
 import org.lvu.main.fragments.ChinaVideoFragment;
 import org.lvu.main.fragments.EuropePictureFragment;
 import org.lvu.main.fragments.EuropeVideoFragment;
@@ -40,6 +40,11 @@ import org.lvu.main.fragments.LewdWifeNovelFragment;
 import org.lvu.main.fragments.SchoolNovelFragment;
 import org.lvu.utils.ImmerseUtil;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.util.Arrays;
+import java.util.List;
+
 import io.vov.vitamio.Vitamio;
 
 /**
@@ -53,6 +58,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
     private DrawerLayout mDrawerLayout;
     private View mTopView;
     private MenuList mMenuList;
+    private BaseListFragment mShowingFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,11 +80,12 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
         }
     }
 
-    private void showFragment(Fragment fragment) {
+    private void showFragment(BaseListFragment fragment) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && this.isDestroyed())
             return;
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.wait_replace, fragment).commitAllowingStateLoss();
+        mShowingFragment = fragment;
     }
 
     public void hideToolbar() {
@@ -194,7 +201,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
 
     @Override
     public void onClick(int stringId) {
-        Fragment fragment;
+        BaseListFragment fragment;
         switch (stringId) {
             case R.string.menu_china_video:
                 fragment = new ChinaVideoFragment();
@@ -303,8 +310,55 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                 e.printStackTrace();
             }
         }*/
+        mShowingFragment.saveAdapterData();
+        mShowingFragment = null;
         ImageLoader.getInstance().clearMemoryCache();
-        ImageLoader.getInstance().clearDiskCache();
+        //ImageLoader.getInstance().clearDiskCache();
+        //获取缓存路径
+        File cacheDir = ImageLoader.getInstance().getDiskCache().getDirectory();
+        //获取该目录下大于30k的文件
+        File[] temps = cacheDir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.length() >= 30720;
+            }
+        });
+        //删除大于30k的文件
+        for (File tmp : temps)
+            tmp.delete();
+        //获取该目录下所有文件
+        File[] files = cacheDir.listFiles();
+        //记录该目录的总大小
+        long length = 0;
+        //计算该目录总大小
+        for (File f : files)
+            length += f.length();
+        //如果该目录总大小大于或等于5m，则删除一部分文件
+        if (length >= 5242880) {
+            //文件夹目标大小(2.5m)
+            long targetLength = 2621440;
+            //冒泡算法 最小的排到最前面（按修改日期排序）
+            List<File> list = Arrays.asList(files);
+            for (int i = 0; i < list.size() - 1; i++) {
+                for (int j = 1; j < list.size() - i; j++) {
+                    File tmp;
+                    if (list.get(j - 1).lastModified() > list.get(j).lastModified()) {
+                        tmp = list.get(j - 1);
+                        list.set((j - 1), list.get(j));
+                        list.set(j, tmp);
+                    }
+                }
+            }
+            long tmp;
+            for (File file : list) {
+                tmp = file.length();
+                if (file.delete())
+                    length -= tmp;
+                //每删除一个文件判断是否以达到目标大小
+                if (length <= targetLength)
+                    break;
+            }
+        }
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 

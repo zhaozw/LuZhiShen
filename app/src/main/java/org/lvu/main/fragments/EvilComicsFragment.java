@@ -1,5 +1,6 @@
 package org.lvu.main.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -11,6 +12,7 @@ import org.lvu.main.activities.ComicsViewActivity;
 import org.lvu.main.activities.PicturesViewActivity;
 import org.lvu.model.Data;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -38,5 +40,23 @@ public class EvilComicsFragment extends BaseListFragment {
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
         return new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+    }
+
+    @Override
+    public void saveAdapterData() {
+        try {
+            mAdapter.saveDataToStorage(getActivity().openFileOutput(EvilComicsFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void restoreAdapterData() {
+        try {
+            mAdapter.restoreDataFromStorage(getActivity().openFileInput(EvilComicsFragment.class.getSimpleName()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

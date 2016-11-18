@@ -1,10 +1,13 @@
 package org.lvu.main.fragments;
 
+import android.content.Context;
+
 import org.lvu.R;
 import org.lvu.adapter.BaseListAdapter;
 import org.lvu.adapter.BaseListAdapterSubs.AsiaPictureAdapter;
 import org.lvu.model.Data;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -14,5 +17,23 @@ public class AsiaPictureFragment extends EuropePictureFragment {
     @Override
     protected BaseListAdapter getAdapter() {
         return new AsiaPictureAdapter(getActivity(), R.layout.adapter_list_item, new ArrayList<Data>());
+    }
+
+    @Override
+    public void saveAdapterData() {
+        try {
+            mAdapter.saveDataToStorage(getActivity().openFileOutput(AsiaPictureFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void restoreAdapterData() {
+        try {
+            mAdapter.restoreDataFromStorage(getActivity().openFileInput(AsiaPictureFragment.class.getSimpleName()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

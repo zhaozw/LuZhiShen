@@ -1,5 +1,6 @@
 package org.lvu.main.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,7 @@ import org.lvu.adapter.BaseListAdapterSubs.EuropePictureAdapter;
 import org.lvu.main.activities.PicturesViewActivity;
 import org.lvu.model.Data;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -37,5 +39,24 @@ public class EuropePictureFragment extends BaseListFragment {
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
         return new LinearLayoutManager(getActivity());
+    }
+
+    @Override
+    public void saveAdapterData() {
+        try {
+            mAdapter.saveDataToStorage(getActivity().openFileOutput(EuropePictureFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    protected void restoreAdapterData() {
+        try {
+            mAdapter.restoreDataFromStorage(getActivity().openFileInput(EuropePictureFragment.class.getSimpleName()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

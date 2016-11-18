@@ -1,10 +1,13 @@
 package org.lvu.main.fragments;
 
+import android.content.Context;
+
 import org.lvu.R;
 import org.lvu.adapter.BaseListAdapter;
 import org.lvu.adapter.JapanVideoAdapter;
 import org.lvu.model.Data;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -15,5 +18,23 @@ public class JapanVideoFragment extends ChinaVideoFragment  {
     @Override
     protected BaseListAdapter getAdapter() {
         return new JapanVideoAdapter(getActivity(), R.layout.adapter_picture_list_item, new ArrayList<Data>());
+    }
+
+    @Override
+    public void saveAdapterData() {
+        try {
+            mAdapter.saveDataToStorage(getActivity().openFileOutput(JapanVideoFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void restoreAdapterData() {
+        try {
+            mAdapter.restoreDataFromStorage(getActivity().openFileInput(JapanVideoFragment.class.getSimpleName()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

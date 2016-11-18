@@ -1,17 +1,15 @@
 import org.jsoup.HttpStatusException;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
+import java.io.File;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by wuyr on 6/16/16 7:40 PM.
@@ -23,7 +21,7 @@ public class HttpTest {
             REASON_CONNECT_SERVER_FAILURE = "连接服务器失败，请检查网络后重试。\t(向右滑动清除)",
             REASON_INTERNET_NO_GOOD = "网络不给力，请重试。\t(向右滑动清除)";
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         /*final String url;
         if (args.length != 0)
             url = args[0];
@@ -48,6 +46,21 @@ public class HttpTest {
                 listener.onSuccess(null, nextPageUrl);
             }
         });*/
+        File[] files = new File("/home/wuyr/Desktop/cache").listFiles();
+        List<File> list = Arrays.asList(files);
+        for (int i = 0; i < list.size() - 1; i++) {
+            for (int j = 1; j < list.size() - i; j++) {
+                File tmp;
+                if (list.get(j - 1).lastModified() > list.get(j).lastModified()) {
+                    tmp = list.get(j - 1);
+                    list.set((j - 1), list.get(j));
+                    list.set(j, tmp);
+                }
+            }
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.getDefault());
+        for (File tmp : list)
+            println(tmp.getName() + "-->" + sdf.format(new Date(tmp.lastModified())));
     }
 
     // TODO: 8/18/16 less than 50k no need to compress

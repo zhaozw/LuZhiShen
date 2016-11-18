@@ -149,7 +149,7 @@ public abstract class BaseListFragment extends Fragment {
             }
         });
         mAdapter.setOnItemClickListener(getOnItemClickListener());
-        mAdapter.syncData("");
+        restoreAdapterData();
     }
 
     private void initRecyclerView() {
@@ -386,10 +386,15 @@ public abstract class BaseListFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        saveAdapterData();
         mAdapter.clearData();
         mAdapter.setOwnerIsDestroyed();
         super.onDetach();
     }
+
+    public abstract void saveAdapterData();
+
+    protected abstract void restoreAdapterData();
 
     protected abstract BaseListAdapter getAdapter();
 

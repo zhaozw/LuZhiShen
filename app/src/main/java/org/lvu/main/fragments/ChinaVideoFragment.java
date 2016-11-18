@@ -1,5 +1,6 @@
 package org.lvu.main.fragments;
 
+import android.content.Context;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,13 +14,13 @@ import org.lvu.main.activities.MainActivity;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
  * Created by wuyr on 6/23/16 2:30 PM.
  */
 public class ChinaVideoFragment extends BaseListFragment {
-
     @Override
     protected BaseListAdapter getAdapter() {
         return new ChinaVideoAdapter(getActivity(), R.layout.adapter_picture_list_item, new ArrayList<Data>());
@@ -51,5 +52,24 @@ public class ChinaVideoFragment extends BaseListFragment {
     protected RecyclerView.LayoutManager getLayoutManager() {
         //return new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         return new LinearLayoutManager(getActivity());
+    }
+
+    @Override
+    public void saveAdapterData() {
+        try {
+            mAdapter.saveDataToStorage(getActivity().openFileOutput(ChinaVideoFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    protected void restoreAdapterData() {
+        try {
+            mAdapter.restoreDataFromStorage(getActivity().openFileInput(ChinaVideoFragment.class.getSimpleName()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

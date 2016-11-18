@@ -20,6 +20,11 @@ import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -241,6 +246,72 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
                     break;
             }
         }
+    }
+
+    public void saveDataToStorage(OutputStream os) {
+        if (mData == null || mData.isEmpty())
+            return;
+        ObjectOutputStream oos = null;
+        try {
+            mData.get(0).setNextPageUrl(mNextPageUrl);
+            oos = new ObjectOutputStream(os);
+            oos.writeObject(mData);
+            oos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void restoreDataFromStorage(InputStream is) {
+        restoreDataFromStorage(is, new HttpUtil.HttpRequestCallbackListener() {
+            @Override
+            public void onSuccess(List<Data> data, String args) {
+                mSyncDataCallbackListener.onSuccess(data, args);
+            }
+
+            @Override
+            public void onSuccess(Bitmap bitmap) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e, String reason) {
+                syncData("");
+            }
+        });
+    }
+
+    protected void restoreDataFromStorage(final InputStream is, final HttpUtil.HttpRequestCallbackListener listener) {
+        new Thread(){
+            @Override
+            public void run() {
+                List<Data> result;
+                ObjectInputStream ois = null;
+                try {
+                    ois = new ObjectInputStream(is);
+                    result = (List<Data>) ois.readObject();
+                    listener.onSuccess(result, result.get(0).getNextPageUrl());
+                } catch (Exception e) {
+                    listener.onFailure(e, "");
+                } finally {
+                    if (ois != null) {
+                        try {
+                            ois.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }.start();
     }
 
     public abstract void syncData(@NonNull String url);
