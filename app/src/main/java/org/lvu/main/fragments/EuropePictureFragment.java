@@ -56,7 +56,7 @@ public class EuropePictureFragment extends BaseListFragment {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(EuropePictureFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 }

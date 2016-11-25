@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +23,11 @@ public class JapanVideoAdapter extends EuropeVideoAdapter {
     }
 
     @Override
+    protected String getPageUrl() {
+        return "https://www.haoxxoo09.com/category/16-%s.html";
+    }
+
+    @Override
     public void syncData(@NonNull String url) {
         if (url.isEmpty())
             url = URL;
@@ -31,18 +35,32 @@ public class JapanVideoAdapter extends EuropeVideoAdapter {
     }
 
     @Override
-    public void loadMore() {
+    public void loadNext() {
         if (mNextPageUrl == null || mNextPageUrl.isEmpty())
             syncData("");
         else
-            HttpUtil.getJapanVideoListAsync(mNextPageUrl, mLoadMoreCallbackListener);
+            HttpUtil.getJapanVideoListAsync(mNextPageUrl, mLoadNextCallbackListener);
     }
 
     @Override
-    public void refreshData() {
-        HttpUtil.getJapanVideoListAsync(URL, mRefreshDataCallbackListener);
-        mData = new ArrayList<>();
-        notifyDataSetChanged();
+    public void loadPrevious() {
+        int page = getCurrentPage() - 1;
+        if (page <= 1) {
+            syncData("");
+            return;
+        }
+        String pageUrl = getPageUrl();
+        HttpUtil.getJapanVideoListAsync(String.format(pageUrl, String.valueOf(page)), mLoadPreviousCallbackListener);
+    }
+
+    @Override
+    public void jumpToPage(int page) {
+        if (page == 1)
+            syncData("");
+        else {
+            String pageUrl = getPageUrl();
+            HttpUtil.getJapanVideoListAsync(String.format(pageUrl, String.valueOf(page)), mOnJumpPageCallbackListener);
+        }
     }
 
     @Override

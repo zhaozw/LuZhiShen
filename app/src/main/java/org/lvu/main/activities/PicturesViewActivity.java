@@ -56,7 +56,7 @@ public class PicturesViewActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(mAdapter);
         mAdapter.syncData(getIntent().getStringExtra(URL));
-        mAdapter.setOnSyncDataFinishListener(new BaseListAdapter.OnSyncDataFinishListener() {
+        mAdapter.setOnSyncDataFinishListener(new BaseListAdapter.OnFinishListener() {
             @Override
             public void onFinish() {
                 hideLoadMoreBar();
@@ -71,7 +71,12 @@ public class PicturesViewActivity extends BaseActivity {
                         e1.printStackTrace();
                     }
                 } else
-                    hideLoadMoreBar();
+                    mLoadMoreBar.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            hideLoadMoreBar();
+                        }
+                    });
                 MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
                         getString(R.string.back), new View.OnClickListener() {
                             @Override
@@ -124,11 +129,23 @@ public class PicturesViewActivity extends BaseActivity {
         }
     }
 
+    private Animation hideAnimation;
+
     private void hideLoadMoreBar() {
-        ScaleAnimation animation = new ScaleAnimation(
+        if (hideAnimation == null)
+            initHideAnimation();
+        try {
+            mLoadMoreBar.startAnimation(hideAnimation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initHideAnimation() {
+        hideAnimation = new ScaleAnimation(
                 1, 0, 1, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        animation.setDuration(250);
-        animation.setAnimationListener(new Animation.AnimationListener() {
+        hideAnimation.setDuration(250);
+        hideAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 
@@ -144,11 +161,6 @@ public class PicturesViewActivity extends BaseActivity {
 
             }
         });
-        try {
-            mLoadMoreBar.startAnimation(animation);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void changeToLandscape() {

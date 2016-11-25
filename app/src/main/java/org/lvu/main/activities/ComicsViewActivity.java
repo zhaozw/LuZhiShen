@@ -3,6 +3,7 @@ package org.lvu.main.activities;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -21,6 +22,9 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import org.lvu.R;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
@@ -28,6 +32,11 @@ import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +51,8 @@ public class ComicsViewActivity extends BaseActivity {
     private CircleProgressBar mLoadMoreBar;
     private ImageView mContent;
     private Handler mHandler;
+    private HashCodeFileNameGenerator mNameGenerator;
+    private File dir = ImageLoader.getInstance().getDiskCache().getDirectory();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,39 +69,6 @@ public class ComicsViewActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mContent = (ImageView) findViewById(R.id.image_view);
-
-        HttpUtil.getComicsContentAsync(getIntent().getStringExtra(PicturesViewActivity.URL), new HttpUtil.HttpRequestCallbackListener() {
-            @Override
-            public void onSuccess(List<Data> data, String nextPage) {
-            }
-
-            @Override
-            public void onSuccess(Bitmap bitmap) {
-                Message message = new Message();
-                message.obj = bitmap;
-                mHandler.sendMessage(message);
-            }
-
-            @Override
-            public void onFailure(Exception e, String reason) {
-                if (reason.equals("无可用网络。\t(向右滑动清除)")) {
-                    try {
-                        mLoadMoreBar.setVisibility(View.GONE);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                } else
-                    hideLoadMoreBar();
-                MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
-                        getString(R.string.back), new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                onBackPressed();
-                            }
-                        });
-            }
-        });
-
         mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
         if (ImmerseUtil.isHasNavigationBar(this)) {
             CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
@@ -107,6 +85,58 @@ public class ComicsViewActivity extends BaseActivity {
                 getResources().getColor(R.color.bluePrimary));
         mLoadMoreBar.setBackgroundColor(color);
         a.recycle();
+
+        final String url = getIntent().getStringExtra(PicturesViewActivity.URL);
+        mNameGenerator = new HashCodeFileNameGenerator();
+        File bitmapFile = new File(dir, mNameGenerator.generate(url));
+        if (bitmapFile.exists()) {
+            try {
+                mContent.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(bitmapFile)));
+            } catch (Exception e) {
+                e.printStackTrace();
+                MySnackBar.show(findViewById(R.id.coordinator), getString(R.string.load_pic_fail), Snackbar.LENGTH_SHORT);
+            } finally {
+                mLoadMoreBar.setVisibility(View.GONE);
+            }
+        } else {
+            HttpUtil.getComicsContentAsync(url, new HttpUtil.HttpRequestCallbackListener() {
+                @Override
+                public void onSuccess(List<Data> data, String nextPage) {
+                }
+
+                @Override
+                public void onSuccess(Bitmap bitmap) {
+                    new WriteDataThread(mNameGenerator.generate(url), bitmap).start();
+                    Message message = Message.obtain();
+                    message.obj = bitmap;
+                    mHandler.sendMessage(message);
+                }
+
+                @Override
+                public void onFailure(Exception e, String reason) {
+                    if (reason.equals("无可用网络。\t(向右滑动清除)")) {
+                        try {
+                            mLoadMoreBar.setVisibility(View.GONE);
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                    } else
+                        mLoadMoreBar.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                hideLoadMoreBar();
+                            }
+                        });
+                    MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
+                            getString(R.string.back), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    onBackPressed();
+                                }
+                            });
+                }
+            });
+        }
     }
 
     private void initImmerse() {
@@ -141,11 +171,25 @@ public class ComicsViewActivity extends BaseActivity {
         }
     }
 
+    private Animation hideAnimation;
+
     private void hideLoadMoreBar() {
-        ScaleAnimation animation = new ScaleAnimation(
+        if (hideAnimation == null)
+            initHideAnimation();
+        try {
+            mLoadMoreBar.startAnimation(hideAnimation);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (mLoadMoreBar != null || mLoadMoreBar.getVisibility() == View.GONE)
+                mLoadMoreBar.setVisibility(View.GONE);
+        }
+    }
+
+    private void initHideAnimation() {
+        hideAnimation = new ScaleAnimation(
                 1, 0, 1, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        animation.setDuration(250);
-        animation.setAnimationListener(new Animation.AnimationListener() {
+        hideAnimation.setDuration(250);
+        hideAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 
@@ -161,11 +205,6 @@ public class ComicsViewActivity extends BaseActivity {
 
             }
         });
-        try {
-            mLoadMoreBar.startAnimation(animation);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void changeToLandscape() {
@@ -254,6 +293,44 @@ public class ComicsViewActivity extends BaseActivity {
             } else {
                 msg.obj = null;
                 System.gc();
+            }
+        }
+    }
+
+    public class WriteDataThread extends Thread {
+
+        private String name;
+        private Bitmap bitmap;
+
+        WriteDataThread(String name, Bitmap bitmap) {
+            this.bitmap = bitmap;
+            this.name = name;
+        }
+
+        @Override
+        public void run() {
+            FileOutputStream fos = null;
+            try {
+                if (name == null || name.isEmpty())
+                    throw new IOException("name is empty");
+                if (bitmap == null)
+                    throw new IOException("bitmap is empty");
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                fos = new FileOutputStream(new File(dir, name));
+                fos.write(baos.toByteArray());
+                fos.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }

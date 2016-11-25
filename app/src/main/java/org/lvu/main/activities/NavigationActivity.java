@@ -28,7 +28,7 @@ import java.util.List;
 @SuppressWarnings("ConstantConditions")
 public class NavigationActivity extends BaseActivity {
 
-    public static final String POSITION = "Position", STRING_ID = "StringId";
+    public static final String STRING_ID = "StringId";
     private View mTopView, mBottomView;
 
     @Override
@@ -48,99 +48,80 @@ public class NavigationActivity extends BaseActivity {
         videoArea.setOnItemClickListener(new MenuListAdapter.OnItemClickListener() {
             @Override
             public void onClick(int stringId) {
-                int position;
-                switch (stringId) {
-                    case R.string.menu_china_video:
-                        position = 0;
-                        break;
-                    case R.string.menu_europe_video:
-                        position = 1;
-                        break;
-                    case R.string.menu_japan_video:
-                        position = 2;
-                        break;
-                    default:
-                        position = -1;
-                        break;
-                }
-                if (position != -1) {
-                    Intent intent = new Intent(NavigationActivity.this, MainActivity.class);
-                    intent.putExtra(POSITION, position);
-                    intent.putExtra(STRING_ID, stringId);
-                    startActivity(intent);
-                    finish();
-                }
+                handleOnClick(stringId);
             }
         });
         pictureArea.setOnItemClickListener(new MenuListAdapter.OnItemClickListener() {
             @Override
             public void onClick(int stringId) {
-                int position;
-                switch (stringId) {
-                    case R.string.menu_family_pic:
-                        position = 3;
-                        break;
-                    case R.string.menu_asia_pic:
-                        position = 4;
-                        break;
-                    case R.string.menu_europe_pic:
-                        position = 5;
-                        break;
-                    case R.string.menu_evil_pics:
-                        position = 6;
-                        break;
-                    case R.string.menu_gif:
-                        position = 7;
-                        break;
-                    default:
-                        position = -1;
-                        break;
-                }
-                if (position != -1) {
-                    Intent intent = new Intent(NavigationActivity.this, MainActivity.class);
-                    intent.putExtra(POSITION, position);
-                    intent.putExtra(STRING_ID, stringId);
-                    startActivity(intent);
-                    finish();
-                }
+                handleOnClick(stringId);
             }
         });
         textArea.setOnItemClickListener(new MenuListAdapter.OnItemClickListener() {
             @Override
             public void onClick(int stringId) {
-                int position;
-                switch (stringId) {
-                    case R.string.menu_excited_novel:
-                        position = 8;
-                        break;
-                    case R.string.menu_family_mess_novel:
-                        position = 9;
-                        break;
-                    case R.string.menu_school_novel:
-                        position = 10;
-                        break;
-                    case R.string.menu_lewd_wife_novel:
-                        position = 11;
-                        break;
-                    case R.string.menu_funny_joke:
-                        position = 12;
-                        break;
-                    default:
-                        position = -1;
-                        break;
-                }
-                if (position != -1) {
-                    Intent intent = new Intent(NavigationActivity.this, MainActivity.class);
-                    intent.putExtra(POSITION, position);
-                    intent.putExtra(STRING_ID, stringId);
-                    startActivity(intent);
-                    finish();
-                }
+                handleOnClick(stringId);
             }
         });
         videoArea.setData(initVideoAreaData());
         pictureArea.setData(initPictureAreaData());
         textArea.setData(initTextAreaData());
+    }
+
+    private void handleOnClick(int stringId) {
+        Intent intent = new Intent(NavigationActivity.this, MainActivity.class);
+        intent.putExtra(STRING_ID, stringId);
+        startActivity(intent);
+        finish();
+    }
+
+    public static int getPositionById(int stringId) {
+        int position;
+        switch (stringId) {
+            case R.string.menu_china_video:
+                position = 0;
+                break;
+            case R.string.menu_europe_video:
+                position = 1;
+                break;
+            case R.string.menu_japan_video:
+                position = 2;
+                break;
+            case R.string.menu_family_pic:
+                position = 3;
+                break;
+            case R.string.menu_asia_pic:
+                position = 4;
+                break;
+            case R.string.menu_europe_pic:
+                position = 5;
+                break;
+            case R.string.menu_evil_pics:
+                position = 6;
+                break;
+            case R.string.menu_gif:
+                position = 7;
+                break;
+            case R.string.menu_excited_novel:
+                position = 8;
+                break;
+            case R.string.menu_family_mess_novel:
+                position = 9;
+                break;
+            case R.string.menu_school_novel:
+                position = 10;
+                break;
+            case R.string.menu_lewd_wife_novel:
+                position = 11;
+                break;
+            case R.string.menu_funny_joke:
+                position = 12;
+                break;
+            default:
+                position = -1;
+                break;
+        }
+        return position;
     }
 
     private List<Menu> initVideoAreaData() {
@@ -251,13 +232,13 @@ public class NavigationActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_navigation,menu);
+        getMenuInflater().inflate(R.menu.activity_navigation, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.change_skin:
                 changeSkin();
                 return true;

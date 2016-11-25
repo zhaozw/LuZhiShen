@@ -56,7 +56,7 @@ public class ExcitedNovelFragment extends BaseListFragment  {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(ExcitedNovelFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 }

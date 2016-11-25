@@ -19,4 +19,9 @@ public class FamilyMessNovelAdapter extends ExcitedNovelAdapter {
     protected String getUrl(){
         return "http://fv3333.com/html/part/22.html";
     }
+
+    @Override
+    protected String getPageUrl() {
+        return "http://fv3333.com/html/part/22_%s.html";
+    }
 }

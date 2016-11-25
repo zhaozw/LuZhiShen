@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,10 +13,18 @@ import java.util.List;
  */
 public class FunnyJokeAdapter extends EuropePictureAdapter {
 
-    private final String URL = "http://www.laifudao.com/wangwen/";
-
     public FunnyJokeAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
+    }
+
+    @Override
+    protected String getUrl() {
+        return "http://www.laifudao.com/wangwen/";
+    }
+
+    @Override
+    protected String getPageUrl() {
+        return "http://www.laifudao.com/wangwen/index_%s.htm";
     }
 
     @Override
@@ -28,17 +35,31 @@ public class FunnyJokeAdapter extends EuropePictureAdapter {
     }
 
     @Override
-    public void loadMore() {
+    public void loadNext() {
         if (mNextPageUrl == null || mNextPageUrl.isEmpty())
             syncData("");
         else
-            HttpUtil.getJokeListAsync(mNextPageUrl, mLoadMoreCallbackListener);
+            HttpUtil.getJokeListAsync(mNextPageUrl, mLoadNextCallbackListener);
     }
 
     @Override
-    public void refreshData() {
-        HttpUtil.getJokeListAsync(URL, mRefreshDataCallbackListener);
-        mData = new ArrayList<>();
-        notifyDataSetChanged();
+    public void loadPrevious() {
+        int page = getCurrentPage() - 1;
+        if (page <= 1) {
+            syncData("");
+            return;
+        }
+        String pageUrl = getPageUrl();
+        HttpUtil.getJokeListAsync(String.format(pageUrl, String.valueOf(page)), mLoadPreviousCallbackListener);
+    }
+
+    @Override
+    public void jumpToPage(int page) {
+        if (page == 1)
+            syncData("");
+        else {
+            String pageUrl = getPageUrl();
+            HttpUtil.getJokeListAsync(String.format(pageUrl, String.valueOf(page)), mOnJumpPageCallbackListener);
+        }
     }
 }

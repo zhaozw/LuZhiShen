@@ -19,4 +19,9 @@ public class LewdWifeNovelAdapter extends ExcitedNovelAdapter {
     protected String getUrl(){
         return "http://fv3333.com/html/part/18.html";
     }
+
+    @Override
+    protected String getPageUrl() {
+        return "http://fv3333.com/html/part/18_%s.html";
+    }
 }

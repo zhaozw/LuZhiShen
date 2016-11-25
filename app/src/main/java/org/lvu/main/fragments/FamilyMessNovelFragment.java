@@ -33,7 +33,7 @@ public class FamilyMessNovelFragment extends ExcitedNovelFragment {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(FamilyMessNovelFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 }

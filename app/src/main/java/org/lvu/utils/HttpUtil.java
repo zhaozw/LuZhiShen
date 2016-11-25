@@ -32,13 +32,13 @@ public class HttpUtil {
             REASON_CONNECT_SERVER_FAILURE = "连接服务器失败，请检查网络后重试。\t(向右滑动清除)",
             REASON_INTERNET_NO_GOOD = "网络不给力，请重试。\t(向右滑动清除)";
 
-    // TODO: 7/17/16 if nextPageUrl == null show is last page if previousPageUrl == null show is first page
     public static void getChinaVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                String currentPage = "", nextPageUrl = "", previousPageUrl = "";
+                String nextPageUrl = "";
+                int currentPage = 0, totalPages = 0;
                 Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements li = document.select("ul[class=list]").get(0).children();
@@ -50,16 +50,26 @@ public class HttpUtil {
                                         /*title*/tmp.child(0).child(0).attr("alt")));
                 }
                 //pagination
-                Elements pagination = document.select("div[class=pagebar]").get(0).children();
+                Element page = document.select("div[class=pagebar]").get(0);
+                String[] pageInfo = page.ownText().split("/");
+                pageInfo[1] = pageInfo[1].substring(0, pageInfo[1].length() - 5);
+                try {
+                    totalPages = Integer.parseInt(pageInfo[1]);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                Elements pagination = page.children();
                 for (Element tmp : pagination) {
-                    if (tmp.tagName().equals("em") && tmp.hasClass("current"))
-                        currentPage = tmp.text();
-                    if (tmp.text().equals("上一页") && tmp.tagName().equals("a"))
-                        previousPageUrl = tmp.attr("abs:href");
-                    if (tmp.text().equals("下一页") && tmp.tagName().equals("a")) {
+                    if (tmp.tagName().equals("em") && tmp.hasClass("current")) {
+                        currentPage = Integer.parseInt(tmp.text());
+                    } else if (tmp.text().equals("下一页") && tmp.tagName().equals("a")) {
                         nextPageUrl = tmp.attr("abs:href");
                     }
                 }
+                if (currentPage == totalPages)
+                    nextPageUrl = "";
+                result.get(0).setCurrentPage(currentPage);
+                result.get(0).setTotalPages(totalPages);
                 listener.onSuccess(result, nextPageUrl);
             }
         });
@@ -71,6 +81,7 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPageUrl = "";
+                int currentPage = 0, totalPages = 194;
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements src = document.select("img[src]"), links = new Elements(), texts = document.select("h2"),
@@ -79,12 +90,23 @@ public class HttpUtil {
                     links.add(tmp.parent());
                 }
                 src.remove(0);
-                for (int i = 0; i < links.size(); i++) {
+                for (int i = 0; i < links.size(); i++)
                     result.add(new Data(links.get(i).attr("abs:href"), src.get(i).attr("abs:src"), texts.get(i).text()));
-                }
                 for (Element tmp : nextPageTmp)
-                    if (tmp.attr("rel").equals("next"))
+                    if (tmp.attr("rel").equals("next")) {
                         nextPageUrl = tmp.attr("abs:href");
+                        break;
+                    }
+
+                try {
+                    currentPage = Integer.parseInt(document.select("span[class=btn raised highlighted]").get(0).text());
+                }catch (NumberFormatException e){
+                    e.printStackTrace();
+                }
+                if (currentPage == totalPages)
+                    nextPageUrl = "";
+                result.get(0).setCurrentPage(currentPage);
+                result.get(0).setTotalPages(totalPages);
                 listener.onSuccess(result, nextPageUrl);
             }
         });
@@ -99,7 +121,8 @@ public class HttpUtil {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                String nextPageUrl = "", currentPage = "", previousPageUrl = "";
+                String nextPageUrl = "";
+                int currentPage, totalPages;
                 Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 //class="box list channel"
@@ -110,13 +133,19 @@ public class HttpUtil {
                 }
                 //<div class="pagination">
                 Elements pagination = document.select("div[class=pagination").get(0).children();
-                currentPage = pagination.select("strong").get(0).text();
+                currentPage = Integer.parseInt(pagination.select("strong").get(0).text());
+                String lastPageUrl = "";
                 for (Element tmp : pagination) {
-                    if (tmp.text().equals("上一页") && tmp.tagName().equals("a"))
-                        previousPageUrl = tmp.attr("abs:href");
                     if (tmp.text().equals("下一页") && tmp.tagName().equals("a"))
                         nextPageUrl = tmp.attr("abs:href");
+                    else if (tmp.text().equals("尾页") && tmp.tagName().equals("a"))
+                        lastPageUrl = tmp.attr("abs:href");
                 }
+                totalPages = handleString6(lastPageUrl);
+                if (currentPage == totalPages)
+                    nextPageUrl = "";
+                result.get(0).setCurrentPage(currentPage);
+                result.get(0).setTotalPages(totalPages);
                 listener.onSuccess(result, nextPageUrl);
             }
         });
@@ -132,20 +161,31 @@ public class HttpUtil {
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPageUrl = "";
+                int currentPage = 0, totalPages = 0;
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                Elements li = document.select("ul[class=piclist listcon]").get(0).children(), a, img, next = document.select("a");
-                a = li.select("a");
-                img = li.select("img");
-
-                for (int i = 0; i < a.size(); i++) {
-                    result.add(new Data(a.get(i).attr("abs:href"),
-                            img.get(i).attr("abs:xSrc"), handleString(a.get(i).attr("title"))));
+                Elements li = document.select("ul[class=piclist listcon").get(0).children();
+                for (Element tmp : li) {
+                    Element a = tmp.child(0);
+                    result.add(new Data(a.attr("abs:href"), a.child(2).attr("xSrc"), a.child(0).text()));
                 }
-
-                for (Element tmp : next)
-                    if (tmp.text().equals("下一页"))
+                Elements pageList = document.select("ul[class=pagelist]").get(0).children();
+                try {
+                    currentPage = Integer.parseInt(pageList.select("li[class=thisclass]").get(0).text());
+                    totalPages = Integer.parseInt(pageList.select("span[class=pageinfo").get(0).children().get(0).text());
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                Elements nextPageUrlList = pageList.select("a");
+                for (Element tmp : nextPageUrlList)
+                    if (tmp.text().equals("下一页")) {
                         nextPageUrl = tmp.attr("abs:href");
+                        break;
+                    }
+                if (currentPage == totalPages)
+                    nextPageUrl = "";
+                result.get(0).setCurrentPage(currentPage);
+                result.get(0).setTotalPages(totalPages);
                 listener.onSuccess(result, nextPageUrl);
             }
         });
@@ -156,15 +196,18 @@ public class HttpUtil {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                String nextPageUrl = "", currentPage = "", previousPageUrl = "";
+                String nextPageUrl = "";
+                int currentPage = 0, totalPages = 0;
                 Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 //<div class="content">
                 Elements li = document.select("div[class=content]").get(0).children();
                 Elements li2 = li.select("img[src]");
-                for (Element tmp : li2) {
+                for (Element tmp : li2)
                     result.add(new Data("", tmp.attr("abs:src"), ""));
-                }
+
+                result.get(0).setCurrentPage(currentPage);
+                result.get(0).setTotalPages(totalPages);
                 listener.onSuccess(result, nextPageUrl);
             }
         });
@@ -202,7 +245,8 @@ public class HttpUtil {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                String currentPage = "", previousPageUrl = "", nextPageUrl = "";
+                String nextPageUrl = "";
+                int currentPage = 0, totalPages = 0;
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements elements = document.select("section[class=article-content]");
@@ -214,15 +258,17 @@ public class HttpUtil {
                 }
                 Elements page = document.select("div[class=mobile-pagenavi]").get(0).children();
                 for (Element tmp : page) {
-                    if (tmp.tagName().equals("span"))
-                        currentPage = handleString4(tmp.text());
-                    else if (tmp.attr("class").equals("mnext"))
-                        previousPageUrl = tmp.attr("abs:href");
-                    else if ((tmp.attr("class").equals("mprev")))
+                    if (tmp.tagName().equals("span")) {
+                        String[] pageInfo = tmp.text().split("/");
+                        currentPage = Integer.parseInt(pageInfo[0]);
+                        totalPages = Integer.parseInt(pageInfo[1]);
+                    } else if ((tmp.attr("class").equals("mprev")))
                         nextPageUrl = tmp.attr("abs:href");
                 }
-                System.out.printf("currentPage: %s\npreviousPageUrl: %s\nnextPageUrl: %s\n",
-                        currentPage, previousPageUrl, nextPageUrl);
+                if (currentPage == totalPages)
+                    nextPageUrl = "";
+                result.get(0).setCurrentPage(currentPage);
+                result.get(0).setTotalPages(totalPages);
                 listener.onSuccess(result, nextPageUrl);
             }
         });
@@ -258,26 +304,34 @@ public class HttpUtil {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                String currentPage, previousPageUrl = "", nextPageUrl = "";
+                String nextPageUrl = "";
+                int currentPage = 0, totalPages = 0;
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
                 Elements items = document.select("div[class=lovefou]").get(0).children();
                 for (Element li : items) {
                     Element tmp = li.children().get(0);
-                    result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"), tmp.child(0).attr("alt")));
+                    result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"), handleString(tmp.child(0).attr("alt"))));
                 }
                 Elements pagination = document.select("div[class=pagination]").get(0).child(0).children();
-                for (Element tmp : pagination) {
-                    if (tmp.tagName().equals("a")) {
-                        if (tmp.text().equals("上一页"))
-                            previousPageUrl = tmp.attr("abs:href");
-                        if (tmp.text().equals("下一页"))
-                            nextPageUrl = tmp.attr("abs:href");
+                for (Element tmp : pagination)
+                    if (tmp.tagName().equals("a") && tmp.text().equals("下一页")) {
+                        nextPageUrl = tmp.attr("abs:href");
+                        break;
                     }
+                try {
+                    currentPage = Integer.parseInt(pagination.select("span[class=thisclass]").text());
+                    //<span class="pageinfo">共94页1692条</span>
+                    String tmp = pagination.select("span[class=pageinfo").text();
+                    tmp = tmp.substring(1, tmp.indexOf("页"));
+                    totalPages = Integer.parseInt(tmp);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
                 }
-                currentPage = pagination.select("span[class=thisclass]").text();
-                System.out.printf("currentPage: %s\npreviousPageUrl: %s\nnextPageUrl: %s\n",
-                        currentPage, previousPageUrl, nextPageUrl);
+                if (currentPage == totalPages)
+                    nextPageUrl = "";
+                result.get(0).setCurrentPage(currentPage);
+                result.get(0).setTotalPages(totalPages);
                 listener.onSuccess(result, nextPageUrl);
             }
         });
@@ -374,12 +428,12 @@ public class HttpUtil {
         return src.replaceAll("\\s+", "\n");
     }
 
-    private static String handleString4(String src) {
-        return src.split("/")[0];
-    }
-
     private static String handleString5(String src) {
         return src.substring(32, src.indexOf(".mp4\";") + 4);
+    }
+
+    private static int handleString6(String src) {
+        return Integer.parseInt(src.substring(src.indexOf("_") + 1, src.indexOf(".html")));
     }
 
     public static void getChinaVideoUrlByUrl(final String url, final HttpRequestCallbackListener listener) {

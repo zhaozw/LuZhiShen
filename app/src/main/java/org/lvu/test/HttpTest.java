@@ -1,15 +1,16 @@
 import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
-import java.io.File;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
 
 /**
  * Created by wuyr on 6/16/16 7:40 PM.
@@ -22,60 +23,89 @@ public class HttpTest {
             REASON_INTERNET_NO_GOOD = "网络不给力，请重试。\t(向右滑动清除)";
 
     public static void main(String[] args) throws Exception {
-        /*final String url;
+        final String url;
         if (args.length != 0)
             url = args[0];
         else
-            url = "http://fv3333.com/html/part/9.html";
+            url = "http://www.lovefou.com/dongtaitu/list_4.html";
 
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
-                String nextPageUrl = "", currentPage = "", previousPageUrl = "";
-                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000)
+                String nextPageUrl = "";
+                int currentPage = 0, totalPages = 0;
+                Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                //<div class="content">
-                Elements li = document.select("div[class=content]").get(0).children();
-                Elements li2 = li.select("img[src]");
-                for (Element tmp : li2) {
-                    result.add(new Data("", tmp.attr("abs:src"), "", 4));
-                    listener.onSuccess(result, nextPageUrl);
-                    result = new ArrayList<>();
+                Elements items = document.select("div[class=lovefou]").get(0).children();
+                for (Element li : items) {
+                    Element tmp = li.children().get(0);
+                    result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"), tmp.child(0).attr("alt")));
                 }
-                listener.onSuccess(null, nextPageUrl);
-            }
-        });*/
-        File[] files = new File("/home/wuyr/Desktop/cache").listFiles();
-        List<File> list = Arrays.asList(files);
-        for (int i = 0; i < list.size() - 1; i++) {
-            for (int j = 1; j < list.size() - i; j++) {
-                File tmp;
-                if (list.get(j - 1).lastModified() > list.get(j).lastModified()) {
-                    tmp = list.get(j - 1);
-                    list.set((j - 1), list.get(j));
-                    list.set(j, tmp);
+                Elements pagination = document.select("div[class=pagination]").get(0).child(0).children();
+                for (Element tmp : pagination)
+                    if (tmp.tagName().equals("a") && tmp.text().equals("下一页")) {
+                        nextPageUrl = tmp.attr("abs:href");
+                        break;
+                    }
+                try {
+                    currentPage = Integer.parseInt(pagination.select("span[class=thisclass]").text());
+                    //<span class="pageinfo">共94页1692条</span>
+                    String tmp = pagination.select("span[class=pageinfo").text();
+                    tmp = tmp.substring(1, tmp.indexOf("页"));
+                    totalPages = Integer.parseInt(tmp);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
                 }
+
+                if (currentPage == totalPages)
+                    nextPageUrl = "";
+                result.get(0).setCurrentPage(currentPage);
+                result.get(0).setTotalPages(totalPages);
+                listener.onSuccess(result, nextPageUrl);
             }
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.getDefault());
-        for (File tmp : list)
-            println(tmp.getName() + "-->" + sdf.format(new Date(tmp.lastModified())));
+        });
     }
 
-    // TODO: 8/18/16 less than 50k no need to compress
-    private static String handleString2(String src) {
-        return src.replaceAll("<br>", "\n").replaceAll("&nbsp;", "").replaceAll("<p>", "").replaceAll("</p>", "");
+    private static String getGifUrl(String url) {
+        int count = 0, count2 = 0;
+        while (true) {
+            try {
+                Document document = Jsoup.connect(url).timeout(4000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                return document.select("div[class=dongtai]").get(0).select("img").get(0).attr("src");
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof ConnectException) {
+                    count2++;
+                    if (count2 > 3)
+                        break;
+                    continue;
+                }
+                if (e instanceof SocketException ||
+                        e instanceof UnknownHostException ||
+                        e instanceof SocketTimeoutException) {
+                    count++;
+                    if (count > 3)
+                        break;
+                    continue;
+                }
+                break;
+            }
+        }
+        return "";
     }
 
     private static HttpRequestCallbackListener listener = new HttpRequestCallbackListener() {
         @Override
         public void onSuccess(List<Data> data, String args) {
-            if (data != null)
+            if (data != null) {
+                println("currentPage: " + data.get(0).getCurrentPage());
+                println("totalPages: " + data.get(0).getTotalPages());
+                println("nextPageUrl: " + args);
                 for (Data tmp : data)
-                    printf("%s\t%s\n", tmp.getSrc(), tmp.getText());
-            else
-                println("args: " + args + "\n");
+                    printf("%s\t%s\t%s\n", tmp.getUrl(), tmp.getSrc(), tmp.getText());
+            }
         }
 
         @Override
@@ -151,6 +181,8 @@ public class HttpTest {
     static class Data {
 
         private String url, text, src;
+        private int currentPage;
+        private int totalPages;
 
         public Data(String url, String src, String text) {
             this.url = url;
@@ -166,16 +198,32 @@ public class HttpTest {
             this(url, src, text);
         }
 
-        public String getUrl() {
+        String getUrl() {
             return url;
         }
 
-        public String getText() {
+        String getText() {
             return text;
         }
 
-        public String getSrc() {
+        String getSrc() {
             return src;
+        }
+
+        void setCurrentPage(int currentPage) {
+            this.currentPage = currentPage;
+        }
+
+        public int getCurrentPage() {
+            return currentPage;
+        }
+
+        public int getTotalPages() {
+            return totalPages;
+        }
+
+        void setTotalPages(int totalPages) {
+            this.totalPages = totalPages;
         }
     }
 

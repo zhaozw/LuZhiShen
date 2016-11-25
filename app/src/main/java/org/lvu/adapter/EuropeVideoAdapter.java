@@ -18,7 +18,6 @@ import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +26,7 @@ import java.util.List;
 public class EuropeVideoAdapter extends BasePictureListAdapter {
 
     protected final String URL;
-    private static final int GET_URL_SUCCESS = 6, GET_URL_FAILURE = 7;
+    private static final int GET_URL_SUCCESS = 8, GET_URL_FAILURE = 9;
     private AlertDialog mDialog;
     private boolean isUserCanceled;
     private int clickedPosition;
@@ -78,8 +77,14 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                 .setView(R.layout.dialog_resolving_video_address_view).create();
     }
 
+    @Override
     protected String getUrl() {
         return "http://m.fapple.com/videos";
+    }
+
+    @Override
+    protected String getPageUrl() {
+        return "http://m.fapple.com/videos?p=%s";
     }
 
     @Override
@@ -139,18 +144,32 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
     }
 
     @Override
-    public void loadMore() {
+    public void loadNext() {
         if (mNextPageUrl == null || mNextPageUrl.isEmpty())
             syncData("");
         else
-            HttpUtil.getEuropeVideoListAsync(mNextPageUrl, mLoadMoreCallbackListener);
+            HttpUtil.getEuropeVideoListAsync(mNextPageUrl, mLoadNextCallbackListener);
     }
 
     @Override
-    public void refreshData() {
-        HttpUtil.getEuropeVideoListAsync(URL, mRefreshDataCallbackListener);
-        mData = new ArrayList<>();
-        notifyDataSetChanged();
+    public void loadPrevious() {
+        int page = getCurrentPage() - 1;
+        if (page <= 1) {
+            syncData("");
+            return;
+        }
+        String pageUrl = getPageUrl();
+        HttpUtil.getEuropeVideoListAsync(String.format(pageUrl, String.valueOf(page)), mLoadPreviousCallbackListener);
+    }
+
+    @Override
+    public void jumpToPage(int page) {
+        if (page == 1)
+            syncData("");
+        else {
+            String pageUrl = getPageUrl();
+            HttpUtil.getEuropeVideoListAsync(String.format(pageUrl, String.valueOf(page)), mOnJumpPageCallbackListener);
+        }
     }
 
     @Override
@@ -174,6 +193,7 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                 case REFRESH_DATA_SUCCESS:
                 case SYNC_DATA_SUCCESS:
                 case LOAD_MORE_SUCCESS:
+                case JUMP_PAGE_SUCCESS:
                     mClass.get().addData((List<Data>) msg.obj, what);
                     break;
                 case GET_URL_FAILURE:
@@ -185,12 +205,16 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                         mClass.get().mOnSyncDataFinishListener.onFailure((String) msg.obj);
                     break;
                 case LOAD_MORE_FAILURE:
-                    if (mClass.get().mOnLoadMoreFinishListener != null)
-                        mClass.get().mOnLoadMoreFinishListener.onFailure((String) msg.obj);
+                    if (mClass.get().mOnLoadNextFinishListener != null)
+                        mClass.get().mOnLoadNextFinishListener.onFailure((String) msg.obj);
                     break;
                 case REFRESH_DATA_FAILURE:
-                    if (mClass.get().mOnRefreshDataFinishListener != null)
-                        mClass.get().mOnRefreshDataFinishListener.onFailure((String) msg.obj);
+                    if (mClass.get().mOnLoadPreviousFinishListener != null)
+                        mClass.get().mOnLoadPreviousFinishListener.onFailure((String) msg.obj);
+                    break;
+                case JUMP_PAGE_FAILURE:
+                    if (mClass.get().mOnJumpPageFinishListener != null)
+                        mClass.get().mOnJumpPageFinishListener.onFailure((String) msg.obj);
                     break;
                 default:
                     break;

@@ -34,7 +34,8 @@ import java.util.List;
 public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapter.ViewHolder> {
 
     public static final int SYNC_DATA_SUCCESS = 0, LOAD_MORE_SUCCESS = 1, REFRESH_DATA_SUCCESS = 2,
-            SYNC_DATA_FAILURE = 3, LOAD_MORE_FAILURE = 4, REFRESH_DATA_FAILURE = 5;
+            SYNC_DATA_FAILURE = 3, LOAD_MORE_FAILURE = 4, REFRESH_DATA_FAILURE = 5,
+            JUMP_PAGE_SUCCESS = 6, JUMP_PAGE_FAILURE = 7;
     protected final String URL;
 
     //item类型
@@ -45,14 +46,14 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     int mLayoutId;
     protected List<Data> mData;
     OnItemClickListener mOnItemClickListener;
-    protected OnLoadMoreFinishListener mOnLoadMoreFinishListener;
-    protected OnSyncDataFinishListener mOnSyncDataFinishListener;
-    protected OnRefreshDataFinishListener mOnRefreshDataFinishListener;
+    protected OnFinishListener mOnLoadNextFinishListener, mOnSyncDataFinishListener,
+            mOnLoadPreviousFinishListener, mOnJumpPageFinishListener;
     protected String mNextPageUrl;
     protected HttpUtil.HttpRequestCallbackListener mSyncDataCallbackListener,
-            mLoadMoreCallbackListener, mRefreshDataCallbackListener;
+            mLoadNextCallbackListener, mLoadPreviousCallbackListener,mOnJumpPageCallbackListener;
     Handler mHandler;
     private boolean isOwnerDestroyed;
+    private int mCurrentPage, mTotalPages;
 
     public BaseListAdapter(Context context, int layoutId, List<Data> data) {
         mContext = context;
@@ -80,7 +81,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
                     sendFailureMessage(SYNC_DATA_FAILURE, reason);
             }
         };
-        mLoadMoreCallbackListener = new HttpUtil.HttpRequestCallbackListener() {
+        mLoadNextCallbackListener = new HttpUtil.HttpRequestCallbackListener() {
 
             @Override
             public void onSuccess(List<Data> data, String nextPage) {
@@ -99,7 +100,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
                     sendFailureMessage(LOAD_MORE_FAILURE, reason);
             }
         };
-        mRefreshDataCallbackListener = new HttpUtil.HttpRequestCallbackListener() {
+        mLoadPreviousCallbackListener = new HttpUtil.HttpRequestCallbackListener() {
             @Override
             public void onSuccess(List<Data> data, String nextPage) {
                 if (!isOwnerDestroyed)
@@ -115,6 +116,24 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             public void onFailure(Exception e, String reason) {
                 if (!isOwnerDestroyed)
                     sendFailureMessage(REFRESH_DATA_FAILURE, reason);
+            }
+        };
+        mOnJumpPageCallbackListener = new HttpUtil.HttpRequestCallbackListener() {
+            @Override
+            public void onSuccess(List<Data> data, String nextPage) {
+                if (!isOwnerDestroyed)
+                    sendSuccessMessage(JUMP_PAGE_SUCCESS, data, nextPage);
+            }
+
+            @Override
+            public void onSuccess(Bitmap bitmap) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e, String reason) {
+                if (!isOwnerDestroyed)
+                    sendFailureMessage(JUMP_PAGE_FAILURE, reason);
             }
         };
     }
@@ -226,21 +245,31 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     }
 
     public void addData(List<Data> data, int what) {
-        if (data != null) {
-            mData.addAll(data);
-            notifyItemRangeChanged(getDataSize(), data.size());
+        if (data != null && !data.isEmpty()) {
+            mCurrentPage = data.get(0).getCurrentPage();
+            mTotalPages = data.get(0).getTotalPages();
+            mData = new ArrayList<>();
+            notifyDataSetChanged();
+            for (int i = 0; i < data.size(); i++) {
+                mData.add(data.get(i));
+                notifyItemInserted(i);
+            }
             switch (what) {
                 case SYNC_DATA_SUCCESS:
                     if (mOnSyncDataFinishListener != null)
                         mOnSyncDataFinishListener.onFinish();
                     break;
                 case LOAD_MORE_SUCCESS:
-                    if (mOnLoadMoreFinishListener != null)
-                        mOnLoadMoreFinishListener.onFinish();
+                    if (mOnLoadNextFinishListener != null)
+                        mOnLoadNextFinishListener.onFinish();
                     break;
                 case REFRESH_DATA_SUCCESS:
-                    if (mOnRefreshDataFinishListener != null)
-                        mOnRefreshDataFinishListener.onFinish();
+                    if (mOnLoadPreviousFinishListener != null)
+                        mOnLoadPreviousFinishListener.onFinish();
+                    break;
+                case JUMP_PAGE_SUCCESS:
+                    if (mOnJumpPageFinishListener != null)
+                        mOnJumpPageFinishListener.onFinish();
                     break;
                 default:
                     break;
@@ -254,6 +283,8 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         ObjectOutputStream oos = null;
         try {
             mData.get(0).setNextPageUrl(mNextPageUrl);
+            mData.get(0).setCurrentPage(mCurrentPage);
+            mData.get(0).setTotalPages(mTotalPages);
             oos = new ObjectOutputStream(os);
             oos.writeObject(mData);
             oos.flush();
@@ -290,7 +321,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     }
 
     protected void restoreDataFromStorage(final InputStream is, final HttpUtil.HttpRequestCallbackListener listener) {
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 List<Data> result;
@@ -298,6 +329,8 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
                 try {
                     ois = new ObjectInputStream(is);
                     result = (List<Data>) ois.readObject();
+                    mCurrentPage = result.get(0).getCurrentPage();
+                    mTotalPages = result.get(0).getTotalPages();
                     listener.onSuccess(result, result.get(0).getNextPageUrl());
                 } catch (Exception e) {
                     listener.onFailure(e, "");
@@ -316,15 +349,19 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     public abstract void syncData(@NonNull String url);
 
-    public abstract void loadMore();
+    public abstract void loadNext();
 
-    public abstract void refreshData();
+    public abstract void loadPrevious();
+
+    public abstract void jumpToPage(int page);
 
     protected abstract String getUrl();
 
+    protected abstract String getPageUrl();
+
     protected abstract Handler getHandler();
 
-    public int getDataSize() {
+    int getDataSize() {
         return mData.size();
     }
 
@@ -339,6 +376,18 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         System.gc();
     }
 
+    public int getCurrentPage() {
+        return mCurrentPage;
+    }
+
+    public void setCurrentPage(int mCurrentPage) {
+        this.mCurrentPage = mCurrentPage;
+    }
+
+    public int getTotalPages() {
+        return mTotalPages;
+    }
+
     public void setOwnerIsDestroyed() {
         isOwnerDestroyed = true;
     }
@@ -351,28 +400,30 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         void onClick(String url, String title, int position);
     }
 
-    public void setOnSyncDataFinishListener(OnSyncDataFinishListener listener) {
+    public void setOnSyncDataFinishListener(OnFinishListener listener) {
         mOnSyncDataFinishListener = listener;
     }
 
-    public interface OnSyncDataFinishListener {
+    public void setOnLoadMoreFinishListener(OnFinishListener listener) {
+        mOnLoadNextFinishListener = listener;
+    }
+
+    public void setOnRefreshDataFinishListener(OnFinishListener listener) {
+        mOnLoadPreviousFinishListener = listener;
+    }
+
+    public void setOnJumpPageFinishListener(OnFinishListener listener) {
+        mOnJumpPageFinishListener = listener;
+    }
+
+    public OnFinishListener getOnSyncDataFinishListener(){
+        return mOnSyncDataFinishListener;
+    }
+
+    public interface OnFinishListener {
         void onFinish();
 
         void onFailure(String reason);
-    }
-
-    public void setOnLoadMoreFinishListener(OnLoadMoreFinishListener listener) {
-        mOnLoadMoreFinishListener = listener;
-    }
-
-    public interface OnLoadMoreFinishListener extends OnSyncDataFinishListener {
-    }
-
-    public void setOnRefreshDataFinishListener(OnRefreshDataFinishListener listener) {
-        mOnRefreshDataFinishListener = listener;
-    }
-
-    public interface OnRefreshDataFinishListener extends OnSyncDataFinishListener {
     }
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {

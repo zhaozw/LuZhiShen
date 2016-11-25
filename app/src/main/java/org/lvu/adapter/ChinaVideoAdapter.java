@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +23,11 @@ public class ChinaVideoAdapter extends EuropeVideoAdapter {
     }
 
     @Override
+    protected String getPageUrl() {
+        return "https://www.haoxxoo09.com/category/2-%s.html";
+    }
+
+    @Override
     public void syncData(@NonNull String url) {
         if (url.isEmpty())
             url = URL;
@@ -31,18 +35,22 @@ public class ChinaVideoAdapter extends EuropeVideoAdapter {
     }
 
     @Override
-    public void loadMore() {
+    public void loadNext() {
         if (mNextPageUrl == null || mNextPageUrl.isEmpty())
             syncData("");
         else
-            HttpUtil.getChinaVideoListAsync(mNextPageUrl, mLoadMoreCallbackListener);
+            HttpUtil.getChinaVideoListAsync(mNextPageUrl, mLoadNextCallbackListener);
     }
 
     @Override
-    public void refreshData() {
-        HttpUtil.getChinaVideoListAsync(URL, mRefreshDataCallbackListener);
-        mData = new ArrayList<>();
-        notifyDataSetChanged();
+    public void loadPrevious() {
+        int page = getCurrentPage() - 1;
+        if (page <= 1) {
+            syncData("");
+            return;
+        }
+        String pageUrl = getPageUrl();
+        HttpUtil.getChinaVideoListAsync(String.format(pageUrl, String.valueOf(page)), mLoadPreviousCallbackListener);
     }
 
     @Override
@@ -53,9 +61,18 @@ public class ChinaVideoAdapter extends EuropeVideoAdapter {
             HttpUtil.getChinaVideoUrlByUrl(
                     mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
                             mData.size() - 1 : holder.getAdapterPosition()).getUrl(), mCallBackListener);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-     }
+    }
 
+    @Override
+    public void jumpToPage(int page) {
+        if (page == 1)
+            syncData("");
+        else {
+            String pageUrl = getPageUrl();
+            HttpUtil.getChinaVideoListAsync(String.format(pageUrl, String.valueOf(page)), mOnJumpPageCallbackListener);
+        }
+    }
 }

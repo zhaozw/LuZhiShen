@@ -33,7 +33,7 @@ public class FamilyPhotoFragment extends EuropePictureFragment  {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(FamilyPhotoFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 }

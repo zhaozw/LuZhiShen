@@ -58,7 +58,7 @@ public class FunnyJokeFragment extends BaseListFragment {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(FunnyJokeFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 }

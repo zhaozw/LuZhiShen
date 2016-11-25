@@ -34,7 +34,7 @@ public class JapanVideoFragment extends ChinaVideoFragment  {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(JapanVideoFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 }

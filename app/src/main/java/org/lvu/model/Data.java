@@ -7,7 +7,8 @@ import java.io.Serializable;
  */
 public class Data implements Serializable {
 
-    private String url, src, text, nextPageUrl;
+    private String url, src, text, nextPageUrl, previousPageUrl;
+    private int currentPage, totalPages;
 
     public Data(String url, String src, String text) {
         this.url = url;
@@ -37,5 +38,29 @@ public class Data implements Serializable {
 
     public void setNextPageUrl(String nextPageUrl) {
         this.nextPageUrl = nextPageUrl;
+    }
+
+    public void setPreviousPageUrl(String url) {
+        previousPageUrl = url;
+    }
+
+    public String getPreviousPageUrl() {
+        return previousPageUrl == null ? "" : previousPageUrl;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
     }
 }

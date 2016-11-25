@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +23,11 @@ public class ExcitedNovelAdapter extends EuropePictureAdapter {
     }
 
     @Override
+    protected String getPageUrl() {
+        return "http://fv3333.com/html/part/17_%s.html";
+    }
+
+    @Override
     public void syncData(@NonNull String url) {
         if (url.isEmpty())
             url = URL;
@@ -31,18 +35,21 @@ public class ExcitedNovelAdapter extends EuropePictureAdapter {
     }
 
     @Override
-    public void loadMore() {
+    public void loadNext() {
         if (mNextPageUrl == null || mNextPageUrl.isEmpty())
             syncData("");
         else
-            HttpUtil.getNovelListAsync(mNextPageUrl, mLoadMoreCallbackListener);
+            HttpUtil.getNovelListAsync(mNextPageUrl, mLoadNextCallbackListener);
     }
 
     @Override
-    public void refreshData() {
-        HttpUtil.getNovelListAsync(URL, mRefreshDataCallbackListener);
-        mData = new ArrayList<>();
-        notifyDataSetChanged();
+    public void loadPrevious() {
+        int page = getCurrentPage() - 1;
+        if (page <= 1) {
+            syncData("");
+            return;
+        }
+        String pageUrl = getPageUrl();
+        HttpUtil.getNovelListAsync(String.format(pageUrl, String.valueOf(page)), mLoadPreviousCallbackListener);
     }
-
 }

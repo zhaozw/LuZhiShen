@@ -7,10 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +22,7 @@ import org.lvu.adapter.EuropeVideoAdapter;
 import org.lvu.adapter.JapanVideoAdapter;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
+import org.lvu.customize.RefreshLayout;
 import org.lvu.customize.VideoPlayer;
 import org.lvu.main.activities.MainActivity;
 import org.lvu.utils.ImmerseUtil;
@@ -41,12 +39,11 @@ public abstract class BaseListFragment extends Fragment {
 
     protected View mRootView;
     protected RecyclerView mRecyclerView;
-    private SwipeRefreshLayout mRefreshLayout;
-    protected CircleProgressBar mLoadMoreBar;
-    protected boolean isLoadingMore = true, isLoadBarHiding;
+    private RefreshLayout mRefreshLayout;
+    protected CircleProgressBar mJumpBar;
+    protected boolean isJumping;
     protected VideoPlayer mPlayer;
     protected BaseListAdapter mAdapter;
-    private boolean flag = true;
 
     @Nullable
     @Override
@@ -73,8 +70,6 @@ public abstract class BaseListFragment extends Fragment {
                     return false;
                 else {
                     mPlayer.exit();
-                    if (isLoadingMore)
-                        showLoadMoreBar();
                     return true;
                 }
             }
@@ -95,68 +90,66 @@ public abstract class BaseListFragment extends Fragment {
                 if (mRecyclerView.getVisibility() != View.VISIBLE)
                     mRecyclerView.setVisibility(View.VISIBLE);
                 ((MainActivity) getActivity()).showToolbar();
-                if (isLoadingMore)
-                    showLoadMoreBar();
             }
         });
     }
 
     private void initAdapter() {
         mAdapter = getAdapter();
-        mAdapter.setOnSyncDataFinishListener(new BaseListAdapter.OnSyncDataFinishListener() {
+        mAdapter.setOnSyncDataFinishListener(new BaseListAdapter.OnFinishListener() {
             @Override
             public void onFinish() {
-                hideLoadMoreBar();
-                if (mRefreshLayout.isRefreshing())
-                    mRefreshLayout.setRefreshing(false);
+                handleOnFinish();
             }
 
             @Override
             public void onFailure(String reason) {
                 handleOnFailure(reason);
-                if (mRefreshLayout.isRefreshing())
-                    mRefreshLayout.setRefreshing(false);
             }
         });
-        mAdapter.setOnLoadMoreFinishListener(new BaseListAdapter.OnLoadMoreFinishListener() {
-            @Override
-            public void onFinish() {
-                hideLoadMoreBar();
-                if (mRefreshLayout.isRefreshing())
-                    mRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void onFailure(String reason) {
-                handleOnFailure(reason);
-                if (mRefreshLayout.isRefreshing())
-                    mRefreshLayout.setRefreshing(false);
-            }
-        });
-        mAdapter.setOnRefreshDataFinishListener(new BaseListAdapter.OnRefreshDataFinishListener() {
-            @Override
-            public void onFinish() {
-                hideLoadMoreBar();
-                if (mRefreshLayout.isRefreshing())
-                    mRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void onFailure(String reason) {
-                handleOnFailure(reason);
-                if (mRefreshLayout.isRefreshing())
-                    mRefreshLayout.setRefreshing(false);
-            }
-        });
+        mAdapter.setOnLoadMoreFinishListener(mAdapter.getOnSyncDataFinishListener());
+        mAdapter.setOnRefreshDataFinishListener(mAdapter.getOnSyncDataFinishListener());
+        mAdapter.setOnJumpPageFinishListener(mAdapter.getOnSyncDataFinishListener());
         mAdapter.setOnItemClickListener(getOnItemClickListener());
         restoreAdapterData();
+    }
+
+    private void handleOnFinish() {
+        ((MainActivity) getActivity()).setTotalPages(mAdapter.getTotalPages());
+        ((MainActivity) getActivity()).setCurrentPage(mAdapter.getCurrentPage());
+        if (mRefreshLayout.isRefreshing())
+            mRefreshLayout.setRefreshing(false);
+        if (isJumping)
+            hideJumpBar();
+        mRecyclerView.smoothScrollToPosition(0);
+    }
+
+    private boolean flag = true;
+
+    private void handleOnFailure(String reason) {
+        if (flag && reason.equals("无可用网络。\t(向右滑动清除)")) {
+            if (isJumping) {
+                try {
+                    mJumpBar.setVisibility(View.GONE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                isJumping = false;
+                mRefreshLayout.setEnabled(true);
+            }
+        } else if (isJumping)
+            hideJumpBar();
+        if (mRefreshLayout.isRefreshing())
+            mRefreshLayout.setRefreshing(false);
+        flag = false;
+        MySnackBar.show(mRootView.findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
     }
 
     private void initRecyclerView() {
         mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recycler_view);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(getLayoutManager());
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+       /* mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             //用来标记是否正在向最后一个滑动，既是否向下滑动
             boolean isSlidingToLast;
@@ -173,10 +166,10 @@ public abstract class BaseListFragment extends Fragment {
                     int totalItemCount = manager.getItemCount();
 
                     // 判断是否滚动到底部
-                    if (!mRefreshLayout.isRefreshing() && isSlidingToLast && !isLoadBarHiding && !isLoadingMore &&
-                            lastVisiblePos == (totalItemCount - 1)) {
-                        showLoadMoreBar();
-                        mAdapter.loadMore();
+                    if (!mRefreshLayout.isRefreshing() && isSlidingToLast && !isLoadBarHiding && !isJumping &&
+                            lastVisiblePos == totalItemCount) {
+                        showJumpBar();
+                        mAdapter.loadNext();
                     }
                 }
             }
@@ -185,13 +178,13 @@ public abstract class BaseListFragment extends Fragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 isSlidingToLast = isScrollDown(dy);
                 if (recyclerView.getLayoutManager() instanceof LinearLayoutManager)
-                    if (!mRefreshLayout.isRefreshing() && isSlidingToLast && !isLoadBarHiding && !isLoadingMore &&
+                    if (!mRefreshLayout.isRefreshing() && isSlidingToLast && !isLoadBarHiding && !isJumping &&
                             (((LinearLayoutManager) recyclerView.getLayoutManager())
                                     .findLastVisibleItemPosition() == mAdapter.getDataSize() - 1 ||
                                     ((LinearLayoutManager) recyclerView.getLayoutManager())
                                             .findLastVisibleItemPosition() == mAdapter.getDataSize() - 2)) {
-                        showLoadMoreBar();
-                        mAdapter.loadMore();
+                        showJumpBar();
+                        mAdapter.loadNext();
                     }
             }
         });
@@ -207,18 +200,19 @@ public abstract class BaseListFragment extends Fragment {
 
     protected boolean isScrollDown(int y) {
         return y > 0;
+    }*/
     }
 
     private void initRefreshLayout() {
-        mLoadMoreBar = (CircleProgressBar) mRootView.findViewById(R.id.progressbar);
+        mJumpBar = (CircleProgressBar) mRootView.findViewById(R.id.progressbar);
         if (ImmerseUtil.isHasNavigationBar(getActivity())) {
-            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
+            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mJumpBar.getLayoutParams();
             lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(getActivity());
-            mLoadMoreBar.setLayoutParams(lp);
+            mJumpBar.setLayoutParams(lp);
         }
-        mRefreshLayout = (SwipeRefreshLayout) mRootView.findViewById(R.id.refresh_layout);
+        mRefreshLayout = (RefreshLayout) mRootView.findViewById(R.id.refresh_layout);
         mRefreshLayout.setColorSchemeResources(R.color.menu_text_color);
-        mLoadMoreBar.setColorSchemeResources(R.color.menu_text_color);
+        mJumpBar.setColorSchemeResources(R.color.menu_text_color);
         List<Integer> data = new ArrayList<>();
         int[] array = R.styleable.AppCompatTheme;
         for (int tmp : array)
@@ -228,21 +222,38 @@ public abstract class BaseListFragment extends Fragment {
                 .getResources().getColor(R.color.bluePrimary));
         mRefreshLayout.setProgressBackgroundColorSchemeColor(color);
         a.recycle();
-        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mRefreshLayout.setOnRefreshListener(new RefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mAdapter.refreshData();
+                mAdapter.loadPrevious();
+            }
+
+            @Override
+            public void onLoad() {
+                mAdapter.loadNext();
             }
         });
+        isJumping = true;
+        mRefreshLayout.setEnabled(false);
     }
 
-    private void showLoadMoreBar() {
-        if (isLoadBarHiding)
-            return;
-        isLoadingMore = true;
-        TranslateAnimation animation = new TranslateAnimation(0, 0, 150, 0);
-        animation.setDuration(250);
-        animation.setAnimationListener(new Animation.AnimationListener() {
+    private Animation showAnimation;
+
+    private void showJumpBar() {
+        isJumping = true;
+        if (showAnimation == null)
+            initShowAnimation();
+        try {
+            mJumpBar.startAnimation(showAnimation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initShowAnimation() {
+        showAnimation = new TranslateAnimation(0, 0, 150, 0);
+        showAnimation.setDuration(250);
+        showAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 
@@ -250,7 +261,7 @@ public abstract class BaseListFragment extends Fragment {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                mLoadMoreBar.setVisibility(View.VISIBLE);
+                mJumpBar.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -258,11 +269,6 @@ public abstract class BaseListFragment extends Fragment {
 
             }
         });
-        try {
-            mLoadMoreBar.startAnimation(animation);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private boolean isAnimationNormalEnd;
@@ -277,11 +283,10 @@ public abstract class BaseListFragment extends Fragment {
             }
             if (!isAnimationNormalEnd) {
                 try {
-                    mLoadMoreBar.post(new Runnable() {
+                    mJumpBar.post(new Runnable() {
                         @Override
                         public void run() {
-                            mLoadMoreBar.setVisibility(View.GONE);
-                            isLoadBarHiding = false;
+                            mJumpBar.setVisibility(View.GONE);
                         }
                     });
                 } catch (Exception e2) {
@@ -292,37 +297,21 @@ public abstract class BaseListFragment extends Fragment {
     }
 
     ExecutorService threadPool = Executors.newSingleThreadExecutor();
+    private Animation hideAnimation;
 
-    private void hideLoadMoreBar() {
-        if (isLoadingMore || mLoadMoreBar.getVisibility() == View.VISIBLE) {
-            isLoadingMore = false;
-            isLoadBarHiding = true;
-            ScaleAnimation animation = new ScaleAnimation(
-                    1, 0, 1, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-            animation.setDuration(250);
-            animation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    mLoadMoreBar.setVisibility(View.GONE);
-                    isLoadBarHiding = false;
-                    isAnimationNormalEnd = true;
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            });
+    private void hideJumpBar() {
+        if (isJumping || mJumpBar.getVisibility() == View.VISIBLE) {
+            isJumping = false;
+            mRefreshLayout.setEnabled(true);
+            if (hideAnimation == null)
+                initHideAnimation();
             try {
                 isAnimationNormalEnd = false;
-                mLoadMoreBar.startAnimation(animation);
+                mJumpBar.startAnimation(hideAnimation);
                 threadPool.execute(new HideLoadMoreBarThread());
             } catch (Exception e) {
                 try {
-                    mLoadMoreBar.setVisibility(View.GONE);
+                    mJumpBar.setVisibility(View.GONE);
                 } catch (Exception e2) {
                     e2.printStackTrace();
                 }
@@ -331,18 +320,25 @@ public abstract class BaseListFragment extends Fragment {
         }
     }
 
-    private void handleOnFailure(String reason) {
-        if (flag && reason.equals("无可用网络。\t(向右滑动清除)")) {
-            try {
-                mLoadMoreBar.setVisibility(View.GONE);
-            } catch (Exception e) {
-                e.printStackTrace();
+    private void initHideAnimation() {
+        hideAnimation = new ScaleAnimation(
+                1, 0, 1, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        hideAnimation.setDuration(250);
+        hideAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
             }
-            isLoadingMore = false;
-        } else
-            hideLoadMoreBar();
-        flag = false;
-        MySnackBar.show(mRootView.findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE);
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mJumpBar.setVisibility(View.GONE);
+                isAnimationNormalEnd = true;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
     }
 
     @Override
@@ -352,6 +348,13 @@ public abstract class BaseListFragment extends Fragment {
             changeToLandscape();
         else
             changeToPortrait();
+    }
+
+    public void jumpToPage(int page) {
+        mAdapter.jumpToPage(page);
+        mAdapter.setCurrentPage(page);
+        showJumpBar();
+        mRefreshLayout.setEnabled(false);
     }
 
     public void changeToLandscape() {

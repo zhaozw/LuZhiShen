@@ -1,5 +1,6 @@
 package org.lvu.main.activities;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -9,14 +10,18 @@ import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -55,10 +60,14 @@ import io.vov.vitamio.Vitamio;
 public class MainActivity extends BaseActivity implements MenuListAdapter.OnItemClickListener {
 
     private Toolbar mToolbar;
+    private TextView mTitle, mTotalPages;
+    private TextInputEditText mCurrentPage;
     private DrawerLayout mDrawerLayout;
     private View mTopView;
     private MenuList mMenuList;
+    private static int mFragmentPosition = -1, mStringId = -1;
     private BaseListFragment mShowingFragment;
+    private int totalPages;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,11 +81,13 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
 
     private void initFragment() {
         Intent intent = getIntent();
-        int position = intent.getIntExtra(NavigationActivity.POSITION, -1),
-                stringId = intent.getIntExtra(NavigationActivity.STRING_ID, -1);
-        if (position != -1 && stringId != -1) {
-            mMenuList.setSelectedPos(position);
-            onClick(stringId);
+        if (mStringId == -1)
+            mStringId = intent.getIntExtra(NavigationActivity.STRING_ID, -1);
+        if (mFragmentPosition == -1)
+            mFragmentPosition = NavigationActivity.getPositionById(mStringId);
+        if (mFragmentPosition != -1 && mStringId != -1) {
+            mMenuList.setSelectedPos(mFragmentPosition);
+            onClick(mStringId);
         }
     }
 
@@ -86,6 +97,11 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.wait_replace, fragment).commitAllowingStateLoss();
         mShowingFragment = fragment;
+        mCurrentPage.setText("");
+        mCurrentPage.setVisibility(View.GONE);
+        mCurrentPage.clearFocus();
+        mTotalPages.setText("");
+        mTotalPages.setVisibility(View.GONE);
     }
 
     public void hideToolbar() {
@@ -128,8 +144,34 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
 
     private void initViews() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(R.string.menu_navigation);
         setSupportActionBar(mToolbar);
+        mTitle = (TextView) mToolbar.findViewById(R.id.title);
+        mTotalPages = (TextView) mToolbar.findViewById(R.id.total_page);
+        mCurrentPage = (TextInputEditText) mToolbar.findViewById(R.id.current_page);
+        mCurrentPage.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    int cp;
+                    try {
+                        cp = Integer.parseInt(mCurrentPage.getText().toString());
+                    } catch (NumberFormatException e) {
+                        setCurrentPage(1);
+                        cp = 1;
+                    }
+                    if (cp > totalPages)
+                        cp = totalPages;
+                    if (cp < 1)
+                        cp = 1;
+                    mCurrentPage.clearFocus();
+                    hideInputMethod();
+                    if (mShowingFragment != null)
+                        mShowingFragment.jumpToPage(cp);
+                    return true;
+                }
+                return false;
+            }
+        });
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -199,6 +241,28 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
         mOnBackPressedListener = listener;
     }
 
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+        mTotalPages.setText(String.format("页共%s页", totalPages + ""));
+        mTotalPages.setVisibility(View.VISIBLE);
+    }
+
+    public void setCurrentPage(int currentPage) {
+        if (currentPage > totalPages)
+            currentPage = totalPages;
+        if (currentPage < 1)
+            currentPage = 1;
+        mCurrentPage.setText(String.valueOf(currentPage));
+        mCurrentPage.setVisibility(View.VISIBLE);
+    }
+
+    private void hideInputMethod() {
+        // 隐藏输入法
+        InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        // 显示或者隐藏输入法
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
     @Override
     public void onClick(int stringId) {
         BaseListFragment fragment;
@@ -248,7 +312,9 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
         }
         if (fragment != null)
             showFragment(fragment);
-        mToolbar.setTitle(stringId);
+        mStringId = stringId;
+        mFragmentPosition = NavigationActivity.getPositionById(stringId);
+        mTitle.setText(stringId);
         closeDrawer();
     }
 
@@ -310,8 +376,10 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                 e.printStackTrace();
             }
         }*/
-        mShowingFragment.saveAdapterData();
-        mShowingFragment = null;
+        if (mShowingFragment != null) {
+            mShowingFragment.saveAdapterData();
+            mShowingFragment = null;
+        }
         ImageLoader.getInstance().clearMemoryCache();
         //ImageLoader.getInstance().clearDiskCache();
         //获取缓存路径

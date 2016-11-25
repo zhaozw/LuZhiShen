@@ -10,7 +10,6 @@ import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +36,11 @@ public class GifPictureAdapter extends EvilComicsAdapter {
     }
 
     @Override
+    protected String getPageUrl() {
+        return "http://www.lovefou.com/dongtaitu/list_%s.html";
+    }
+
+    @Override
     public void syncData(@NonNull String url) {
         if (url.isEmpty())
             url = URL;
@@ -44,18 +48,32 @@ public class GifPictureAdapter extends EvilComicsAdapter {
     }
 
     @Override
-    public void loadMore() {
+    public void loadNext() {
         if (mNextPageUrl == null || mNextPageUrl.isEmpty())
             syncData("");
         else
-            HttpUtil.getGifList(mNextPageUrl, mLoadMoreCallbackListener);
+            HttpUtil.getGifList(mNextPageUrl, mLoadNextCallbackListener);
     }
 
     @Override
-    public void refreshData() {
-        HttpUtil.getGifList(URL, mRefreshDataCallbackListener);
-        mData = new ArrayList<>();
-        notifyDataSetChanged();
+    public void loadPrevious() {
+        int page = getCurrentPage() - 1;
+        if (page <= 1) {
+            syncData("");
+            return;
+        }
+        String pageUrl = getPageUrl();
+        HttpUtil.getGifList(String.format(pageUrl, String.valueOf(page)), mLoadPreviousCallbackListener);
+    }
+
+    @Override
+    public void jumpToPage(int page) {
+        if (page == 1)
+            syncData("");
+        else {
+            String pageUrl = getPageUrl();
+            HttpUtil.getGifList(String.format(pageUrl, String.valueOf(page)), mOnJumpPageCallbackListener);
+        }
     }
 
     public static class ViewHolder extends BasePictureListAdapter.ViewHolder {

@@ -16,7 +16,12 @@ public class SchoolNovelAdapter extends ExcitedNovelAdapter {
     }
 
     @Override
-    protected String getUrl(){
+    protected String getUrl() {
         return "http://fv3333.com/html/part/19.html";
+    }
+
+    @Override
+    protected String getPageUrl() {
+        return "http://fv3333.com/html/part/19_%s.html";
     }
 }

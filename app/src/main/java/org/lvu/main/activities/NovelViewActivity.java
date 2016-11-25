@@ -20,6 +20,9 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import org.lvu.R;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
@@ -27,6 +30,11 @@ import org.lvu.model.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +49,8 @@ public class NovelViewActivity extends BaseActivity {
     protected CircleProgressBar mLoadMoreBar;
     private TextView mContent;
     protected Handler mHandler;
+    private HashCodeFileNameGenerator mNameGenerator;
+    private File dir = ImageLoader.getInstance().getDiskCache().getDirectory();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,14 +63,12 @@ public class NovelViewActivity extends BaseActivity {
 
     private void initViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        String title = TextUtils.isEmpty(getIntent().getStringExtra(PicturesViewActivity.TITLE))?
-                        "全部内容" : getIntent().getStringExtra(PicturesViewActivity.TITLE);
+        String title = TextUtils.isEmpty(getIntent().getStringExtra(PicturesViewActivity.TITLE)) ?
+                "全部内容" : getIntent().getStringExtra(PicturesViewActivity.TITLE);
         getSupportActionBar().setTitle(title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mContent = (TextView) findViewById(R.id.text_view);
-
-        startSyncData();
 
         mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
         if (ImmerseUtil.isHasNavigationBar(this)) {
@@ -78,41 +86,76 @@ public class NovelViewActivity extends BaseActivity {
                 getResources().getColor(R.color.bluePrimary));
         mLoadMoreBar.setBackgroundColor(color);
         a.recycle();
+
+        startSyncData();
     }
 
     protected void startSyncData() {
-        HttpUtil.getNovelContentAsync(getIntent().getStringExtra(PicturesViewActivity.URL), new HttpUtil.HttpRequestCallbackListener() {
-            @Override
-            public void onSuccess(List<Data> tmp, String textContent) {
-                Message message = new Message();
-                message.obj = textContent;
-                mHandler.sendMessage(message);
-            }
-
-            @Override
-            public void onSuccess(Bitmap bitmap) {
-
-            }
-
-            @Override
-            public void onFailure(Exception e, String reason) {
-                if (reason.equals("无可用网络。\t(向右滑动清除)")) {
+        mNameGenerator = new HashCodeFileNameGenerator();
+        final String url = getIntent().getStringExtra(PicturesViewActivity.URL);
+        File bitmapFile = new File(dir, mNameGenerator.generate(url));
+        if (bitmapFile.exists()) {
+            BufferedReader br = null;
+            try {
+                StringBuilder content = new StringBuilder();
+                String buff;
+                br = new BufferedReader(new FileReader(bitmapFile));
+                while ((buff = br.readLine()) != null)
+                    content.append(buff).append("\n");
+                mContent.setText(content);
+            } catch (Exception e) {
+                e.printStackTrace();
+                MySnackBar.show(findViewById(R.id.coordinator), getString(R.string.load_data_fail), Snackbar.LENGTH_SHORT);
+            } finally {
+                mLoadMoreBar.setVisibility(View.GONE);
+                if (br != null) {
                     try {
-                        mLoadMoreBar.setVisibility(View.GONE);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
+                        br.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } else
-                    hideLoadMoreBar();
-                MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
-                        getString(R.string.back), new View.OnClickListener() {
+                }
+            }
+        } else {
+            HttpUtil.getNovelContentAsync(url, new HttpUtil.HttpRequestCallbackListener() {
+                @Override
+                public void onSuccess(List<Data> tmp, String textContent) {
+                    new WriteDataThread(textContent, mNameGenerator.generate(url)).start();
+                    Message message = new Message();
+                    message.obj = textContent;
+                    mHandler.sendMessage(message);
+                }
+
+                @Override
+                public void onSuccess(Bitmap bitmap) {
+
+                }
+
+                @Override
+                public void onFailure(Exception e, String reason) {
+                    if (reason.equals("无可用网络。\t(向右滑动清除)")) {
+                        try {
+                            mLoadMoreBar.setVisibility(View.GONE);
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                    } else
+                        mLoadMoreBar.post(new Runnable() {
                             @Override
-                            public void onClick(View v) {
-                                onBackPressed();
+                            public void run() {
+                                hideLoadMoreBar();
                             }
                         });
-            }
-        });
+                    MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
+                            getString(R.string.back), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    onBackPressed();
+                                }
+                            });
+                }
+            });
+        }
     }
 
     private void initImmerse() {
@@ -147,11 +190,23 @@ public class NovelViewActivity extends BaseActivity {
         }
     }
 
+    private Animation hideAnimation;
+
     protected void hideLoadMoreBar() {
-        ScaleAnimation animation = new ScaleAnimation(
+        if (hideAnimation == null)
+            initHideAnimation();
+        try {
+            mLoadMoreBar.startAnimation(hideAnimation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initHideAnimation() {
+        hideAnimation = new ScaleAnimation(
                 1, 0, 1, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        animation.setDuration(250);
-        animation.setAnimationListener(new Animation.AnimationListener() {
+        hideAnimation.setDuration(250);
+        hideAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 
@@ -167,11 +222,6 @@ public class NovelViewActivity extends BaseActivity {
 
             }
         });
-        try {
-            mLoadMoreBar.startAnimation(animation);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void changeToLandscape() {
@@ -233,7 +283,7 @@ public class NovelViewActivity extends BaseActivity {
 
         private WeakReference<NovelViewActivity> mClass;
 
-        public MyHandler(NovelViewActivity clazz) {
+        MyHandler(NovelViewActivity clazz) {
             mClass = new WeakReference<>(clazz);
         }
 
@@ -245,6 +295,42 @@ public class NovelViewActivity extends BaseActivity {
             } else {
                 msg.obj = null;
                 System.gc();
+            }
+        }
+    }
+
+    public class WriteDataThread extends Thread {
+
+        private String data, name;
+
+        WriteDataThread(String data, String name) {
+            this.data = data;
+            this.name = name;
+        }
+
+        @Override
+        public void run() {
+            FileWriter fw = null;
+            try {
+                if (data == null || data.isEmpty())
+                    throw new IOException("data is empty");
+
+                if (name == null || name.isEmpty())
+                    throw new IOException("name is empty");
+
+                fw = new FileWriter(new File(dir, name));
+                fw.write(data);
+                fw.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (fw != null) {
+                    try {
+                        fw.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }

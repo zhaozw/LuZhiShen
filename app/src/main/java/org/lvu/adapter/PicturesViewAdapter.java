@@ -90,12 +90,12 @@ public class PicturesViewAdapter extends BasePictureListAdapter {
     }
 
     @Override
-    public void loadMore() {
+    public void loadNext() {
         //do nothing
     }
 
     @Override
-    public void refreshData() {
+    public void loadPrevious() {
         //do nothing
     }
 
@@ -103,5 +103,15 @@ public class PicturesViewAdapter extends BasePictureListAdapter {
     protected String getUrl() {
         //do nothing
         return null;
+    }
+
+    @Override
+    protected String getPageUrl() {
+        return null;
+    }
+
+    @Override
+    public void jumpToPage(int page) {
+        //do nothing
     }
 }

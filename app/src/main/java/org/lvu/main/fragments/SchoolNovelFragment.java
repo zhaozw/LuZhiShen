@@ -33,7 +33,7 @@ public class SchoolNovelFragment extends ExcitedNovelFragment {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(SchoolNovelFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 }

@@ -56,7 +56,7 @@ public class EvilComicsFragment extends BaseListFragment {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(EvilComicsFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 }

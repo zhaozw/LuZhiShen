@@ -33,7 +33,7 @@ public class LewdWifeNovelFragment extends ExcitedNovelFragment  {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(LewdWifeNovelFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 }

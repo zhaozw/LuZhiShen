@@ -35,8 +35,8 @@ public class ChinaVideoFragment extends BaseListFragment {
                     MySnackBar.show(mRootView.findViewById(R.id.coordinator), url, Snackbar.LENGTH_LONG);
                     return;
                 }
-                if (mLoadMoreBar.getVisibility() == View.VISIBLE)
-                    mLoadMoreBar.setVisibility(View.GONE);
+                if (mJumpBar.getVisibility() == View.VISIBLE)
+                    mJumpBar.setVisibility(View.GONE);
                 if (getActivity() == null)
                     return;
                 ((MainActivity) getActivity()).setDrawerLockMode(true);
@@ -69,7 +69,7 @@ public class ChinaVideoFragment extends BaseListFragment {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(ChinaVideoFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 }

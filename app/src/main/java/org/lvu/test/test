@@ -1,20 +1,56 @@
-<div class="pageNav px14">
-    <div class="pages">页次：<strong>
-        <em>1</em>/186</strong>页
-    </div>
-    <div class="pageList">
-        <a href="index.htm">首页</a>
-        <a href="/htm/novellist1/1.htm" target="_parent">上一页</a>
-        <strong>1</strong>
-        <a href="2.htm">2</a>
-        <a href="3.htm">3</a>
-        <a href="4.htm">4</a>
-        <a href="5.htm">5</a>
-        <a href="6.htm">6</a>
-        <a href="7.htm">7</a>
-        <a href="8.htm">8</a>
-        <a href="9.htm">9</a>
-        <a href="/htm/novellist1/2.htm" target="_parent">下一页</a>
-        <a href="186.htm">尾页</a>
-    </div>
-</div>
+<ul class="pagelist">
+    <li><a href='list_1_1.html'>首页</a></li>
+    <li><a href='list_1_21.html'>上一页</a></li>
+    <li><a href='list_1_17.html'>17</a></li>
+    <li><a href='list_1_18.html'>18</a></li>
+    <li><a href='list_1_19.html'>19</a></li>
+    <li><a href='list_1_20.html'>20</a></li>
+    <li><a href='list_1_21.html'>21</a></li>
+    <li class="thisclass">22</li>
+    <li><a href='list_1_23.html'>23</a></li>
+    <li><a href='list_1_24.html'>24</a></li>
+    <li><a href='list_1_25.html'>25</a></li>
+    <li><a href='list_1_26.html'>26</a></li>
+    <li><a href='list_1_27.html'>27</a></li>
+    <li><a href='list_1_23.html'>下一页</a></li>
+    <li><a href='list_1_36.html'>末页</a></li>
+    <li><select name='sldd' style='width:42px' onchange='location.href=this.options[this.selectedIndex].value;'>
+        <option value='list_1_1.html'>1</option>
+        <option value='list_1_2.html'>2</option>
+        <option value='list_1_3.html'>3</option>
+        <option value='list_1_4.html'>4</option>
+        <option value='list_1_5.html'>5</option>
+        <option value='list_1_6.html'>6</option>
+        <option value='list_1_7.html'>7</option>
+        <option value='list_1_8.html'>8</option>
+        <option value='list_1_9.html'>9</option>
+        <option value='list_1_10.html'>10</option>
+        <option value='list_1_11.html'>11</option>
+        <option value='list_1_12.html'>12</option>
+        <option value='list_1_13.html'>13</option>
+        <option value='list_1_14.html'>14</option>
+        <option value='list_1_15.html'>15</option>
+        <option value='list_1_16.html'>16</option>
+        <option value='list_1_17.html'>17</option>
+        <option value='list_1_18.html'>18</option>
+        <option value='list_1_19.html'>19</option>
+        <option value='list_1_20.html'>20</option>
+        <option value='list_1_21.html'>21</option>
+        <option value='list_1_22.html' selected>22</option>
+        <option value='list_1_23.html'>23</option>
+        <option value='list_1_24.html'>24</option>
+        <option value='list_1_25.html'>25</option>
+        <option value='list_1_26.html'>26</option>
+        <option value='list_1_27.html'>27</option>
+        <option value='list_1_28.html'>28</option>
+        <option value='list_1_29.html'>29</option>
+        <option value='list_1_30.html'>30</option>
+        <option value='list_1_31.html'>31</option>
+        <option value='list_1_32.html'>32</option>
+        <option value='list_1_33.html'>33</option>
+        <option value='list_1_34.html'>34</option>
+        <option value='list_1_35.html'>35</option>
+        <option value='list_1_36.html'>36</option>
+    </select></li>
+    <li><span class="pageinfo">共 <strong>36</strong>页<strong>1277</strong>条</span></li>
+</ul>

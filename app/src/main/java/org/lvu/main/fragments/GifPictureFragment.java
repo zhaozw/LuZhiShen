@@ -73,7 +73,7 @@ public class GifPictureFragment extends BaseListFragment {
                                 holder.progress.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        MySnackBar.show(mRootView.findViewById(R.id.coordinator), "加载图片失败", Snackbar.LENGTH_SHORT);
+                                        MySnackBar.show(mRootView.findViewById(R.id.coordinator), getString(R.string.load_pic_fail), Snackbar.LENGTH_SHORT);
                                     }
                                 });
                             } finally {
@@ -136,11 +136,11 @@ public class GifPictureFragment extends BaseListFragment {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(GifPictureFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 
-    class WriteDataThread extends Thread {
+    public class WriteDataThread extends Thread {
 
         private String name;
         private byte[] data;

@@ -33,7 +33,7 @@ public class AsiaPictureFragment extends EuropePictureFragment {
         try {
             mAdapter.restoreDataFromStorage(getActivity().openFileInput(AsiaPictureFragment.class.getSimpleName()));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mAdapter.syncData("");
         }
     }
 }

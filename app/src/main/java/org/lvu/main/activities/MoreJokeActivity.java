@@ -41,7 +41,12 @@ public class MoreJokeActivity extends NovelViewActivity {
                         e1.printStackTrace();
                     }
                 } else
-                    hideLoadMoreBar();
+                    mLoadMoreBar.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            hideLoadMoreBar();
+                        }
+                    });
                 MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
                         getString(R.string.back), new View.OnClickListener() {
                             @Override
