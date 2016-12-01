@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -32,6 +33,7 @@ import org.lvu.customize.MySnackBar;
 import org.lvu.main.fragments.AsiaPictureFragment;
 import org.lvu.main.fragments.BaseListFragment;
 import org.lvu.main.fragments.ChinaVideoFragment;
+import org.lvu.main.fragments.DownloadManagerFragment;
 import org.lvu.main.fragments.EuropePictureFragment;
 import org.lvu.main.fragments.EuropeVideoFragment;
 import org.lvu.main.fragments.EvilComicsFragment;
@@ -66,7 +68,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
     private View mTopView;
     private MenuList mMenuList;
     private static int mFragmentPosition = -1, mStringId = -1;
-    private BaseListFragment mShowingFragment;
+    private Fragment mShowingFragment;
     private int totalPages;
 
     @Override
@@ -80,19 +82,25 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
     }
 
     private void initFragment() {
-        Intent intent = getIntent();
-        if (mStringId == -1)
-            mStringId = intent.getIntExtra(NavigationActivity.STRING_ID, -1);
-        if (mFragmentPosition == -1)
-            mFragmentPosition = NavigationActivity.getPositionById(mStringId);
-        if (mFragmentPosition != -1 && mStringId != -1) {
-            mMenuList.setSelectedPos(mFragmentPosition);
-            onClick(mStringId);
+        if (mStringId == -2 && mFragmentPosition == -2) {
+            showFragment(new DownloadManagerFragment());
+            mMenuList.setSelectedItem(MenuList.MenuItem.DOWNLOAD_MANAGER);
+            mTitle.setText(R.string.download_manager);
+        }else {
+            Intent intent = getIntent();
+            if (mStringId == -1)
+                mStringId = intent.getIntExtra(NavigationActivity.STRING_ID, -1);
+            if (mFragmentPosition == -1)
+                mFragmentPosition = NavigationActivity.getPositionById(mStringId);
+            if (mFragmentPosition != -1 && mStringId != -1) {
+                mMenuList.setSelectedPos(mFragmentPosition);
+                onClick(mStringId);
+            }
         }
     }
 
-    private void showFragment(BaseListFragment fragment) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && this.isDestroyed())
+    private void showFragment(Fragment fragment) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())
             return;
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.wait_replace, fragment).commitAllowingStateLoss();
@@ -166,7 +174,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                     mCurrentPage.clearFocus();
                     hideInputMethod();
                     if (mShowingFragment != null)
-                        mShowingFragment.jumpToPage(cp);
+                        ((BaseListFragment) mShowingFragment).jumpToPage(cp);
                     return true;
                 }
                 return false;
@@ -187,6 +195,16 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                 switch (v.getId()) {
                     case R.id.change_skin:
                         changeSkin();
+                        break;
+                    case R.id.download_manager:
+                        if (mShowingFragment instanceof DownloadManagerFragment)
+                            break;
+                        showFragment(new DownloadManagerFragment());
+                        mMenuList.setSelectedItem(MenuList.MenuItem.DOWNLOAD_MANAGER);
+                        mStringId = -2;
+                        mFragmentPosition = -2;
+                        mTitle.setText(R.string.download_manager);
+                        closeDrawer();
                         break;
                     case R.id.exit:
                         exit();
@@ -265,6 +283,8 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
 
     @Override
     public void onClick(int stringId) {
+        if (mMenuList != null)
+            mMenuList.clearSelected();
         BaseListFragment fragment;
         switch (stringId) {
             case R.string.menu_china_video:
@@ -377,7 +397,8 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
             }
         }*/
         if (mShowingFragment != null) {
-            mShowingFragment.saveAdapterData();
+            if (mShowingFragment instanceof BaseListFragment)
+                ((BaseListFragment) mShowingFragment).saveAdapterData();
             mShowingFragment = null;
         }
         ImageLoader.getInstance().clearMemoryCache();

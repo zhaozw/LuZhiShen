@@ -48,7 +48,7 @@ public class GifPictureFragment extends BaseListFragment {
     protected BaseListAdapter.OnItemClickListener getOnItemClickListener() {
         return new BaseListAdapter.OnItemClickListener() {
             @Override
-            public void onClick(String url, String title, final int position) {
+            public void onClick(String url, String text, final int position) {
                 int firstItemPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
                 if (position - firstItemPosition >= 0) {
                     //得到要更新的item的view
@@ -118,8 +118,24 @@ public class GifPictureFragment extends BaseListFragment {
     }
 
     @Override
+    protected BaseListAdapter.OnItemLongClickListener getOnItemLongClickListener() {
+        return new BaseListAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onLongClick(Data item) {
+                showDialog(item, getString(R.string.download_this_gif));
+                return true;
+            }
+        };
+    }
+
+    @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
         return new LinearLayoutManager(getActivity());
+    }
+
+    @Override
+    protected void longClickLogic(Data data) {
+
     }
 
     @Override

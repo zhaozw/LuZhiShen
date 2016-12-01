@@ -34,4 +34,7 @@
     <dimen name="dp_0">0dp</dimen>
     <dimen name="dp_5">5dp</dimen>
     <dimen name="dp_40">40dp</dimen>
+    <dimen name="sp_16">16sp</dimen>
+    <dimen name="dp_77">77dp</dimen>
+    <dimen name="dp_61">61dp</dimen>
 </resources>

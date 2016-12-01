@@ -46,11 +46,12 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     int mLayoutId;
     protected List<Data> mData;
     OnItemClickListener mOnItemClickListener;
+    OnItemLongClickListener mOnItemLongClickListener;
     protected OnFinishListener mOnLoadNextFinishListener, mOnSyncDataFinishListener,
             mOnLoadPreviousFinishListener, mOnJumpPageFinishListener;
     protected String mNextPageUrl;
     protected HttpUtil.HttpRequestCallbackListener mSyncDataCallbackListener,
-            mLoadNextCallbackListener, mLoadPreviousCallbackListener,mOnJumpPageCallbackListener;
+            mLoadNextCallbackListener, mLoadPreviousCallbackListener, mOnJumpPageCallbackListener;
     Handler mHandler;
     private boolean isOwnerDestroyed;
     private int mCurrentPage, mTotalPages;
@@ -186,6 +187,20 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
                                 mOnItemClickListener.onClick(data.getUrl(), data.getText(), pos);
                             } catch (Exception e) {
                                 e.printStackTrace();
+                            }
+                        }
+                    });
+                if (mOnItemLongClickListener != null)
+                    holder.root.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            try {
+                                int pos = holder.getAdapterPosition();
+                                return mOnItemLongClickListener.onLongClick(mData.get(pos != 0 && pos >= mData.size() ?
+                                        mData.size() - 1 : pos));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                return false;
                             }
                         }
                     });
@@ -396,8 +411,16 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         mOnItemClickListener = listener;
     }
 
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        mOnItemLongClickListener = listener;
+    }
+
     public interface OnItemClickListener {
-        void onClick(String url, String title, int position);
+        void onClick(String url, String text, int position);
+    }
+
+    public interface OnItemLongClickListener {
+        boolean onLongClick(Data item);
     }
 
     public void setOnSyncDataFinishListener(OnFinishListener listener) {
@@ -416,7 +439,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         mOnJumpPageFinishListener = listener;
     }
 
-    public OnFinishListener getOnSyncDataFinishListener(){
+    public OnFinishListener getOnSyncDataFinishListener() {
         return mOnSyncDataFinishListener;
     }
 

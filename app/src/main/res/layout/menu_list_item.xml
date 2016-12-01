@@ -2,9 +2,9 @@
 <com.balysv.materialripple.MaterialRippleLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ripple_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/ripple_layout"
     app:mrl_rippleColor="@color/ripple_color"
     app:mrl_rippleOverlay="true">
 
@@ -16,14 +16,15 @@
         android:clickable="true"
         android:orientation="horizontal"
         android:paddingBottom="@dimen/dp_3"
-        android:paddingTop="@dimen/dp_3">
+        android:paddingTop="@dimen/dp_3"
+        tools:background="?attr/colorPrimary">
 
         <ImageView
             android:id="@+id/icon"
             android:layout_width="@dimen/dp_45"
             android:layout_height="@dimen/dp_45"
-            android:layout_marginLeft="@dimen/dp_12"
-            android:layout_marginRight="@dimen/dp_6"
+            android:layout_marginLeft="@dimen/dp_8"
+            android:layout_marginRight="@dimen/dp_8"
             android:padding="@dimen/dp_8"
             tools:src="@drawable/ic_navigation" />
 
@@ -31,10 +32,10 @@
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginRight="@dimen/dp_42"
+            android:layout_marginRight="@dimen/dp_61"
             android:gravity="center_vertical"
             android:textColor="@color/menu_text_color"
-            android:textSize="@dimen/sp_18"
+            android:textSize="@dimen/sp_17"
             tools:text="漫画大全" />
     </LinearLayout>
 </com.balysv.materialripple.MaterialRippleLayout>

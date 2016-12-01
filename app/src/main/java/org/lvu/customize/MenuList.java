@@ -23,7 +23,7 @@ public class MenuList extends LinearLayout {
 
     private RecyclerView mRecyclerView;
     private MenuListAdapter mAdapter;
-    private View mChangeSkinButton, mExitButton, mBottomView;
+    private View mChangeSkinView, mDownloadManagerView, mExitView, mBottomView;
     private Context mContext;
 
     public MenuList(Context context) {
@@ -45,8 +45,9 @@ public class MenuList extends LinearLayout {
         mContext = context;
         View view = LayoutInflater.from(context).inflate(R.layout.menu_list_view, this);
         mBottomView = view.findViewById(R.id.bottom_view);
-        mChangeSkinButton = view.findViewById(R.id.change_skin);
-        mExitButton = view.findViewById(R.id.exit);
+        mChangeSkinView = view.findViewById(R.id.change_skin);
+        mDownloadManagerView = view.findViewById(R.id.download_manager);
+        mExitView = view.findViewById(R.id.exit);
 
         if (ImmerseUtil.isAboveKITKAT() && ImmerseUtil.isHasNavigationBar(context)) {
             LayoutParams bottomLP = new LayoutParams(
@@ -85,6 +86,28 @@ public class MenuList extends LinearLayout {
         mRecyclerView.scrollToPosition(position);
     }
 
+    public void clearSelected(){
+        mChangeSkinView.setSelected(false);
+        mDownloadManagerView.setSelected(false);
+        mExitView.setSelected(false);
+    }
+
+    public void setSelectedItem(MenuItem type){
+        mAdapter.clearSelected();
+        switch (type){
+            case CHANGE_SKIN:
+                mChangeSkinView.setSelected(true);
+                break;
+            case DOWNLOAD_MANAGER:
+                mDownloadManagerView.setSelected(true);
+                break;
+            case EXIT:
+                mExitView.setSelected(true);
+                break;
+            default:
+        }
+    }
+
     public void changeToLandscape() {
         if (ImmerseUtil.isAboveKITKAT()) {
             mRecyclerView.setPadding(0, 0, 0, 0);
@@ -106,8 +129,12 @@ public class MenuList extends LinearLayout {
     }
 
     public void setOnClickListener(OnClickListener listener) {
-        mChangeSkinButton.setOnClickListener(listener);
-        mExitButton.setOnClickListener(listener);
+        mChangeSkinView.setOnClickListener(listener);
+        mDownloadManagerView.setOnClickListener(listener);
+        mExitView.setOnClickListener(listener);
     }
 
+    public enum MenuItem {
+        CHANGE_SKIN, DOWNLOAD_MANAGER, EXIT
+    }
 }

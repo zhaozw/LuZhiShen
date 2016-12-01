@@ -30,7 +30,7 @@ public class ChinaVideoFragment extends BaseListFragment {
     protected BaseListAdapter.OnItemClickListener getOnItemClickListener() {
         return new BaseListAdapter.OnItemClickListener() {
             @Override
-            public void onClick(String url, String title, int position) {
+            public void onClick(String url, String text, int position) {
                 if (url.equals(HttpUtil.REASON_NO_INTERNET_CONNECT) || url.equals(HttpUtil.REASON_CONNECT_SERVER_FAILURE)) {
                     MySnackBar.show(mRootView.findViewById(R.id.coordinator), url, Snackbar.LENGTH_LONG);
                     return;
@@ -49,9 +49,25 @@ public class ChinaVideoFragment extends BaseListFragment {
     }
 
     @Override
+    protected BaseListAdapter.OnItemLongClickListener getOnItemLongClickListener() {
+        return new BaseListAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onLongClick(Data item) {
+                showDialog(item,getString(R.string.download_this_video));
+                return true;
+            }
+        };
+    }
+
+    @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
         //return new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         return new LinearLayoutManager(getActivity());
+    }
+
+    @Override
+    protected void longClickLogic(Data data) {
+
     }
 
     @Override
@@ -62,7 +78,6 @@ public class ChinaVideoFragment extends BaseListFragment {
             e.printStackTrace();
         }
     }
-
 
     @Override
     protected void restoreAdapterData() {

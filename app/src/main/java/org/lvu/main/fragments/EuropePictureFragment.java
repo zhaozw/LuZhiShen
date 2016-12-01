@@ -27,11 +27,22 @@ public class EuropePictureFragment extends BaseListFragment {
     protected BaseListAdapter.OnItemClickListener getOnItemClickListener() {
         return new BaseListAdapter.OnItemClickListener() {
             @Override
-            public void onClick(String url, String title, int position) {
+            public void onClick(String url, String text, int position) {
                 Intent intent = new Intent(getActivity(), PicturesViewActivity.class);
                 intent.putExtra(PicturesViewActivity.URL, url);
-                intent.putExtra(PicturesViewActivity.TITLE, title);
+                intent.putExtra(PicturesViewActivity.TITLE, text);
                 startActivity(intent);
+            }
+        };
+    }
+
+    @Override
+    protected BaseListAdapter.OnItemLongClickListener getOnItemLongClickListener() {
+        return new BaseListAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onLongClick(Data item) {
+                showDialog(item,getString(R.string.download_this_item_pic));
+                return true;
             }
         };
     }
@@ -42,6 +53,11 @@ public class EuropePictureFragment extends BaseListFragment {
     }
 
     @Override
+    protected void longClickLogic(Data data) {
+
+    }
+
+    @Override
     public void saveAdapterData() {
         try {
             mAdapter.saveDataToStorage(getActivity().openFileOutput(EuropePictureFragment.class.getSimpleName(), Context.MODE_PRIVATE));
@@ -49,7 +65,6 @@ public class EuropePictureFragment extends BaseListFragment {
             e.printStackTrace();
         }
     }
-
 
     @Override
     protected void restoreAdapterData() {

@@ -19,6 +19,40 @@
         app:mrl_rippleColor="@color/ripple_color">
 
         <LinearLayout
+            android:id="@+id/download_manager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/menu_selector"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/dp_3"
+            android:paddingTop="@dimen/dp_3">
+
+            <ImageView
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
+                android:layout_marginLeft="@dimen/dp_8"
+                android:layout_marginRight="@dimen/dp_8"
+                android:padding="@dimen/dp_8"
+                android:src="@drawable/ic_menu_exit" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/dp_61"
+                android:gravity="center_vertical"
+                android:text="@string/download_manager"
+                android:textColor="@color/menu_text_color"
+                android:textSize="@dimen/sp_17" />
+        </LinearLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
+
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:mrl_rippleColor="@color/ripple_color">
+
+        <LinearLayout
             android:id="@+id/change_skin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,19 +65,19 @@
             <ImageView
                 android:layout_width="@dimen/dp_45"
                 android:layout_height="@dimen/dp_45"
-                android:layout_marginLeft="@dimen/dp_12"
-                android:layout_marginRight="@dimen/dp_6"
+                android:layout_marginLeft="@dimen/dp_8"
+                android:layout_marginRight="@dimen/dp_8"
                 android:padding="@dimen/dp_8"
                 android:src="@drawable/ic_skin" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginRight="@dimen/dp_42"
+                android:layout_marginRight="@dimen/dp_61"
                 android:gravity="center_vertical"
                 android:text="@string/change_skin"
                 android:textColor="@color/menu_text_color"
-                android:textSize="@dimen/sp_18" />
+                android:textSize="@dimen/sp_17" />
         </LinearLayout>
     </com.balysv.materialripple.MaterialRippleLayout>
 
@@ -65,19 +99,19 @@
             <ImageView
                 android:layout_width="@dimen/dp_45"
                 android:layout_height="@dimen/dp_45"
-                android:layout_marginLeft="@dimen/dp_12"
-                android:layout_marginRight="@dimen/dp_6"
+                android:layout_marginLeft="@dimen/dp_8"
+                android:layout_marginRight="@dimen/dp_8"
                 android:padding="@dimen/dp_8"
                 android:src="@drawable/ic_menu_exit" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginRight="@dimen/dp_42"
+                android:layout_marginRight="@dimen/dp_61"
                 android:gravity="center_vertical"
                 android:text="@string/exit"
                 android:textColor="@color/menu_text_color"
-                android:textSize="@dimen/sp_18" />
+                android:textSize="@dimen/sp_17" />
         </LinearLayout>
     </com.balysv.materialripple.MaterialRippleLayout>
 

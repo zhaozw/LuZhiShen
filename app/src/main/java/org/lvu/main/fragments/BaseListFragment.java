@@ -1,5 +1,6 @@
 package org.lvu.main.fragments;
 
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,7 @@ import org.lvu.customize.MySnackBar;
 import org.lvu.customize.RefreshLayout;
 import org.lvu.customize.VideoPlayer;
 import org.lvu.main.activities.MainActivity;
+import org.lvu.model.Data;
 import org.lvu.utils.ImmerseUtil;
 
 import java.util.ArrayList;
@@ -111,10 +114,13 @@ public abstract class BaseListFragment extends Fragment {
         mAdapter.setOnRefreshDataFinishListener(mAdapter.getOnSyncDataFinishListener());
         mAdapter.setOnJumpPageFinishListener(mAdapter.getOnSyncDataFinishListener());
         mAdapter.setOnItemClickListener(getOnItemClickListener());
+        mAdapter.setOnItemLongClickListener(getOnItemLongClickListener());
         restoreAdapterData();
     }
 
     private void handleOnFinish() {
+        if (getActivity() == null)
+            return;
         ((MainActivity) getActivity()).setTotalPages(mAdapter.getTotalPages());
         ((MainActivity) getActivity()).setCurrentPage(mAdapter.getCurrentPage());
         if (mRefreshLayout.isRefreshing())
@@ -395,6 +401,17 @@ public abstract class BaseListFragment extends Fragment {
         super.onDetach();
     }
 
+    protected void showDialog(final Data data, String itemName) {
+        new AlertDialog.Builder(getActivity()).setItems(new String[]{itemName}, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                longClickLogic(data);
+            }
+        }).show();
+    }
+
+    protected abstract void longClickLogic(Data data);
+
     public abstract void saveAdapterData();
 
     protected abstract void restoreAdapterData();
@@ -402,6 +419,8 @@ public abstract class BaseListFragment extends Fragment {
     protected abstract BaseListAdapter getAdapter();
 
     protected abstract BaseListAdapter.OnItemClickListener getOnItemClickListener();
+
+    protected abstract BaseListAdapter.OnItemLongClickListener getOnItemLongClickListener();
 
     protected abstract RecyclerView.LayoutManager getLayoutManager();
 }

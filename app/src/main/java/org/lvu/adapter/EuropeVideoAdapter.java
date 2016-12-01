@@ -118,6 +118,20 @@ public class EuropeVideoAdapter extends BasePictureListAdapter {
                             getVideoUrlByUrl(holder);
                         }
                     });
+                if (mOnItemLongClickListener != null)
+                    holder.root.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            try {
+                                int pos = holder.getAdapterPosition();
+                                return mOnItemLongClickListener.onLongClick(mData.get(pos != 0 && pos >= mData.size() ?
+                                        mData.size() - 1 : pos));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                return false;
+                            }
+                        }
+                    });
             } catch (Exception e) {
                 e.printStackTrace();
             }
