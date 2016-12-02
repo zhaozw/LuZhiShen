@@ -15,7 +15,7 @@
         android:clickable="true"
         app:cardBackgroundColor="?attr/colorAccent"
         app:cardCornerRadius="@dimen/dp_0"
-        app:cardElevation="@dimen/dp_3"
+        app:cardPreventCornerOverlap="true"
         app:cardUseCompatPadding="true">
 
         <LinearLayout
@@ -33,7 +33,7 @@
                 android:layout_marginLeft="@dimen/dp_6"
                 android:layout_marginRight="@dimen/dp_6"
                 android:padding="@dimen/dp_8"
-                tools:src="@drawable/ic_navigation" />
+                tools:src="@drawable/ic_book" />
 
             <TextView
                 android:id="@+id/name"

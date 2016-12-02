@@ -45,7 +45,8 @@ import java.util.List;
 @SuppressWarnings("ConstantConditions")
 public class NovelViewActivity extends BaseActivity {
 
-    private View mTopView, mBottomView;
+    private View mBottomView;
+    private Toolbar mToolbar;
     protected CircleProgressBar mLoadMoreBar;
     private TextView mContent;
     protected Handler mHandler;
@@ -62,10 +63,11 @@ public class NovelViewActivity extends BaseActivity {
     }
 
     private void initViews() {
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         String title = TextUtils.isEmpty(getIntent().getStringExtra(PicturesViewActivity.TITLE)) ?
                 "全部内容" : getIntent().getStringExtra(PicturesViewActivity.TITLE);
-        getSupportActionBar().setTitle(title);
+        mToolbar.setTitle(title);
+        setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mContent = (TextView) findViewById(R.id.text_view);
@@ -171,11 +173,6 @@ public class NovelViewActivity extends BaseActivity {
             window.setFlags(
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            //init topView
-            mTopView = findViewById(R.id.status_bar_view);
-            AppBarLayout.LayoutParams topLP = new AppBarLayout.LayoutParams(
-                    AppBarLayout.LayoutParams.MATCH_PARENT, ImmerseUtil.getStatusBarHeight(this));
-            mTopView.setLayoutParams(topLP);
             if (ImmerseUtil.isHasNavigationBar(this)) {
                 //init bottomView
                 mBottomView = findViewById(R.id.navigation_bar_view);
@@ -225,7 +222,7 @@ public class NovelViewActivity extends BaseActivity {
     }
 
     private void changeToLandscape() {
-        mTopView.setVisibility(View.GONE);
+        mToolbar.setPadding(0, 0, 0, 0);
         if (mBottomView != null)
             mBottomView.setVisibility(View.GONE);
         int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -238,7 +235,7 @@ public class NovelViewActivity extends BaseActivity {
     }
 
     private void changeToPortrait() {
-        mTopView.setVisibility(View.VISIBLE);
+        mToolbar.setPadding(0, ImmerseUtil.getStatusBarHeight(this), 0, 0);
         if (mBottomView != null)
             mBottomView.setVisibility(View.VISIBLE);
         getWindow().getDecorView().setSystemUiVisibility(

@@ -59,8 +59,8 @@ public class MenuList extends LinearLayout {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         mRecyclerView.setAdapter(mAdapter =
                 new MenuListAdapter(context, R.layout.menu_list_item, initData()));
-        if (ImmerseUtil.isAboveKITKAT())
-            mRecyclerView.setPadding(0, ImmerseUtil.getStatusBarHeight(context), 0, 0);
+        /*if (ImmerseUtil.isAboveKITKAT())
+            mRecyclerView.setPadding(0, ImmerseUtil.getStatusBarHeight(context), 0, 0);*/
     }
 
     private List<Menu> initData() {
@@ -86,15 +86,15 @@ public class MenuList extends LinearLayout {
         mRecyclerView.scrollToPosition(position);
     }
 
-    public void clearSelected(){
+    public void clearSelected() {
         mChangeSkinView.setSelected(false);
         mDownloadManagerView.setSelected(false);
         mExitView.setSelected(false);
     }
 
-    public void setSelectedItem(MenuItem type){
+    public void setSelectedItem(MenuItem type) {
         mAdapter.clearSelected();
-        switch (type){
+        switch (type) {
             case CHANGE_SKIN:
                 mChangeSkinView.setSelected(true);
                 break;
@@ -110,17 +110,33 @@ public class MenuList extends LinearLayout {
 
     public void changeToLandscape() {
         if (ImmerseUtil.isAboveKITKAT()) {
-            mRecyclerView.setPadding(0, 0, 0, 0);
+            //mRecyclerView.setPadding(0, 0, 0, 0);
             if (ImmerseUtil.isHasNavigationBar(mContext))
                 mBottomView.setVisibility(GONE);
+            int position = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+            MenuListAdapter.ViewHolder holder = null;
+            if (position >= 0) {
+                View view = mRecyclerView.getChildAt(position);
+                if (view != null && mRecyclerView.getChildViewHolder(view) != null)
+                    holder = (MenuListAdapter.ViewHolder) mRecyclerView.getChildViewHolder(view);
+            }
+            mAdapter.setOrientation(MenuListAdapter.Orientation.LANDSCAPE, position, holder);
         }
     }
 
     public void changeToPortrait() {
         if (ImmerseUtil.isAboveKITKAT()) {
-            mRecyclerView.setPadding(0, ImmerseUtil.getStatusBarHeight(mContext), 0, 0);
+            //mRecyclerView.setPadding(0, ImmerseUtil.getStatusBarHeight(mContext), 0, 0);
             if (ImmerseUtil.isHasNavigationBar(mContext))
                 mBottomView.setVisibility(VISIBLE);
+            int position = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+            MenuListAdapter.ViewHolder holder = null;
+            if (position >= 0) {
+                View view = mRecyclerView.getChildAt(position);
+                if (view != null && mRecyclerView.getChildViewHolder(view) != null)
+                    holder = (MenuListAdapter.ViewHolder) mRecyclerView.getChildViewHolder(view);
+            }
+            mAdapter.setOrientation(MenuListAdapter.Orientation.PORTRAIT, position, holder);
         }
     }
 

@@ -29,7 +29,8 @@ import java.util.List;
 public class NavigationActivity extends BaseActivity {
 
     public static final String STRING_ID = "StringId";
-    private View mTopView, mBottomView;
+    private View mBottomView;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +41,8 @@ public class NavigationActivity extends BaseActivity {
     }
 
     private void initViews() {
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         NavigationList videoArea = (NavigationList) findViewById(R.id.area_video),
                 pictureArea = (NavigationList) findViewById(R.id.area_picture),
@@ -165,11 +167,6 @@ public class NavigationActivity extends BaseActivity {
             window.setFlags(
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            //init topView
-            mTopView = findViewById(R.id.status_bar_view);
-            AppBarLayout.LayoutParams topLP = new AppBarLayout.LayoutParams(
-                    AppBarLayout.LayoutParams.MATCH_PARENT, ImmerseUtil.getStatusBarHeight(this));
-            mTopView.setLayoutParams(topLP);
             if (ImmerseUtil.isHasNavigationBar(this)) {
                 //init bottomView
                 mBottomView = findViewById(R.id.navigation_bar_view);
@@ -185,7 +182,7 @@ public class NavigationActivity extends BaseActivity {
     }
 
     private void changeToLandscape() {
-        mTopView.setVisibility(View.GONE);
+        mToolbar.setPadding(0, 0, 0, 0);
         if (mBottomView != null)
             mBottomView.setVisibility(View.GONE);
         int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -198,7 +195,7 @@ public class NavigationActivity extends BaseActivity {
     }
 
     private void changeToPortrait() {
-        mTopView.setVisibility(View.VISIBLE);
+        mToolbar.setPadding(0, ImmerseUtil.getStatusBarHeight(this), 0, 0);
         if (mBottomView != null)
             mBottomView.setVisibility(View.VISIBLE);
         getWindow().getDecorView().setSystemUiVisibility(

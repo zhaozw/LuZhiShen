@@ -135,7 +135,7 @@ public class GifPictureFragment extends BaseListFragment {
 
     @Override
     protected void longClickLogic(Data data) {
-
+        //TODO: if gif is cached auto play gif
     }
 
     @Override

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
@@ -30,7 +31,8 @@ import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
  */
 public class ErrorActivity extends BaseActivity {
 
-    private View mTopView, mBottomView;
+    private View mBottomView;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,6 +44,8 @@ public class ErrorActivity extends BaseActivity {
 
     @SuppressWarnings("ConstantConditions")
     private void initViews() {
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
         //Close/restart button logic:
         //If a class if set, use restart.
         //Else, use close and just finish the app.
@@ -135,10 +139,6 @@ public class ErrorActivity extends BaseActivity {
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             //init topView
-            mTopView = findViewById(R.id.status_bar_view);
-            AppBarLayout.LayoutParams topLP = new AppBarLayout.LayoutParams(
-                    AppBarLayout.LayoutParams.MATCH_PARENT, ImmerseUtil.getStatusBarHeight(this));
-            mTopView.setLayoutParams(topLP);
             if (ImmerseUtil.isHasNavigationBar(this)) {
                 //init bottomView
                 mBottomView = findViewById(R.id.navigation_bar_view);
@@ -154,7 +154,7 @@ public class ErrorActivity extends BaseActivity {
     }
 
     private void changeToLandscape() {
-        mTopView.setVisibility(View.GONE);
+        mToolbar.setPadding(0, 0, 0, 0);
         if (mBottomView != null)
             mBottomView.setVisibility(View.GONE);
         int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -167,7 +167,7 @@ public class ErrorActivity extends BaseActivity {
     }
 
     private void changeToPortrait() {
-        mTopView.setVisibility(View.VISIBLE);
+        mToolbar.setPadding(0, ImmerseUtil.getStatusBarHeight(this), 0, 0);
         if (mBottomView != null)
             mBottomView.setVisibility(View.VISIBLE);
         getWindow().getDecorView().setSystemUiVisibility(

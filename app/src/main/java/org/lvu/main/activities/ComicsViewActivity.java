@@ -47,7 +47,8 @@ import java.util.List;
 @SuppressWarnings("ConstantConditions")
 public class ComicsViewActivity extends BaseActivity {
 
-    private View mTopView, mBottomView;
+    private View mBottomView;
+    private Toolbar mToolbar;
     private CircleProgressBar mLoadMoreBar;
     private ImageView mContent;
     private Handler mHandler;
@@ -64,8 +65,9 @@ public class ComicsViewActivity extends BaseActivity {
     }
 
     private void initViews() {
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(getIntent().getStringExtra(PicturesViewActivity.TITLE));
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle(getIntent().getStringExtra(PicturesViewActivity.TITLE));
+        setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mContent = (ImageView) findViewById(R.id.image_view);
@@ -152,11 +154,6 @@ public class ComicsViewActivity extends BaseActivity {
             window.setFlags(
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            //init topView
-            mTopView = findViewById(R.id.status_bar_view);
-            AppBarLayout.LayoutParams topLP = new AppBarLayout.LayoutParams(
-                    AppBarLayout.LayoutParams.MATCH_PARENT, ImmerseUtil.getStatusBarHeight(this));
-            mTopView.setLayoutParams(topLP);
             if (ImmerseUtil.isHasNavigationBar(this)) {
                 //init bottomView
                 mBottomView = findViewById(R.id.navigation_bar_view);
@@ -208,7 +205,7 @@ public class ComicsViewActivity extends BaseActivity {
     }
 
     private void changeToLandscape() {
-        mTopView.setVisibility(View.GONE);
+        mToolbar.setPadding(0, 0, 0, 0);
         if (mBottomView != null)
             mBottomView.setVisibility(View.GONE);
         int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -221,7 +218,7 @@ public class ComicsViewActivity extends BaseActivity {
     }
 
     private void changeToPortrait() {
-        mTopView.setVisibility(View.VISIBLE);
+        mToolbar.setPadding(0, ImmerseUtil.getStatusBarHeight(this), 0, 0);
         if (mBottomView != null)
             mBottomView.setVisibility(View.VISIBLE);
         getWindow().getDecorView().setSystemUiVisibility(

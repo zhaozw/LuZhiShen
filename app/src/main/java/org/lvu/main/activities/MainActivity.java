@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -65,7 +64,6 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
     private TextView mTitle, mTotalPages;
     private TextInputEditText mCurrentPage;
     private DrawerLayout mDrawerLayout;
-    private View mTopView;
     private MenuList mMenuList;
     private static int mFragmentPosition = -1, mStringId = -1;
     private Fragment mShowingFragment;
@@ -86,7 +84,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
             showFragment(new DownloadManagerFragment());
             mMenuList.setSelectedItem(MenuList.MenuItem.DOWNLOAD_MANAGER);
             mTitle.setText(R.string.download_manager);
-        }else {
+        } else {
             Intent intent = getIntent();
             if (mStringId == -1)
                 mStringId = intent.getIntExtra(NavigationActivity.STRING_ID, -1);
@@ -139,10 +137,10 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             //init topView
-            mTopView = findViewById(R.id.status_bar_view);
+            /*mTopView = findViewById(R.id.status_bar_view);
             AppBarLayout.LayoutParams topLP = new AppBarLayout.LayoutParams(
                     AppBarLayout.LayoutParams.MATCH_PARENT, ImmerseUtil.getStatusBarHeight(this));
-            mTopView.setLayoutParams(topLP);
+            mTopView.setLayoutParams(topLP);*/
             if (getResources().getConfiguration().orientation
                     == Configuration.ORIENTATION_LANDSCAPE)
                 changeToLandscape();
@@ -154,6 +152,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mTitle = (TextView) mToolbar.findViewById(R.id.title);
+
         mTotalPages = (TextView) mToolbar.findViewById(R.id.total_page);
         mCurrentPage = (TextInputEditText) mToolbar.findViewById(R.id.current_page);
         mCurrentPage.setOnKeyListener(new View.OnKeyListener() {
@@ -180,7 +179,6 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                 return false;
             }
         });
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, mToolbar,
@@ -233,7 +231,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
     }
 
     private void changeToLandscape() {
-        mTopView.setVisibility(View.GONE);
+        mToolbar.setPadding(0, 0, 0, 0);
         int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -245,7 +243,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
     }
 
     private void changeToPortrait() {
-        mTopView.setVisibility(View.VISIBLE);
+        mToolbar.setPadding(0, ImmerseUtil.getStatusBarHeight(this), 0, 0);
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -372,7 +370,14 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                                     dialog.dismiss();
                                     finish();
                                 }
-                            }).setNegativeButton(R.string.no, null).create();
+                            }).setNegativeButton(R.string.no, null).setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            if (getResources().getConfiguration().orientation
+                                    == Configuration.ORIENTATION_LANDSCAPE)
+                                fullScreen();
+                        }
+                    }).create();
         }
         if (exitDialog.isShowing())
             return;

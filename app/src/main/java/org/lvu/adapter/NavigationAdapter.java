@@ -18,7 +18,7 @@ public class NavigationAdapter extends MenuListAdapter {
     }
 
     @Override
-    public void onBindViewHolder(final MenuListAdapter.MyHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         final Menu menu = mData.get(position);
         holder.icon.setImageResource(menu.getImageId());
         holder.name.setText(menu.getNameId());

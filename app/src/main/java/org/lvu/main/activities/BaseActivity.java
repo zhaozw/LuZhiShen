@@ -2,11 +2,11 @@ package org.lvu.main.activities;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
 import android.view.View;
 
 import org.lvu.R;
@@ -65,7 +65,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-
     private AlertDialog skinDialog;
     private List<Menu> skinData;
 
@@ -93,11 +92,28 @@ public class BaseActivity extends AppCompatActivity {
                                     skinDialog.dismiss();
                                     recreate();
                                 }
-                            }).setNegativeButton(R.string.cancel, null).create();
+                            }).setNegativeButton(R.string.cancel, null).setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            if (getResources().getConfiguration().orientation
+                                    == Configuration.ORIENTATION_LANDSCAPE)
+                                fullScreen();
+                        }
+                    }).create();
         }
         if (skinDialog.isShowing())
             return;
         skinDialog.show();
+    }
+
+    protected void fullScreen() {
+        int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                | View.SYSTEM_UI_FLAG_FULLSCREEN; // hide status bar
+        uiFlags |= 0x00001000;
+        getWindow().getDecorView().setSystemUiVisibility(uiFlags);
     }
 
     private List<Menu> getSkinData() {
@@ -130,6 +146,7 @@ public class BaseActivity extends AppCompatActivity {
         return result;
     }
 
+    /*
     private float mDownX, mDownY, mCurrentX, mCurrentY;
     private boolean mRightSlideFlag, isFlagChanged;
 
@@ -167,5 +184,5 @@ public class BaseActivity extends AppCompatActivity {
 
     private boolean isRightSlide() {
         return mCurrentX - mDownX > 160 && mCurrentY - mDownY < 25 && mCurrentY - mDownY > -25;
-    }
+    }*/
 }
