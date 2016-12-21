@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <RelativeLayout
+        android:id="@+id/surface_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <ImageView
+        android:id="@+id/background_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:id="@+id/title_view"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_alignParentTop="true"
+        android:background="#90424242"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <org.video_player.ScrollingTextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:padding="4dp"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="17sp"
+            tools:text="“蒜你狠”卷土重来 每斤价格直逼20元" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/seek_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="#90424242"
+        android:padding="8dp"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+        android:visibility="invisible"
+        tools:text="+ 5:13" />
+
+    <LinearLayout
+        android:id="@+id/control_view"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:background="#90424242"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="8dp"
+        android:paddingRight="2dp"
+        android:visibility="invisible">
+
+        <TextView
+            android:id="@+id/current_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <SeekBar
+            android:id="@+id/progress_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/total_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="6dp"
+            android:text="00:00"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/download_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:padding="6dp"
+            android:src="@drawable/ic_download" />
+
+        <ImageView
+            android:id="@+id/fullscreen_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:padding="6dp"
+            android:src="@drawable/ic_fullscreen" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/play_status"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
+        android:layout_centerInParent="true"
+        android:adjustViewBounds="true"
+        android:padding="4dp"
+        android:src="@drawable/ic_play" />
+
+    <org.video_player.CircleProgressBar
+        android:id="@+id/loading_bar"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
+        app:background_color="#90424242"
+        app:enable_circle_background="true"
+        app:inner_radius="12dp"
+        app:progress_color="@android:color/white" />
+
+    <ProgressBar
+        android:id="@+id/bottom_progress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_alignParentBottom="true"
+        android:max="100"
+        tools:progress="50" />
+</RelativeLayout>
