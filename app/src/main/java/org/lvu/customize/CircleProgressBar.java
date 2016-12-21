@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.animation.Animation;
-import android.widget.ImageView;
 
 import org.lvu.R;
 
@@ -23,7 +22,7 @@ import org.lvu.R;
 /**
  * Created by wuyr on 1/12/16 8:41 PM.
  */
-public class CircleProgressBar extends ImageView {
+public class CircleProgressBar extends android.support.v7.widget.AppCompatImageView {
 
     private static final int KEY_SHADOW_COLOR = 0x1E000000;
     private static final int FILL_SHADOW_COLOR = 0x3D000000;

@@ -3,33 +3,27 @@ package org.lvu.customize;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import org.lvu.R;
 
 import java.lang.ref.WeakReference;
 
-import io.vov.vitamio.MediaPlayer;
-import io.vov.vitamio.widget.VideoView;
-
 /**
  * Created by wuyr on 6/6/16 8:50 PM.
  */
+
 @SuppressLint("SetTextI18n")
 public class VideoPlayer extends LinearLayout implements View.OnClickListener {
 
@@ -101,27 +95,17 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
-        a.recycle();*/
-        mProgressbar.setEnabled(false);
+        a.recycle();*
+        mProgressbar.setEnabled(false);*/
     }
 
     private void findViews() {
         mRootView = LayoutInflater.from(mContext).
                 inflate(R.layout.customize_video_player_view, this, true);
-        mPlayer = (VideoView) mRootView.findViewById(R.id.video_view);
-        mLoadingBar = mRootView.findViewById(R.id.buffering);
-        mDownloadSpeed = (TextView) mRootView.findViewById(R.id.download_speed);
-        mPlayStatus = (ImageView) mRootView.findViewById(R.id.play_status);
-        mBottomView = mRootView.findViewById(R.id.bottom_view);
-        mExitBtn = mRootView.findViewById(R.id.btn_exit);
-        mSeekView = (TextView) mRootView.findViewById(R.id.seek_view);
-        mCurrentTime = (TextView) mRootView.findViewById(R.id.current_time);
-        mTotalTime = (TextView) mRootView.findViewById(R.id.total_time);
-        mProgressbar = (SeekBar) mRootView.findViewById(R.id.progress_bar);
     }
 
-    private void setListeners() {
-        mPlayer.setOnClickListener(this);
+    private void setListeners() {}
+        /*mPlayer.setOnClickListener(this);
         mPlayStatus.setOnClickListener(this);
         mExitBtn.setOnClickListener(this);
         mProgressbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -167,7 +151,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
             public void onPrepared(MediaPlayer mp) {
                 if (!isExited) {
                     mPlayer.setBackgroundColor(Color.TRANSPARENT);
-                    mp.setPlaybackSpeed(1.0f);
+                    //mp.setPlaybackSpeed(1.0f);
                     mProgressbar.setEnabled(true);
                     mTotalWidth = mPlayer.getWidth();
                     if (mMediaPlayer == null) {
@@ -195,7 +179,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
                 }
             }
         });
-        mPlayer.setOnPrepareErrorListener(new VideoView.OnPrepareErrorListener() {
+       /* mPlayer.setOnPrepareErrorListener(new VideoView.OnPrepareErrorListener() {
             @Override
             public void onError() {
                 if (isExited) return;
@@ -212,7 +196,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
                 mProgressbar.setSecondaryProgress((int) (mProgressbar.getMax() * tmp));
             }
         });*/
-        mPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+        /*mPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
             // 等待缓冲监听
             @Override
             public boolean onInfo(MediaPlayer mp, int what, int extra) {
@@ -304,7 +288,6 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         TypedArray a = mContext.obtainStyledAttributes(R.styleable.AppCompatTheme);
         int color = a.getColor(data.indexOf(R.attr.colorAccent),
                 mContext.getResources().getColor(R.color.blueAccent));
-
         mPlayStatus.setColorFilter(color);
         ((ImageView) mExitBtn).setColorFilter(color);
         mCurrentTime.setTextColor(color);
@@ -312,11 +295,9 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         ((TextView) mLoadingBar).setTextColor(color);
         a.recycle();
     }
-
     private void measure() {
         int displayWith = mSurfaceView.getWidth(), displayHeight = mSurfaceView.getHeight();
         int vW = mPlayer.getVideoWidth(), vH = mPlayer.getVideoHeight();
-
         if (vW != 0 && vH != 0) {
             //设置视频的宽度和高度
             ViewGroup.LayoutParams lp = mSurfaceView.getLayoutParams();
@@ -333,10 +314,9 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
                 lp.height = displayHeight;
             }
             mSurfaceView.setLayoutParams(lp);
-
             mSurfaceView.getHolder().setFixedSize(lp.width, lp.height);
         }
-    }*/
+    }*
 
     private void initErrorDialog() {
         mErrorTips = new AlertDialog.Builder(mContext).setTitle(R.string.play_video_failure)
@@ -346,7 +326,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
                         exit();
                     }
                 }).create();
-    }
+    }*
 
     private void startTimingThread() {
         new Thread() {
@@ -384,16 +364,16 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         mBottomView.setVisibility(isShow ? View.VISIBLE : View.GONE);
         mPlayStatus.setVisibility(mBottomView.getVisibility());
         isControlButtonsShowing = isShow;
-    }
+    }*/
 
     public void setUrlPlay(String url) {
-        mOriginallyOrientation = mActivity.getResources().getConfiguration().orientation;
+        /*mOriginallyOrientation = mActivity.getResources().getConfiguration().orientation;
         changeToLandscape();
         mLoadingBar.setVisibility(VISIBLE);
         isExited = false;
         mPlayer.setVideoPath(url);
         if (mRootView.getVisibility() == GONE)
-            mRootView.setVisibility(VISIBLE);
+            mRootView.setVisibility(VISIBLE);*/
         //mPlayer.setDataSource(mContext, Uri.parse("android:resource://org.lvu/"+R.raw.media));
     }
 
@@ -401,8 +381,8 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
         if (mPlayer == null) return;
         if (!mPlayer.isPlaying())
             mPlayer.start();
-        if (!isTimingThreadRunning)
-            startTimingThread();
+      /*  if (!isTimingThreadRunning)
+            startTimingThread();*/
     }
 
     public void pause() {
@@ -413,13 +393,13 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
 
     public void replay() {
         if (mPlayer == null) return;
-        if (!mPlayer.isPlaying())
+        /*if (!mPlayer.isPlaying())
             mPlayer.start();
-        startTimingThread();
+        startTimingThread();*/
     }
 
     public void exit() {
-        pause();
+        /*pause();
         isExited = true;
         mRootView.setVisibility(GONE);
         mProgressbar.setEnabled(false);
@@ -472,7 +452,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
                     | View.SYSTEM_UI_FLAG_FULLSCREEN; // hide status bar
             uiFlags |= 0x00001000;
             mActivity.getWindow().getDecorView().setSystemUiVisibility(uiFlags);
-        }
+        }*/
     }
 
     private OnPlayCompleteListener mOnPlayCompleteListener;
@@ -486,9 +466,9 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
     }
 
     public void setActivity(Activity activity) {
-        mActivity = activity;
+        /*mActivity = activity;
         mOriginallyVCS = mActivity.getVolumeControlStream();
-        mActivity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        mActivity.setVolumeControlStream(AudioManager.STREAM_MUSIC);*/
     }
 
     //将MediaPlayer返回毫秒解释成 分:秒
@@ -506,7 +486,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
+        /*switch (v.getId()) {
             case R.id.video_view:
                 showControlButtons(!isControlButtonsShowing);
                 break;
@@ -529,7 +509,7 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
                 break;
             default:
                 break;
-        }
+        }*/
     }
 
     static class MyHandler extends Handler {
@@ -542,14 +522,14 @@ public class VideoPlayer extends LinearLayout implements View.OnClickListener {
 
         @Override
         public void handleMessage(Message msg) {
-            mClass.get().mCurrentTime.setText((String) msg.obj);
+         /*   mClass.get().mCurrentTime.setText((String) msg.obj);
             if (msg.obj.equals(mClass.get().mTotalTime.getText().toString())) {
                 mClass.get().showControlButtons(true);
                 mClass.get().mProgressbar.setProgress(1);
                 mClass.get().mPlayStatus.setImageResource(R.drawable.ic_continue);
                 mClass.get().mCurrentTime.setText("00:00");
                 mClass.get().isReplay = true;
-            }
+            }*/
         }
     }
 }

@@ -17,11 +17,11 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 
 import org.lvu.R;
-import org.lvu.adapter.BaseListAdapter;
-import org.lvu.adapter.PicturesViewAdapter;
+import org.lvu.adapters.BaseListAdapter;
+import org.lvu.adapters.PicturesViewAdapter;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
-import org.lvu.model.Data;
+import org.lvu.models.Data;
 import org.lvu.utils.ImmerseUtil;
 
 import java.util.ArrayList;

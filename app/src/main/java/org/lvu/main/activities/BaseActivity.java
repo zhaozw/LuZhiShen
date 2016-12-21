@@ -10,8 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import org.lvu.R;
-import org.lvu.adapter.SkinChooseAdapter;
-import org.lvu.model.Menu;
+import org.lvu.adapters.SkinChooseAdapter;
+import org.lvu.models.Menu;
 
 import java.util.ArrayList;
 import java.util.HashMap;

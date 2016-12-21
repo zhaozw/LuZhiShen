@@ -9,8 +9,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import org.lvu.R;
-import org.lvu.adapter.MenuListAdapter;
-import org.lvu.model.Menu;
+import org.lvu.adapters.MenuListAdapter;
+import org.lvu.models.Menu;
 import org.lvu.utils.ImmerseUtil;
 
 import java.util.ArrayList;
@@ -27,13 +27,11 @@ public class MenuList extends LinearLayout {
     private Context mContext;
 
     public MenuList(Context context) {
-        super(context);
-        initViews(context);
+        this(context, null);
     }
 
     public MenuList(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initViews(context);
+        this(context, attrs, 0);
     }
 
     public MenuList(Context context, AttributeSet attrs, int defStyleAttr) {

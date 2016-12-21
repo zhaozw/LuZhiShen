@@ -6,11 +6,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
 import org.lvu.R;
-import org.lvu.adapter.BaseListAdapter;
-import org.lvu.adapter.EvilComicsAdapter;
+import org.lvu.adapters.BaseListAdapter;
+import org.lvu.adapters.EvilComicsAdapter;
 import org.lvu.main.activities.ComicsViewActivity;
 import org.lvu.main.activities.PicturesViewActivity;
-import org.lvu.model.Data;
+import org.lvu.models.Data;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;

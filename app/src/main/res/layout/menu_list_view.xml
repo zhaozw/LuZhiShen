@@ -34,7 +34,7 @@
                 android:layout_marginLeft="@dimen/dp_8"
                 android:layout_marginRight="@dimen/dp_8"
                 android:padding="@dimen/dp_8"
-                android:src="@drawable/ic_menu_exit" />
+                android:src="@drawable/ic_menu_download" />
 
             <TextView
                 android:layout_width="match_parent"

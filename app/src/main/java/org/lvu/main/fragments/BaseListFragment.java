@@ -18,16 +18,16 @@ import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 
 import org.lvu.R;
-import org.lvu.adapter.BaseListAdapter;
-import org.lvu.adapter.ChinaVideoAdapter;
-import org.lvu.adapter.EuropeVideoAdapter;
-import org.lvu.adapter.JapanVideoAdapter;
+import org.lvu.adapters.BaseListAdapter;
+import org.lvu.adapters.ChinaVideoAdapter;
+import org.lvu.adapters.EuropeVideoAdapter;
+import org.lvu.adapters.JapanVideoAdapter;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
 import org.lvu.customize.RefreshLayout;
 import org.lvu.customize.VideoPlayer;
 import org.lvu.main.activities.MainActivity;
-import org.lvu.model.Data;
+import org.lvu.models.Data;
 import org.lvu.utils.ImmerseUtil;
 
 import java.util.ArrayList;

@@ -7,11 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import org.lvu.R;
-import org.lvu.adapter.BaseListAdapter;
-import org.lvu.adapter.ChinaVideoAdapter;
+import org.lvu.adapters.BaseListAdapter;
+import org.lvu.adapters.ChinaVideoAdapter;
 import org.lvu.customize.MySnackBar;
 import org.lvu.main.activities.MainActivity;
-import org.lvu.model.Data;
+import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
 
 import java.io.FileNotFoundException;

@@ -2,7 +2,6 @@ package org.lvu.customize;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -11,8 +10,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.lvu.R;
-import org.lvu.adapter.NavigationAdapter;
-import org.lvu.model.Menu;
+import org.lvu.adapters.NavigationAdapter;
+import org.lvu.models.Menu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +26,11 @@ public class NavigationList extends LinearLayout {
     private NavigationAdapter mAdapter;
 
     public NavigationList(Context context) {
-        super(context);
-        init(context, null, 0);
+        this(context, null);
     }
 
     public NavigationList(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs, 0);
+        this(context, attrs,0);
     }
 
     public NavigationList(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -51,7 +48,7 @@ public class NavigationList extends LinearLayout {
         a.recycle();
         mAdapter = new NavigationAdapter(context, R.layout.navigation_list_item,new ArrayList<Menu>());
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setLayoutManager(new NavigationLayoutManager(context));
         recyclerView.setAdapter(mAdapter);
     }
 

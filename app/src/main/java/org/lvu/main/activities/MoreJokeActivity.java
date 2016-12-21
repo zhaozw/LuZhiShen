@@ -7,7 +7,7 @@ import android.view.View;
 
 import org.lvu.R;
 import org.lvu.customize.MySnackBar;
-import org.lvu.model.Data;
+import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
 
 import java.util.List;

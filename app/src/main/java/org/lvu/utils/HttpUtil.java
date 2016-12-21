@@ -13,7 +13,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.lvu.Application;
-import org.lvu.model.Data;
+import org.lvu.models.Data;
 
 import java.net.ConnectException;
 import java.net.SocketException;
@@ -167,7 +167,7 @@ public class HttpUtil {
                 Elements li = document.select("ul[class=piclist listcon").get(0).children();
                 for (Element tmp : li) {
                     Element a = tmp.child(0);
-                    result.add(new Data(a.attr("abs:href"), a.child(2).attr("xSrc"), a.child(0).text()));
+                    result.add(new Data(a.attr("abs:href"), a.child(2).attr("xSrc"), handleString(a.child(0).text())));
                 }
                 Elements pageList = document.select("ul[class=pagelist]").get(0).children();
                 try {
@@ -311,7 +311,7 @@ public class HttpUtil {
                 Elements items = document.select("div[class=lovefou]").get(0).children();
                 for (Element li : items) {
                     Element tmp = li.children().get(0);
-                    result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"), handleString(tmp.child(0).attr("alt"))));
+                    result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"),tmp.child(0).attr("alt")));
                 }
                 Elements pagination = document.select("div[class=pagination]").get(0).child(0).children();
                 for (Element tmp : pagination)

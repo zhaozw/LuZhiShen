@@ -3,9 +3,9 @@ package org.lvu.main.fragments;
 import android.content.Context;
 
 import org.lvu.R;
-import org.lvu.adapter.BaseListAdapter;
-import org.lvu.adapter.BaseListAdapterSubs.AsiaPictureAdapter;
-import org.lvu.model.Data;
+import org.lvu.adapters.BaseListAdapter;
+import org.lvu.adapters.BaseListAdapterSubs.AsiaPictureAdapter;
+import org.lvu.models.Data;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;

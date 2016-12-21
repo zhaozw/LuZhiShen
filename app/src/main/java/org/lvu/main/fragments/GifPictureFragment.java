@@ -12,11 +12,11 @@ import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGener
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.lvu.R;
-import org.lvu.adapter.BaseListAdapter;
-import org.lvu.adapter.BasePictureListAdapter;
-import org.lvu.adapter.GifPictureAdapter;
+import org.lvu.adapters.BaseListAdapter;
+import org.lvu.adapters.BasePictureListAdapter;
+import org.lvu.adapters.GifPictureAdapter;
 import org.lvu.customize.MySnackBar;
-import org.lvu.model.Data;
+import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
 
 import java.io.File;

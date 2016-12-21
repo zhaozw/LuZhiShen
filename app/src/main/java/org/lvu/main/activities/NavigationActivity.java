@@ -13,10 +13,10 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import org.lvu.R;
-import org.lvu.adapter.MenuListAdapter;
+import org.lvu.adapters.MenuListAdapter;
 import org.lvu.customize.MySnackBar;
 import org.lvu.customize.NavigationList;
-import org.lvu.model.Menu;
+import org.lvu.models.Menu;
 import org.lvu.utils.ImmerseUtil;
 
 import java.util.ArrayList;

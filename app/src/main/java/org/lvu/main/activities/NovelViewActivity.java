@@ -26,7 +26,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import org.lvu.R;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
-import org.lvu.model.Data;
+import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
 

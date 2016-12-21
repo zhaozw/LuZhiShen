@@ -26,7 +26,7 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.lvu.R;
-import org.lvu.adapter.MenuListAdapter;
+import org.lvu.adapters.MenuListAdapter;
 import org.lvu.customize.MenuList;
 import org.lvu.customize.MySnackBar;
 import org.lvu.main.fragments.AsiaPictureFragment;
@@ -51,8 +51,6 @@ import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.List;
 
-import io.vov.vitamio.Vitamio;
-
 /**
  * Created by wuyr on 6/1/16 3:33 PM.
  */
@@ -72,7 +70,6 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Vitamio.isInitialized(getApplicationContext());
         setContentView(R.layout.activity_main_view);
         initViews();
         initImmerse();

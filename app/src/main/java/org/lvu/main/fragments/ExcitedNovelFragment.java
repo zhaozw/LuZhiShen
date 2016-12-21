@@ -6,11 +6,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import org.lvu.R;
-import org.lvu.adapter.BaseListAdapter;
-import org.lvu.adapter.BaseListAdapterSubs.ExcitedNovelAdapter;
+import org.lvu.adapters.BaseListAdapter;
+import org.lvu.adapters.BaseListAdapterSubs.ExcitedNovelAdapter;
 import org.lvu.main.activities.NovelViewActivity;
 import org.lvu.main.activities.PicturesViewActivity;
-import org.lvu.model.Data;
+import org.lvu.models.Data;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
