@@ -20,13 +20,11 @@ import java.util.List;
  */
 public class MySnackBar {
 
-    public static void show(@NonNull View view, @NonNull CharSequence text,
-                            @Snackbar.Duration int duration) {
+    public static void show(@NonNull View view, @NonNull CharSequence text, int duration) {
         show(view, text, duration, null, null);
     }
 
-    public static void show(@NonNull View view, @NonNull CharSequence text,
-                            @Snackbar.Duration int duration,
+    public static void show(@NonNull View view, @NonNull CharSequence text, int duration,
                             @Nullable String actionText, @Nullable View.OnClickListener listener) {
         Snackbar snackbar = Snackbar.make(view, text, duration);
         Snackbar.SnackbarLayout root = (Snackbar.SnackbarLayout) snackbar.getView();

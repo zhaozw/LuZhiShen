@@ -19,7 +19,7 @@ import java.util.List;
  */
 public abstract class BasePictureListAdapter extends BaseListAdapter {
 
-    ImageLoader mImageLoader;
+    protected ImageLoader mImageLoader;
 
     BasePictureListAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);

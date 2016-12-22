@@ -7,7 +7,7 @@ import android.widget.TextView;
 /**
  * Created by wuyr on 7/10/16 11:13 PM.
  */
-public class ScrollingTextView extends android.support.v7.widget.AppCompatTextView {
+public class ScrollingTextView extends TextView {
 
     public ScrollingTextView(Context context) {
         super(context);

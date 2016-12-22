@@ -36,21 +36,21 @@ import static org.video_player.PlayManager.PlayStatus.PLAYING;
 @SuppressLint("SetTextI18n")
 public class VideoPlayer extends RelativeLayout {
 
-    private View mRootView, mTitleView, mControlView, mDownloadButton, mLoadingBar;
-    private RelativeLayout mSurfaceViewContainer;
-    private ImageView mBackgroundImg, mPlayStatusButton, mFullScreenButton;
-    private TextView mTitle, mSeekView, mCurrentTime, mTotalTime;
-    private SeekBar mProgressBar;
-    private ProgressBar mBottomProgressBar;
-    private SurfaceView mSurfaceView;
-    private PlayManager mManager;
-    private PlayManager.PlayListener mPlayListener;
-    private Timer mDismissControlViewTimer, mUpdateProgressTimer;
-    private boolean isOriginallyPlaying, isShowTitleView = true, isTouching;
-    private float mStartX;
-    private int mMoveDistance, mResult, mTotalWidth = -1;
-    private static boolean isFullScreenNow;
-    private String mCurrentVideoUrl;
+    protected View mRootView, mTitleView, mControlView, mDownloadButton, mLoadingBar;
+    protected RelativeLayout mSurfaceViewContainer;
+    protected ImageView mBackgroundImg, mPlayStatusButton, mFullScreenButton;
+    protected TextView mTitle, mSeekView, mCurrentTime, mTotalTime;
+    protected SeekBar mProgressBar;
+    protected ProgressBar mBottomProgressBar;
+    protected SurfaceView mSurfaceView;
+    protected PlayManager mManager;
+    protected PlayManager.PlayListener mPlayListener;
+    protected Timer mDismissControlViewTimer, mUpdateProgressTimer;
+    protected boolean isOriginallyPlaying, isShowTitleView = true, isTouching;
+    protected float mStartX;
+    protected int mMoveDistance, mResult, mTotalWidth = -1;
+    protected static boolean isFullScreenNow;
+    protected String mCurrentVideoUrl;
 
     public VideoPlayer(Context context) {
         this(context, null);
@@ -65,7 +65,7 @@ public class VideoPlayer extends RelativeLayout {
         init();
     }
 
-    private void init() {
+    protected void init() {
         mRootView = LayoutInflater.from(getContext()).inflate(R.layout.video_player_view, this, true);
         mManager = PlayManager.getInstance();
         findViews();
@@ -73,7 +73,7 @@ public class VideoPlayer extends RelativeLayout {
         LogUtil.print("init player complete");
     }
 
-    private void findViews() {
+    protected void findViews() {
         mSurfaceViewContainer = (RelativeLayout) mRootView.findViewById(R.id.surface_view_container);
         mTitleView = mRootView.findViewById(R.id.title_view);
         mControlView = mRootView.findViewById(R.id.control_view);
@@ -90,15 +90,14 @@ public class VideoPlayer extends RelativeLayout {
         mBottomProgressBar = (ProgressBar) mRootView.findViewById(R.id.bottom_progress);
     }
 
-    private void setListeners() {
+    protected void setListeners() {
         OnClickListener onClickListener = new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!isFullScreenNow) {
                     mManager.setCurrentPlayer(VideoPlayer.this);
                     mManager.setCurrentListener(mPlayListener);
-                } else
-                    mManager.setCurrentListener(mManager.getLastListener());
+                }
                 int i = view.getId();
                 if (i == R.id.fullscreen_button) {
                     LogUtil.printf("fullscreen button isFullScreenNow? %s", isFullScreenNow);
@@ -130,7 +129,6 @@ public class VideoPlayer extends RelativeLayout {
                 } else if (i == R.id.download_button) {
                     LogUtil.print("download button clicked");
                     // TODO: 12/21/16 handle download
-                    // TODO: 12/22/16 activity stop player releases
                 }
                 startDismissControlViewTimer();
             }
@@ -138,7 +136,6 @@ public class VideoPlayer extends RelativeLayout {
         mFullScreenButton.setOnClickListener(onClickListener);
         mDownloadButton.setOnClickListener(onClickListener);
         mPlayStatusButton.setOnClickListener(onClickListener);
-        mProgressBar.setEnabled(false);
         mRootView.setFocusable(true);
         mRootView.setClickable(true);
         mRootView.setOnClickListener(new OnClickListener() {
@@ -147,15 +144,13 @@ public class VideoPlayer extends RelativeLayout {
                 if (!isFullScreenNow) {
                     mManager.setCurrentPlayer(VideoPlayer.this);
                     mManager.setCurrentListener(mPlayListener);
-                } else
-                    mManager.setCurrentListener(mManager.getLastListener());
+                }
                 LogUtil.printf("rootView clicked player status: %s", mManager.getPlayStatus());
                 if (mManager.getPlayStatus() == ERROR || mManager.getPlayStatus() == NORMAL)
                     prepareAsync();
-                else {
+                else
                     setControlViewsVisibility(mControlView.getVisibility() == VISIBLE ? INVISIBLE : VISIBLE);
-                    startDismissControlViewTimer();
-                }
+
             }
         });
         mRootView.setOnTouchListener(new OnTouchListener() {
@@ -273,12 +268,10 @@ public class VideoPlayer extends RelativeLayout {
                 mBottomProgressBar.setMax((int) mManager.getDuration());
                 mTotalTime.setText(formatTime((int) mManager.getDuration()));
                 mCurrentTime.setText(formatTime((int) mManager.getCurrentPosition()));
-                mProgressBar.setEnabled(true);
                 hideLoadingBar();
                 setBackgroundVisibility(INVISIBLE);
                 play();
                 setControlViewsVisibility(VISIBLE);
-                startDismissControlViewTimer();
                 startProgressTimer();
             }
 
@@ -301,22 +294,19 @@ public class VideoPlayer extends RelativeLayout {
             public void onError(int what, int extra) {
                 LogUtil.printf("on error what = %s", what);
                 if (what != -38) {
-                    resetPlayerData();
                     mRootView.setFocusable(true);
                     mRootView.setClickable(true);
                     mManager.setPlayerStatus(ERROR);
                     mManager.release();
+                    resetPlayerData();
                     mPlayStatusButton.setImageResource(R.drawable.ic_error);
-                    mPlayStatusButton.setVisibility(VISIBLE);
                 }
             }
 
             @Override
             public void onDisplayChanged(boolean isExitFullScreen) {
                 LogUtil.print("on display changed");
-                if (!isExitFullScreen)
-                    setBackgroundVisibility(VISIBLE);
-                else setBackgroundVisibility(INVISIBLE);
+                setBackgroundVisibility(isExitFullScreen ? INVISIBLE : VISIBLE);
             }
 
             @Override
@@ -326,35 +316,36 @@ public class VideoPlayer extends RelativeLayout {
         };
     }
 
-    private boolean isForward() {
+    protected boolean isForward() {
         return mMoveDistance > 30;
     }
 
-    private boolean isBackward() {
+    protected boolean isBackward() {
         return mMoveDistance < -30;
     }
 
-    private void resetPlayerData() {
+    protected void resetPlayerData() {
         setKeepScreenOn(false);
         LogUtil.print("reset player data");
         cancelDismissControlViewTimer();
         cancelProgressTimer();
+        mProgressBar.setProgress(0);
         mProgressBar.setSecondaryProgress(0);
         mBottomProgressBar.setSecondaryProgress(0);
+        mBottomProgressBar.setProgress(0);
         mCurrentTime.setText(formatTime(0));
         mTotalTime.setText(formatTime(0));
         mBackgroundImg.setVisibility(VISIBLE);
-        mProgressBar.setEnabled(false);
         mPlayStatusButton.setImageResource(R.drawable.ic_play);
         resetPlayerViews();
         hideLoadingBar();
     }
 
-    private void initSurfaceView() {
+    protected void initSurfaceView() {
         initSurfaceView(false);
     }
 
-    private void initSurfaceView(final boolean isExitFullScreen) {
+    protected void initSurfaceView(final boolean isExitFullScreen) {
         LogUtil.print("init surface view");
         mSurfaceViewContainer.removeAllViews();
         mSurfaceView = new SurfaceView(getContext());
@@ -376,8 +367,8 @@ public class VideoPlayer extends RelativeLayout {
 
             }
         });
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        layoutParams.addRule(CENTER_IN_PARENT);
         mSurfaceViewContainer.addView(mSurfaceView, 0, layoutParams);
     }
 
@@ -385,39 +376,42 @@ public class VideoPlayer extends RelativeLayout {
         initSurfaceView();
     }
 
-    private void setControlViewsVisibility(int visible) {
+    protected void setControlViewsVisibility(int visible) {
         if (!isTouching) {
             setTitleViewVisibility(visible);
             mPlayStatusButton.setVisibility(visible);
             mControlView.setVisibility(visible);
-            mBottomProgressBar.setVisibility(visible == VISIBLE ? INVISIBLE : VISIBLE);
+            if (visible == VISIBLE) {
+                mBottomProgressBar.setVisibility(INVISIBLE);
+                startDismissControlViewTimer();
+            } else mBottomProgressBar.setVisibility(VISIBLE);
         }
     }
 
-    private void resetPlayerViews() {
+    protected void resetPlayerViews() {
         setTitleViewVisibility(VISIBLE);
         mPlayStatusButton.setVisibility(VISIBLE);
         mControlView.setVisibility(INVISIBLE);
         mBottomProgressBar.setVisibility(INVISIBLE);
     }
 
-    private void showLoadingBar() {
+    protected void showLoadingBar() {
         LogUtil.print("show loading bar");
         mLoadingBar.setVisibility(VISIBLE);
     }
 
-    private void hideLoadingBar() {
+    protected void hideLoadingBar() {
         LogUtil.print("hide loading bar");
         mLoadingBar.setVisibility(INVISIBLE);
     }
 
-    private void exitFullScreen() {
+    protected void exitFullScreen() {
         LogUtil.print("exit full screen");
         if (getContext() instanceof FullScreenActivity)
             ((FullScreenActivity) getContext()).finish();
     }
 
-    private void enterFullScreen() {
+    protected void enterFullScreen() {
         LogUtil.print("enter full screen");
         mManager.setPlayerData(initPlayerStatus());
         getContext().startActivity(new Intent(getContext(), FullScreenActivity.class));
@@ -445,9 +439,9 @@ public class VideoPlayer extends RelativeLayout {
         }
         result.setPlayStatusButtonRes(resId);
         result.setTotalWidth(mTotalWidth);
+        result.setSecondaryProgress(mProgressBar.getSecondaryProgress());
         result.setPlayProgress(mManager.getCurrentPosition());
         result.setProgressLength(mManager.getDuration());
-        result.setProgressBarEnable(mProgressBar.isEnabled());
         result.setLoadingBarVisible(mLoadingBar.getVisibility() == VISIBLE);
         result.setTitle(mTitle.getText().toString());
         result.setVideoUrl(mCurrentVideoUrl);
@@ -456,6 +450,7 @@ public class VideoPlayer extends RelativeLayout {
 
     void setFullScreen() {
         isFullScreenNow = true;
+        mManager.setFullScreenListener(mPlayListener);
         mFullScreenButton.setImageResource(R.drawable.ic_exit_fullscreen);
         if (mManager.getPlayStatus() == PLAYING)
             mPlayStatusButton.setImageResource(R.drawable.ic_pause);
@@ -473,11 +468,12 @@ public class VideoPlayer extends RelativeLayout {
             mTitle.setText(status.getTitle());
             mPlayStatusButton.setImageResource(status.getPlayStatusButtonRes());
             setControlViewsVisibility(status.getControlViewVisibility());
-            mProgressBar.setEnabled(status.isProgressBarEnable());
             mProgressBar.setMax((int) status.getProgressLength());
             mProgressBar.setProgress((int) status.getPlayProgress());
+            mProgressBar.setSecondaryProgress(status.getSecondaryProgress());
             mBottomProgressBar.setMax((int) status.getProgressLength());
             mBottomProgressBar.setProgress((int) status.getPlayProgress());
+            mBottomProgressBar.setSecondaryProgress(status.getSecondaryProgress());
             mTotalTime.setText(formatTime((int) status.getProgressLength()));
             mCurrentTime.setText(formatTime((int) status.getPlayProgress()));
             if (status.isLoadingBarVisible())
@@ -498,7 +494,7 @@ public class VideoPlayer extends RelativeLayout {
         initSurfaceView(true);
     }
 
-    private void startDismissControlViewTimer() {
+    protected void startDismissControlViewTimer() {
         cancelDismissControlViewTimer();
         mDismissControlViewTimer = new Timer();
         mDismissControlViewTimer.schedule(new TimerTask() {
@@ -519,21 +515,21 @@ public class VideoPlayer extends RelativeLayout {
         }, 2500);
     }
 
-    private void cancelDismissControlViewTimer() {
+    protected void cancelDismissControlViewTimer() {
         if (mDismissControlViewTimer != null) {
             mDismissControlViewTimer.cancel();
         }
     }
 
-    private void setTitleViewVisibility(int visible) {
+    protected void setTitleViewVisibility(int visible) {
         mTitleView.setVisibility(isShowTitleView ? visible : isFullScreenNow ? visible : INVISIBLE);
     }
 
-    private void setBackgroundVisibility(int visible) {
+    protected void setBackgroundVisibility(int visible) {
         mBackgroundImg.setVisibility(visible);
     }
 
-    private void startProgressTimer() {
+    protected void startProgressTimer() {
         LogUtil.print("start progress timer");
         cancelProgressTimer();
         mUpdateProgressTimer = new Timer();
@@ -549,7 +545,7 @@ public class VideoPlayer extends RelativeLayout {
                                 mProgressBar.setProgress(currentPos);
                                 mBottomProgressBar.setProgress(currentPos);
                                 mCurrentTime.setText(formatTime(currentPos));
-                                if (mCurrentTime.getText().toString().equals(mTotalTime.getText().toString()))
+                                if (!mCurrentTime.getText().toString().isEmpty() && mCurrentTime.getText().toString().equals(mTotalTime.getText().toString()))
                                     mPlayListener.onCompletion();
                             }
                         }
@@ -559,20 +555,25 @@ public class VideoPlayer extends RelativeLayout {
         }, 0, 100);
     }
 
-    private void prepareAsync() {
-        showLoadingBar();
-        setControlViewsVisibility(INVISIBLE);
+    protected void prepareAsync() {
         mRootView.setFocusable(false);
         mRootView.setClickable(false);
+        showLoadingBar();
+        setTitleViewVisibility(INVISIBLE);
+        mPlayStatusButton.setVisibility(INVISIBLE);
         initSurfaceView();
         mManager.prepareAsync(getContext(), mCurrentVideoUrl);
     }
 
-    private void cancelProgressTimer() {
+    protected void cancelProgressTimer() {
         LogUtil.print("cancel progress timer");
         if (mUpdateProgressTimer != null) {
             mUpdateProgressTimer.cancel();
         }
+    }
+
+    static boolean isFullScreenNow() {
+        return isFullScreenNow;
     }
 
     public void setUrl(String url) {
@@ -622,7 +623,7 @@ public class VideoPlayer extends RelativeLayout {
         mTitleView.setVisibility(INVISIBLE);
     }
 
-    private String formatTime(int time) {
+    protected String formatTime(int time) {
         if (time <= 0 || time >= 24 * 60 * 60 * 1000)
             return "00:00";
         int totalSeconds = time / 1000;
@@ -647,7 +648,7 @@ public class VideoPlayer extends RelativeLayout {
         return mm + ":" + ss;*/
     }
 
-    private void measure() {
+    protected void measure() {
         if (mSurfaceView == null) return;
         int displayWith = mSurfaceView.getWidth(), displayHeight = mSurfaceView.getHeight();
         int vW = mManager.getVideoWidth(), vH = mManager.getVideoHeight();
@@ -674,11 +675,11 @@ public class VideoPlayer extends RelativeLayout {
 
     static class Status {
 
-        private int controlViewVisibility, playStatusButtonRes, totalWidth;
-        private long playProgress, progressLength;
-        private boolean progressBarEnable, loadingBarVisible;
-        private String title, videoUrl;
-        private PlayManager.PlayStatus lastStatus;
+        int controlViewVisibility, playStatusButtonRes, totalWidth, secondaryProgress;
+        long playProgress, progressLength;
+        boolean loadingBarVisible;
+        String title, videoUrl;
+        PlayManager.PlayStatus lastStatus;
 
         int getControlViewVisibility() {
             return controlViewVisibility;
@@ -704,6 +705,14 @@ public class VideoPlayer extends RelativeLayout {
             this.totalWidth = totalWidth;
         }
 
+        int getSecondaryProgress() {
+            return secondaryProgress;
+        }
+
+        void setSecondaryProgress(int secondaryProgress) {
+            this.secondaryProgress = secondaryProgress;
+        }
+
         long getPlayProgress() {
             return playProgress;
         }
@@ -718,14 +727,6 @@ public class VideoPlayer extends RelativeLayout {
 
         void setProgressLength(long progressLength) {
             this.progressLength = progressLength;
-        }
-
-        boolean isProgressBarEnable() {
-            return progressBarEnable;
-        }
-
-        void setProgressBarEnable(boolean progressBarEnable) {
-            this.progressBarEnable = progressBarEnable;
         }
 
         boolean isLoadingBarVisible() {

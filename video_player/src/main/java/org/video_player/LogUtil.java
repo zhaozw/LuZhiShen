@@ -9,13 +9,13 @@ import java.util.Arrays;
  */
 class LogUtil {
 
-    private static boolean isDebugOn = true;
+    private static boolean isDebugOn = false;
 
     static void print(Object s) {
         if (isDebugOn)
             if (s != null) {
                 StackTraceElement element = Thread.currentThread().getStackTrace()[3];
-                Log.e(String.format("%s-->%s", element.getClassName(), element.getMethodName()), String.valueOf(s));
+                Log.i(String.format("%s-->%s", element.getClassName(), element.getMethodName()), String.valueOf(s));
             }
     }
 
@@ -23,7 +23,7 @@ class LogUtil {
         if (isDebugOn)
             if (format != null && args != null) {
                 StackTraceElement element = Thread.currentThread().getStackTrace()[3];
-                Log.e(String.format("%s-->%s", element.getClassName(), element.getMethodName()), String.format(format, Arrays.toString(args)));
+                Log.i(String.format("%s-->%s", element.getClassName(), element.getMethodName()), String.format(format, Arrays.toString(args)));
             }
     }
 }

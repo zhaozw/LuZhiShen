@@ -17,7 +17,7 @@ public class JapanVideoFragment extends ChinaVideoFragment  {
 
     @Override
     protected BaseListAdapter getAdapter() {
-        return new JapanVideoAdapter(getActivity(), R.layout.adapter_picture_list_item, new ArrayList<Data>());
+        return new JapanVideoAdapter(getActivity(), R.layout.adapter_video_item, new ArrayList<Data>());
     }
 
     @Override

@@ -19,7 +19,7 @@
         app:cardUseCompatPadding="true">
         <!--android:foreground="@drawable/card_foreground"-->
 
-        <org.lvu.customize.ScrollingTextView
+        <org.video_player.ScrollingTextView
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

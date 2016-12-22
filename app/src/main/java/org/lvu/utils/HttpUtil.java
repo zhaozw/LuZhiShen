@@ -15,12 +15,16 @@ import org.jsoup.select.Elements;
 import org.lvu.Application;
 import org.lvu.models.Data;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by wuyr on 4/7/16 1:24 PM.
@@ -31,78 +35,65 @@ public class HttpUtil {
             REASON_SERVER_404 = "无法找到资源。(服务器404)\t(向右滑动清除)",
             REASON_CONNECT_SERVER_FAILURE = "连接服务器失败，请检查网络后重试。\t(向右滑动清除)",
             REASON_INTERNET_NO_GOOD = "网络不给力，请重试。\t(向右滑动清除)";
+    private static ExecutorService mThreadPool;
 
-    public static void getChinaVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
-        runOnBackground(listener, new BackgroundLogic() {
+    static {
+        mThreadPool = Executors.newFixedThreadPool(3);
+    }
+
+    public static void getChinaVideoListAsync(final int page, final HttpRequestCallbackListener listener) {
+        mThreadPool.execute(new Thread() {
             @Override
-            public void run() throws Exception {
-                List<Data> result = new ArrayList<>();
-                String nextPageUrl = "";
-                int currentPage = 0, totalPages = 0;
-                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                Elements li = document.select("ul[class=list]").get(0).children();
-                for (Element tmp : li) {
-                    if (!tmp.tagName().equals("li"))
-                        break;
-                    result.add(new Data(/*video url*/tmp.child(0).attr("abs:href"),
-                                        /*img url*/tmp.child(0).child(0).attr("src"),
-                                        /*title*/tmp.child(0).child(0).attr("alt")));
-                }
-                //pagination
-                Element page = document.select("div[class=pagebar]").get(0);
-                String[] pageInfo = page.ownText().split("/");
-                pageInfo[1] = pageInfo[1].substring(0, pageInfo[1].length() - 5);
-                try {
-                    totalPages = Integer.parseInt(pageInfo[1]);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-                Elements pagination = page.children();
-                for (Element tmp : pagination) {
-                    if (tmp.tagName().equals("em") && tmp.hasClass("current")) {
-                        currentPage = Integer.parseInt(tmp.text());
-                    } else if (tmp.text().equals("下一页") && tmp.tagName().equals("a")) {
-                        nextPageUrl = tmp.attr("abs:href");
-                    }
-                }
-                if (currentPage == totalPages)
-                    nextPageUrl = "";
-                result.get(0).setCurrentPage(currentPage);
-                result.get(0).setTotalPages(totalPages);
-                listener.onSuccess(result, nextPageUrl);
+            public void run() {
+                getVideoListAsync(getChinaVideoUrl(page), listener);
             }
         });
     }
 
-    public static void getEuropeVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
+    public static void getEuropeVideoListAsync(final int page, final HttpRequestCallbackListener listener) {
+        mThreadPool.execute(new Thread() {
+            @Override
+            public void run() {
+                getVideoListAsync(getEuropeVideoUrl(page), listener);
+            }
+        });
+    }
+
+    public static void getJapanVideoListAsync(final int page, final HttpRequestCallbackListener listener) {
+        mThreadPool.execute(new Thread() {
+            @Override
+            public void run() {
+                getVideoListAsync(getJapanVideoUrl(page), listener);
+            }
+        });
+    }
+
+    private static void getVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPageUrl = "";
-                int currentPage = 0, totalPages = 194;
+                int currentPage, totalPages;
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                Elements src = document.select("img[src]"), links = new Elements(), texts = document.select("h2"),
-                        nextPageTmp = document.select("link[rel]");
-                for (Element tmp : texts) {
-                    links.add(tmp.parent());
-                }
-                src.remove(0);
-                for (int i = 0; i < links.size(); i++)
-                    result.add(new Data(links.get(i).attr("abs:href"), src.get(i).attr("abs:src"), texts.get(i).text()));
-                for (Element tmp : nextPageTmp)
-                    if (tmp.attr("rel").equals("next")) {
-                        nextPageUrl = tmp.attr("abs:href");
-                        break;
-                    }
+                //<ul class="mainlist clearfix">
+                Elements div = document.select("ul[class=mainlist clearfix]").get(0).select("div");
 
-                try {
-                    currentPage = Integer.parseInt(document.select("span[class=btn raised highlighted]").get(0).text());
-                }catch (NumberFormatException e){
-                    e.printStackTrace();
+                for (Element tmp : div) {
+                    result.add(new Data(tmp.child(1).child(0).attr("abs:href"),
+                            tmp.child(0).child(0).child(0).attr("abs:src"), tmp.child(1).child(0).text()));
                 }
+                // /<div class='pagebox' id='_function_code_page'>
+                Element pageBox = document.select("div[class=pagebox").get(0);
+                Elements pageBoxes = pageBox.children();
+                String[] page = handleString7(pageBox.ownText()).split("/");
+                for (Element tmp : pageBoxes) {
+                    if (tmp.nodeName().equals("a") && tmp.text().equals("下一页"))
+                        nextPageUrl = tmp.attr("abs:href");
+                }
+                currentPage = Integer.parseInt(page[0]);
+                totalPages = Integer.parseInt(page[1]);
                 if (currentPage == totalPages)
                     nextPageUrl = "";
                 result.get(0).setCurrentPage(currentPage);
@@ -112,8 +103,26 @@ public class HttpUtil {
         });
     }
 
-    public static void getJapanVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
-        getChinaVideoListAsync(url, listener);
+    private static String getChinaVideoUrl(int page) {
+        return getVideoBaseUri() + String.format(Locale.getDefault(), "/sj/vod-show-id-1-p-%d.html", page);
+    }
+
+    private static String getJapanVideoUrl(int page) {
+        return getVideoBaseUri() + String.format(Locale.getDefault(), "/sj/vod-show-id-2-p-%d.html", page);
+    }
+
+    private static String getEuropeVideoUrl(int page) {
+        return getVideoBaseUri() + String.format(Locale.getDefault(), "/sj/vod-show-id-3-p-%d.html", page);
+    }
+
+    private static String getVideoBaseUri() {
+        try {
+            return Jsoup.connect("http://www.9527shequ.com/so/wz.php").timeout(4000)
+                    .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get().baseUri();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     public static void getPicturesListAsync(final String url, final HttpRequestCallbackListener listener) {
@@ -311,7 +320,7 @@ public class HttpUtil {
                 Elements items = document.select("div[class=lovefou]").get(0).children();
                 for (Element li : items) {
                     Element tmp = li.children().get(0);
-                    result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"),tmp.child(0).attr("alt")));
+                    result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"), handleString4(tmp.child(0).attr("alt"))));
                 }
                 Elements pagination = document.select("div[class=pagination]").get(0).child(0).children();
                 for (Element tmp : pagination)
@@ -367,7 +376,7 @@ public class HttpUtil {
     }
 
     private static void runOnBackground(final HttpRequestCallbackListener listener, final BackgroundLogic backgroundLogic) {
-        new Thread() {
+        mThreadPool.execute(new Thread() {
             @Override
             public void run() {
                 int count = 0, count2 = 0;
@@ -411,7 +420,7 @@ public class HttpUtil {
                     }
                 }
             }
-        }.start();
+        });
     }
 
     private static String handleString(String src) {
@@ -428,6 +437,12 @@ public class HttpUtil {
         return src.replaceAll("\\s+", "\n");
     }
 
+    private static String handleString4(String src) {
+        return src.replaceAll("邪恶", "").replaceAll("动态", "").
+                replaceAll("gif", "").replaceAll("搞笑", "").
+                replaceAll("妹子有图有声", "").replaceAll("图片", "").replaceAll("图", "");
+    }
+
     private static String handleString5(String src) {
         return src.substring(32, src.indexOf(".mp4\";") + 4);
     }
@@ -436,30 +451,8 @@ public class HttpUtil {
         return Integer.parseInt(src.substring(src.indexOf("_") + 1, src.indexOf(".html")));
     }
 
-    public static void getChinaVideoUrlByUrl(final String url, final HttpRequestCallbackListener listener) {
-        runOnBackground(listener, new BackgroundLogic() {
-            @Override
-            public void run() throws Exception {
-                Document document = Jsoup.connect(url).validateTLSCertificates(false).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                listener.onSuccess(null, handleString5(document.select("script").get(6).html()));
-            }
-        });
-    }
-
-    public static void getEuropeVideoUrlByUrl(final String url, final HttpRequestCallbackListener listener) {
-        runOnBackground(listener, new BackgroundLogic() {
-            @Override
-            public void run() throws Exception {
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                listener.onSuccess(null, document.select("a[class=play]").get(0).attr("href"));
-            }
-        });
-    }
-
-    public static void getJapanVideoUrlByUrl(String url, final HttpRequestCallbackListener listener) {
-        getChinaVideoUrlByUrl(url, listener);
+    private static String handleString7(String src) {
+        return src.substring(src.indexOf("当前:") + 3, src.indexOf("页"));
     }
 
     private static boolean isNetWorkAvailable() {

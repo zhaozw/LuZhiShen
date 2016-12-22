@@ -18,61 +18,28 @@ public class ChinaVideoAdapter extends EuropeVideoAdapter {
     }
 
     @Override
-    protected String getUrl() {
-        return "https://www.haoxxoo09.com/category/2.html";
-    }
-
-    @Override
-    protected String getPageUrl() {
-        return "https://www.haoxxoo09.com/category/2-%s.html";
-    }
-
-    @Override
     public void syncData(@NonNull String url) {
-        if (url.isEmpty())
-            url = URL;
-        HttpUtil.getChinaVideoListAsync(url, mSyncDataCallbackListener);
+        HttpUtil.getChinaVideoListAsync(1, mSyncDataCallbackListener);
     }
 
     @Override
     public void loadNext() {
-        if (mNextPageUrl == null || mNextPageUrl.isEmpty())
-            syncData("");
-        else
-            HttpUtil.getChinaVideoListAsync(mNextPageUrl, mLoadNextCallbackListener);
+        int page = getCurrentPage() + 1;
+        if (page > getTotalPages())
+            page = getCurrentPage();
+        HttpUtil.getChinaVideoListAsync(page, mLoadNextCallbackListener);
     }
 
     @Override
     public void loadPrevious() {
         int page = getCurrentPage() - 1;
-        if (page <= 1) {
-            syncData("");
-            return;
-        }
-        String pageUrl = getPageUrl();
-        HttpUtil.getChinaVideoListAsync(String.format(pageUrl, String.valueOf(page)), mLoadPreviousCallbackListener);
-    }
-
-    @Override
-    protected void getVideoUrlByUrl(final BaseListAdapter.ViewHolder holder) {
-        if (mData.isEmpty())
-            return;
-        try {
-            HttpUtil.getChinaVideoUrlByUrl(
-                    mData.get(holder.getAdapterPosition() != 0 && holder.getAdapterPosition() >= mData.size() ?
-                            mData.size() - 1 : holder.getAdapterPosition()).getUrl(), mCallBackListener);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (page < 1)
+            page = 1;
+        HttpUtil.getChinaVideoListAsync(page, mLoadPreviousCallbackListener);
     }
 
     @Override
     public void jumpToPage(int page) {
-        if (page == 1)
-            syncData("");
-        else {
-            String pageUrl = getPageUrl();
-            HttpUtil.getChinaVideoListAsync(String.format(pageUrl, String.valueOf(page)), mOnJumpPageCallbackListener);
-        }
+        HttpUtil.getChinaVideoListAsync(page, mOnJumpPageCallbackListener);
     }
 }

@@ -4,13 +4,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Created by wuyr on 6/16/16 7:40 PM.
@@ -27,37 +27,33 @@ public class HttpTest {
         if (args.length != 0)
             url = args[0];
         else
-            url = "http://www.lovefou.com/dongtaitu/list_4.html";
+            url = "http://www.9527shequ.com/so/wz.php";
 
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
                 String nextPageUrl = "";
-                int currentPage = 0, totalPages = 0;
+                int currentPage, totalPages;
                 Document document = Jsoup.connect(url).timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                Elements items = document.select("div[class=lovefou]").get(0).children();
-                for (Element li : items) {
-                    Element tmp = li.children().get(0);
-                    result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"), tmp.child(0).attr("alt")));
-                }
-                Elements pagination = document.select("div[class=pagination]").get(0).child(0).children();
-                for (Element tmp : pagination)
-                    if (tmp.tagName().equals("a") && tmp.text().equals("下一页")) {
-                        nextPageUrl = tmp.attr("abs:href");
-                        break;
-                    }
-                try {
-                    currentPage = Integer.parseInt(pagination.select("span[class=thisclass]").text());
-                    //<span class="pageinfo">共94页1692条</span>
-                    String tmp = pagination.select("span[class=pageinfo").text();
-                    tmp = tmp.substring(1, tmp.indexOf("页"));
-                    totalPages = Integer.parseInt(tmp);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
+                //<ul class="mainlist clearfix">
+                Elements div = document.select("ul[class=mainlist clearfix]").get(0).select("div");
 
+                for (Element tmp : div) {
+                    result.add(new Data(tmp.child(1).child(0).attr("abs:href"),
+                            tmp.child(0).child(0).child(0).attr("abs:src"), tmp.child(1).child(0).text()));
+                }
+                // /<div class='pagebox' id='_function_code_page'>
+                Element pageBox = document.select("div[class=pagebox").get(0);
+                Elements pageBoxes = pageBox.children();
+                String[] page = handleString7(pageBox.ownText()).split("/");
+                for (Element tmp : pageBoxes) {
+                    if (tmp.nodeName().equals("a") && tmp.text().equals("下一页"))
+                        nextPageUrl = tmp.attr("abs:href");
+                }
+                currentPage = Integer.parseInt(page[0]);
+                totalPages = Integer.parseInt(page[1]);
                 if (currentPage == totalPages)
                     nextPageUrl = "";
                 result.get(0).setCurrentPage(currentPage);
@@ -67,31 +63,39 @@ public class HttpTest {
         });
     }
 
-    private static String getGifUrl(String url) {
-        int count = 0, count2 = 0;
-        while (true) {
-            try {
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                return document.select("div[class=dongtai]").get(0).select("img").get(0).attr("src");
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof ConnectException) {
-                    count2++;
-                    if (count2 > 3)
-                        break;
-                    continue;
-                }
-                if (e instanceof SocketException ||
-                        e instanceof UnknownHostException ||
-                        e instanceof SocketTimeoutException) {
-                    count++;
-                    if (count > 3)
-                        break;
-                    continue;
-                }
-                break;
-            }
+    private static String handleString7(String src) {
+        return src.substring(src.indexOf("当前:") + 3, src.indexOf("页"));
+    }
+
+    private static String getChinaVideoUrl() {
+        return getVideoBaseUri() + "/sj/vod-show-id-1-p-1.html";
+    }
+
+    private static String getEuropeVideoUrl() {
+        return getVideoBaseUri() + "/sj/vod-show-id-3-p-1.html";
+    }
+
+    private static String getJapanVideoUrl() {
+        return getVideoBaseUri() + "/sj/vod-show-id-2-p-1.html";
+    }
+
+    private static String getVideoBaseUri() {
+        try {
+            return Jsoup.connect("http://www.9527shequ.com/so/wz.php").timeout(4000)
+                    .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get().baseUri();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private static String getPlayerUrl() {
+        try {
+            Document document =  Jsoup.connect(getVideoBaseUri() + "/g/playerurl/geturl.php").timeout(4000)
+                    .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return "";
     }
@@ -119,8 +123,8 @@ public class HttpTest {
         System.out.print(s);
     }
 
-    private static void printf(String src, String... args) {
-        System.out.printf(src, (Object[]) args);
+    private static void printf(String src, Object... args) {
+        System.out.printf(src, args);
     }
 
     private static void println(String s) {

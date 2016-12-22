@@ -19,13 +19,9 @@ import android.view.animation.TranslateAnimation;
 
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
-import org.lvu.adapters.ChinaVideoAdapter;
-import org.lvu.adapters.EuropeVideoAdapter;
-import org.lvu.adapters.JapanVideoAdapter;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
 import org.lvu.customize.RefreshLayout;
-import org.lvu.customize.VideoPlayer;
 import org.lvu.main.activities.MainActivity;
 import org.lvu.models.Data;
 import org.lvu.utils.ImmerseUtil;
@@ -45,7 +41,6 @@ public abstract class BaseListFragment extends Fragment {
     private RefreshLayout mRefreshLayout;
     protected CircleProgressBar mJumpBar;
     protected boolean isJumping;
-    protected VideoPlayer mPlayer;
     protected BaseListAdapter mAdapter;
 
     @Nullable
@@ -59,42 +54,10 @@ public abstract class BaseListFragment extends Fragment {
     private void init() {
         initRefreshLayout();
         initAdapter();
-        if (mAdapter instanceof ChinaVideoAdapter ||
-                mAdapter instanceof JapanVideoAdapter ||
-                mAdapter instanceof EuropeVideoAdapter)
-            initPlayer();
         initRecyclerView();
-        ((MainActivity) getActivity()).setOnBackPressedListener(new MainActivity.OnBackPressedListener() {
-            @Override
-            public boolean onBackPressed() {
-                if (mPlayer == null)
-                    return false;
-                if (mPlayer.getVisibility() == View.GONE)
-                    return false;
-                else {
-                    mPlayer.exit();
-                    return true;
-                }
-            }
-        });
-        if (getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE)
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
             changeToLandscape();
         else changeToPortrait();
-    }
-
-    private void initPlayer() {
-        mPlayer = (VideoPlayer) mRootView.findViewById(R.id.player);
-        mPlayer.setActivity(getActivity());
-        mPlayer.setOnPlayCompleteListener(new VideoPlayer.OnPlayCompleteListener() {
-            @Override
-            public void playComplete() {
-                ((MainActivity) getActivity()).setDrawerLockMode(false);
-                if (mRecyclerView.getVisibility() != View.VISIBLE)
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                ((MainActivity) getActivity()).showToolbar();
-            }
-        });
     }
 
     private void initAdapter() {

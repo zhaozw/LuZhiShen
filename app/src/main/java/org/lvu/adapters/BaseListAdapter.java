@@ -19,12 +19,14 @@ import org.lvu.R;
 import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
+import org.video_player.VideoPlayer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,15 +46,15 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     protected Context mContext;
     LayoutInflater mLayoutInflater;
     int mLayoutId;
-    protected List<Data> mData;
-    OnItemClickListener mOnItemClickListener;
-    OnItemLongClickListener mOnItemLongClickListener;
+    List<Data> mData;
+    private OnItemClickListener mOnItemClickListener;
+    protected OnItemLongClickListener mOnItemLongClickListener;
     protected OnFinishListener mOnLoadNextFinishListener, mOnSyncDataFinishListener,
             mOnLoadPreviousFinishListener, mOnJumpPageFinishListener;
     protected String mNextPageUrl;
     protected HttpUtil.HttpRequestCallbackListener mSyncDataCallbackListener,
             mLoadNextCallbackListener, mLoadPreviousCallbackListener, mOnJumpPageCallbackListener;
-    Handler mHandler;
+    private Handler mHandler;
     private boolean isOwnerDestroyed;
     private int mCurrentPage, mTotalPages;
 
@@ -454,22 +456,64 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         CardView root;
         public TextView text;
         public ImageView image;
+        VideoPlayer player;
         public View progress;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             root = (CardView) itemView.findViewById(R.id.card_view);
             text = (TextView) itemView.findViewById(R.id.text);
         }
     }
 
-    static class FooterHolder extends GifPictureAdapter.ViewHolder {
+    static class FooterHolder extends EuropeVideoAdapter.ViewHolder {
 
         View bottomView;
 
         FooterHolder(View itemView) {
             super(itemView);
             bottomView = itemView.findViewById(R.id.navigation_bar_view);
+        }
+    }
+
+    public static class DefaultHandler extends Handler {
+
+        private WeakReference<BaseListAdapter> mClass;
+
+        public DefaultHandler(BaseListAdapter clazz) {
+            mClass = new WeakReference<>(clazz);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void handleMessage(Message msg) {
+            int what = msg.what;
+            switch (what) {
+                case REFRESH_DATA_SUCCESS:
+                case SYNC_DATA_SUCCESS:
+                case LOAD_MORE_SUCCESS:
+                case JUMP_PAGE_SUCCESS:
+                    mClass.get().addData((List<Data>) msg.obj, what);
+                    break;
+                case SYNC_DATA_FAILURE:
+                    if (mClass.get().mOnSyncDataFinishListener != null)
+                        mClass.get().mOnSyncDataFinishListener.onFailure((String) msg.obj);
+                    break;
+                case LOAD_MORE_FAILURE:
+                    if (mClass.get().mOnLoadNextFinishListener != null)
+                        mClass.get().mOnLoadNextFinishListener.onFailure((String) msg.obj);
+                    break;
+                case REFRESH_DATA_FAILURE:
+                    if (mClass.get().mOnLoadPreviousFinishListener != null)
+                        mClass.get().mOnLoadPreviousFinishListener.onFailure((String) msg.obj);
+                    break;
+                case JUMP_PAGE_FAILURE:
+                    if (mClass.get().mOnJumpPageFinishListener != null)
+                        mClass.get().mOnJumpPageFinishListener.onFailure((String) msg.obj);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

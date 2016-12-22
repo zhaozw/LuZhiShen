@@ -16,12 +16,14 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
  * Created by wuyr on 12/3/16 5:53 PM.
  */
 
-class PlayManager {
+public class PlayManager {
 
     private volatile static PlayManager mInstance;
     private IjkMediaPlayer mPlayer;
-    private PlayListener mListener;
+    private PlayListener mListener, mFullScreenListener;
     private PlayStatus mStatus = PlayStatus.NORMAL;
+    private VideoPlayer.Status mPlayerData;
+    private VideoPlayer mVideoPlayer;
 
     private PlayManager() {
         mPlayer = new IjkMediaPlayer();
@@ -40,8 +42,15 @@ class PlayManager {
     void prepareAsync(Context context, String url) {
         LogUtil.print("prepareAsync");
         if (TextUtils.isEmpty(url)) {
-            if (mListener != null)
-                mListener.onError(0, 0);
+            try {
+                if (VideoPlayer.isFullScreenNow()) {
+                    if (mFullScreenListener != null)
+                        mFullScreenListener.onError(0, 0);
+                } else if (mListener != null)
+                    mListener.onError(0, 0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return;
         }
         try {
@@ -53,28 +62,40 @@ class PlayManager {
             mPlayer.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(IMediaPlayer iMediaPlayer) {
-                    if (mListener != null)
+                    if (VideoPlayer.isFullScreenNow()) {
+                        if (mFullScreenListener != null)
+                            mFullScreenListener.onPrepared();
+                    } else if (mListener != null)
                         mListener.onPrepared();
                 }
             });
             mPlayer.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(IMediaPlayer iMediaPlayer) {
-                    if (mListener != null)
+                    if (VideoPlayer.isFullScreenNow()) {
+                        if (mFullScreenListener != null)
+                            mFullScreenListener.onCompletion();
+                    } else if (mListener != null)
                         mListener.onCompletion();
                 }
             });
             mPlayer.setOnBufferingUpdateListener(new IMediaPlayer.OnBufferingUpdateListener() {
                 @Override
                 public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int i) {
-                    if (mListener != null)
+                    if (VideoPlayer.isFullScreenNow()) {
+                        if (mFullScreenListener != null)
+                            mFullScreenListener.onBufferingUpdate(i);
+                    } else if (mListener != null)
                         mListener.onBufferingUpdate(i);
                 }
             });
             mPlayer.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
-                    if (mListener != null)
+                    if (VideoPlayer.isFullScreenNow()) {
+                        if (mFullScreenListener != null)
+                            mFullScreenListener.onError(i, i1);
+                    } else if (mListener != null)
                         mListener.onError(i, i1);
                     return true;
                 }
@@ -113,7 +134,10 @@ class PlayManager {
         if (mPlayer.isPlaying())
             mPlayer.stop();
         mStatus = PlayStatus.NORMAL;
-        if (mListener != null)
+        if (VideoPlayer.isFullScreenNow()) {
+            if (mFullScreenListener != null)
+                mFullScreenListener.onCompletion();
+        } else if (mListener != null)
             mListener.onCompletion();
     }
 
@@ -149,7 +173,7 @@ class PlayManager {
         mPlayer.seekTo(position);
     }
 
-    void setCurrentListener(PlayListener listener) {
+    public void setCurrentListener(PlayListener listener) {
         if (listener == null) return;
         if (mListener != listener) {
             setPlayerStatus(PlayStatus.NORMAL);
@@ -159,11 +183,9 @@ class PlayManager {
         }
     }
 
-    PlayListener getLastListener() {
-        return mListener;
+    void setFullScreenListener(PlayListener listener) {
+        mFullScreenListener = listener;
     }
-
-    private VideoPlayer.Status mPlayerData;
 
     void setPlayerData(VideoPlayer.Status data) {
         mPlayerData = data;
@@ -173,9 +195,8 @@ class PlayManager {
         return mPlayerData;
     }
 
-    private VideoPlayer mVideoPlayer;
 
-    void setCurrentPlayer(VideoPlayer videoPlayer) {
+    public void setCurrentPlayer(VideoPlayer videoPlayer) {
         if (mVideoPlayer != videoPlayer)
             mVideoPlayer = videoPlayer;
     }
@@ -202,11 +223,11 @@ class PlayManager {
         mStatus = status;
     }
 
-    PlayStatus getPlayStatus() {
+    public PlayStatus getPlayStatus() {
         return mStatus;
     }
 
-    enum PlayStatus {
+    public enum PlayStatus {
         PREPARING, PAUSE, PLAYING, NORMAL, ERROR
     }
 }

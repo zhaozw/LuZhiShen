@@ -39,14 +39,14 @@
                     android:layout_width="@dimen/dp_42"
                     android:layout_height="@dimen/dp_42"
                     android:layout_gravity="center"
+                    app:enable_circle_background="false"
+                    app:inner_radius="16dp"
                     android:visibility="gone"
                     app:background_color="@color/videoViewBBG"
-                    app:enable_circle_background="true"
-                    app:inner_radius="@dimen/dp_12"
                     app:progress_color="@android:color/white" />
             </FrameLayout>
 
-            <org.lvu.customize.ScrollingTextView
+            <org.video_player.ScrollingTextView
                 android:id="@+id/text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

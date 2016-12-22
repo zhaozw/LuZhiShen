@@ -107,19 +107,6 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
         mTotalPages.setVisibility(View.GONE);
     }
 
-    public void hideToolbar() {
-        mToolbar.setVisibility(View.GONE);
-    }
-
-    public void showToolbar() {
-        mToolbar.setVisibility(View.VISIBLE);
-    }
-
-    public void setDrawerLockMode(boolean lock) {
-        mDrawerLayout.setDrawerLockMode(lock ?
-                DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
-    }
-
     private void initImmerse() {
         if (ImmerseUtil.isAboveKITKAT()) {
             /*getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -248,12 +235,6 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
         mMenuList.changeToPortrait();
     }
 
-    private OnBackPressedListener mOnBackPressedListener;
-
-    public void setOnBackPressedListener(OnBackPressedListener listener) {
-        mOnBackPressedListener = listener;
-    }
-
     public void setTotalPages(int totalPages) {
         this.totalPages = totalPages;
         mTotalPages.setText(String.format("页共%s页", totalPages + ""));
@@ -333,25 +314,19 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
         closeDrawer();
     }
 
-    public interface OnBackPressedListener {
-        boolean onBackPressed();
-    }
-
     //上次按下返回键的时间
     private long mLastTime;
 
     @Override
     public void onBackPressed() {
-        if (!mOnBackPressedListener.onBackPressed()) {
-            if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-            else {
-                if ((System.currentTimeMillis() - mLastTime) < 2000)
-                    finish();
-                mLastTime = System.currentTimeMillis();
-                MySnackBar.show(findViewById(R.id.coordinator),
-                        getString(R.string.press_back_exit), Snackbar.LENGTH_SHORT);
-            }
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        else {
+            if ((System.currentTimeMillis() - mLastTime) < 2000)
+                finish();
+            mLastTime = System.currentTimeMillis();
+            MySnackBar.show(findViewById(R.id.coordinator),
+                    getString(R.string.press_back_exit), Snackbar.LENGTH_SHORT);
         }
     }
 
