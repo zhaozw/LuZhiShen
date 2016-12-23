@@ -11,7 +11,7 @@ import android.view.WindowManager;
  * Created by wuyr on 12/6/16 11:58 PM.
  */
 
-public class FullScreenActivity extends AppCompatActivity {
+public class FullScreenActivityLandscape extends AppCompatActivity {
 
     private VideoPlayer mPlayer;
 
@@ -61,6 +61,11 @@ public class FullScreenActivity extends AppCompatActivity {
         super.finish();
         if (PlayManager.getInstance().getLastPlayer() != null)
             PlayManager.getInstance().getLastPlayer().onFullScreenActivityExited(mPlayer.initPlayerStatus());
+    }
+
+    public void finishSpecial(){
+        VideoPlayer.isFullScreenNow = false;
+        super.finish();
     }
 
     @Override

@@ -146,7 +146,7 @@ public class VideoPlayer extends RelativeLayout {
                     mManager.setCurrentListener(mPlayListener);
                 }
                 LogUtil.printf("rootView clicked player status: %s", mManager.getPlayStatus());
-                if (mManager.getPlayStatus() == ERROR || mManager.getPlayStatus() == NORMAL)
+                if (mManager.getPlayStatus() == ERROR && mManager.getPlayStatus() == NORMAL)
                     prepareAsync();
                 else
                     setControlViewsVisibility(mControlView.getVisibility() == VISIBLE ? INVISIBLE : VISIBLE);
@@ -260,6 +260,8 @@ public class VideoPlayer extends RelativeLayout {
             @Override
             public void onPrepared() {
                 LogUtil.print("onPrepared");
+                if (isPortraitVideo() || mSurfaceView == null)
+                    initSurfaceView(true);
                 setKeepScreenOn(true);
                 mTotalWidth = mManager.getVideoWidth();
                 mRootView.setFocusable(true);
@@ -312,6 +314,12 @@ public class VideoPlayer extends RelativeLayout {
             @Override
             public void onResetStatus() {
                 resetPlayerData();
+            }
+
+            @Override
+            public void onExit() {
+                if (getContext() instanceof FullScreenActivityLandscape)
+                    ((FullScreenActivityLandscape) getContext()).finishSpecial();
             }
         };
     }
@@ -400,21 +408,32 @@ public class VideoPlayer extends RelativeLayout {
         mLoadingBar.setVisibility(VISIBLE);
     }
 
-    protected void hideLoadingBar() {
+    public void hideLoadingBar() {
         LogUtil.print("hide loading bar");
         mLoadingBar.setVisibility(INVISIBLE);
     }
 
+    public void reset(){
+        resetPlayerData();
+        mSurfaceView = null;
+    }
+
     protected void exitFullScreen() {
         LogUtil.print("exit full screen");
-        if (getContext() instanceof FullScreenActivity)
-            ((FullScreenActivity) getContext()).finish();
+        if (getContext() instanceof FullScreenActivityLandscape)
+            ((FullScreenActivityLandscape) getContext()).finish();
+    }
+
+    void exitFullScreenSpecial() {
+        LogUtil.print("exit full screen");
+        if (getContext() instanceof FullScreenActivityLandscape)
+            ((FullScreenActivityLandscape) getContext()).finish();
     }
 
     protected void enterFullScreen() {
         LogUtil.print("enter full screen");
         mManager.setPlayerData(initPlayerStatus());
-        getContext().startActivity(new Intent(getContext(), FullScreenActivity.class));
+        getContext().startActivity(new Intent(getContext(), isPortraitVideo() ? FullScreenActivityPortrait.class : FullScreenActivityLandscape.class));
     }
 
     Status initPlayerStatus() {
@@ -589,6 +608,8 @@ public class VideoPlayer extends RelativeLayout {
         mManager.play();
         mPlayStatusButton.setImageResource(R.drawable.ic_pause);
         startProgressTimer();
+        if (mSurfaceView == null)
+            initSurfaceView(true);
     }
 
     public void pause() {
@@ -602,8 +623,9 @@ public class VideoPlayer extends RelativeLayout {
     }
 
     public void release() {
+        resetPlayerData();
+        mSurfaceView = null;
         mManager.release();
-        mPlayStatusButton.setImageResource(R.drawable.ic_play);
     }
 
     public void setTitle(String title) {
@@ -646,6 +668,10 @@ public class VideoPlayer extends RelativeLayout {
                 ss = seconds < 10 ? "0" + seconds : String.valueOf(seconds);
         //以 00:00 的形式返回
         return mm + ":" + ss;*/
+    }
+
+    private boolean isPortraitVideo() {
+        return mManager.getVideoHeight() > mManager.getVideoWidth();
     }
 
     protected void measure() {

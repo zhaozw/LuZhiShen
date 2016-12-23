@@ -1,7 +1,6 @@
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -11,6 +10,8 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.sql.DriverManager.println;
 
 /**
  * Created by wuyr on 6/16/16 7:40 PM.
@@ -27,40 +28,21 @@ public class HttpTest {
         if (args.length != 0)
             url = args[0];
         else
-            url = "http://www.9527shequ.com/so/wz.php";
+            url = getWebBaseUri() + "/sj/play-18153-0-1.html";
 
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                List<Data> result = new ArrayList<>();
-                String nextPageUrl = "";
-                int currentPage, totalPages;
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                //<ul class="mainlist clearfix">
-                Elements div = document.select("ul[class=mainlist clearfix]").get(0).select("div");
-
-                for (Element tmp : div) {
-                    result.add(new Data(tmp.child(1).child(0).attr("abs:href"),
-                            tmp.child(0).child(0).child(0).attr("abs:src"), tmp.child(1).child(0).text()));
-                }
-                // /<div class='pagebox' id='_function_code_page'>
-                Element pageBox = document.select("div[class=pagebox").get(0);
-                Elements pageBoxes = pageBox.children();
-                String[] page = handleString7(pageBox.ownText()).split("/");
-                for (Element tmp : pageBoxes) {
-                    if (tmp.nodeName().equals("a") && tmp.text().equals("下一页"))
-                        nextPageUrl = tmp.attr("abs:href");
-                }
-                currentPage = Integer.parseInt(page[0]);
-                totalPages = Integer.parseInt(page[1]);
-                if (currentPage == totalPages)
-                    nextPageUrl = "";
-                result.get(0).setCurrentPage(currentPage);
-                result.get(0).setTotalPages(totalPages);
-                listener.onSuccess(result, nextPageUrl);
+                String html = getDocument(url).select("div[class=mahua]").get(0).select("script").html();
+                listener.onSuccess(null, getVideoBaseUri(url) + html.substring(html.lastIndexOf("l+'") + 3, html.lastIndexOf(".mp4'];") + 4));
             }
         });
+    }
+
+    private static String getVideoBaseUri(String baseUrl) throws Exception {
+        Document document = getDocument(getBaseUrlByUrl(baseUrl) + "/g/playerurl/geturl.php");
+        String html = document.html();
+        return html.substring(html.indexOf("\"") + 1, html.lastIndexOf("\""));
     }
 
     private static String handleString7(String src) {
@@ -68,30 +50,56 @@ public class HttpTest {
     }
 
     private static String getChinaVideoUrl() {
-        return getVideoBaseUri() + "/sj/vod-show-id-1-p-1.html";
+        return getWebBaseUri() + "/sj/vod-show-id-1-p-1.html";
     }
 
     private static String getEuropeVideoUrl() {
-        return getVideoBaseUri() + "/sj/vod-show-id-3-p-1.html";
+        return getWebBaseUri() + "/sj/vod-show-id-3-p-1.html";
     }
 
     private static String getJapanVideoUrl() {
-        return getVideoBaseUri() + "/sj/vod-show-id-2-p-1.html";
+        return getWebBaseUri() + "/sj/vod-show-id-2-p-1.html";
     }
 
-    private static String getVideoBaseUri() {
-        try {
-            return Jsoup.connect("http://www.9527shequ.com/so/wz.php").timeout(4000)
-                    .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get().baseUri();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private static String getWebBaseUri() {
+        int count = 0, count2 = 0;
+        while (true) {
+            try {
+                return Jsoup.connect("http://www.9527shequ.com/so/wz.php").timeout(4000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get().baseUri();
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof ConnectException) {
+                    count2++;
+                    if (count2 > 4)
+                        break;
+                    continue;
+                }
+                if (e instanceof SocketException ||
+                        e instanceof UnknownHostException ||
+                        e instanceof SocketTimeoutException) {
+                    count++;
+                    if (count > 4)
+                        break;
+                    continue;
+                }
+                break;
+            }
         }
         return "";
     }
 
+    private static String getBaseUrlByUrl(String url) {
+        return url.substring(0, url.indexOf(".com") + 4);
+    }
+
+    private static Document getDocument(String url) throws IOException {
+        return Jsoup.connect(url).timeout(4000).header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+    }
+
     private static String getPlayerUrl() {
         try {
-            Document document =  Jsoup.connect(getVideoBaseUri() + "/g/playerurl/geturl.php").timeout(4000)
+            Document document = Jsoup.connect(getWebBaseUri() + "/g/playerurl/geturl.php").timeout(4000)
                     .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
 
         } catch (IOException e) {
@@ -103,13 +111,14 @@ public class HttpTest {
     private static HttpRequestCallbackListener listener = new HttpRequestCallbackListener() {
         @Override
         public void onSuccess(List<Data> data, String args) {
-            if (data != null) {
+            println(args);
+            /*if (data != null) {
                 println("currentPage: " + data.get(0).getCurrentPage());
                 println("totalPages: " + data.get(0).getTotalPages());
                 println("nextPageUrl: " + args);
                 for (Data tmp : data)
                     printf("%s\t%s\t%s\n", tmp.getUrl(), tmp.getSrc(), tmp.getText());
-            }
+            }*/
         }
 
         @Override

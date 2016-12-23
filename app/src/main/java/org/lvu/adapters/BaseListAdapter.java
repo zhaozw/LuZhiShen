@@ -56,7 +56,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             mLoadNextCallbackListener, mLoadPreviousCallbackListener, mOnJumpPageCallbackListener;
     private Handler mHandler;
     private boolean isOwnerDestroyed;
-    private int mCurrentPage, mTotalPages;
+    private int mCurrentPage, mCurrentPageTmp = -1, mTotalPages;
 
     public BaseListAdapter(Context context, int layoutId, List<Data> data) {
         mContext = context;
@@ -74,11 +74,6 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             }
 
             @Override
-            public void onSuccess(Bitmap bitmap) {
-
-            }
-
-            @Override
             public void onFailure(Exception e, String reason) {
                 if (!isOwnerDestroyed)
                     sendFailureMessage(SYNC_DATA_FAILURE, reason);
@@ -90,11 +85,6 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             public void onSuccess(List<Data> data, String nextPage) {
                 if (!isOwnerDestroyed)
                     sendSuccessMessage(LOAD_MORE_SUCCESS, data, nextPage);
-            }
-
-            @Override
-            public void onSuccess(Bitmap bitmap) {
-
             }
 
             @Override
@@ -111,11 +101,6 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             }
 
             @Override
-            public void onSuccess(Bitmap bitmap) {
-
-            }
-
-            @Override
             public void onFailure(Exception e, String reason) {
                 if (!isOwnerDestroyed)
                     sendFailureMessage(REFRESH_DATA_FAILURE, reason);
@@ -126,11 +111,6 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             public void onSuccess(List<Data> data, String nextPage) {
                 if (!isOwnerDestroyed)
                     sendSuccessMessage(JUMP_PAGE_SUCCESS, data, nextPage);
-            }
-
-            @Override
-            public void onSuccess(Bitmap bitmap) {
-
             }
 
             @Override
@@ -394,11 +374,16 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     }
 
     public int getCurrentPage() {
+        if (mCurrentPageTmp!=-1){
+            int tmp = mCurrentPageTmp;
+            mCurrentPageTmp = -1;
+            return tmp;
+        }
         return mCurrentPage;
     }
 
-    public void setCurrentPage(int mCurrentPage) {
-        this.mCurrentPage = mCurrentPage;
+    public void setCurrentPage(int currentPage) {
+        mCurrentPageTmp = currentPage;
     }
 
     public int getTotalPages() {
@@ -478,7 +463,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     public static class DefaultHandler extends Handler {
 
-        private WeakReference<BaseListAdapter> mClass;
+        WeakReference<BaseListAdapter> mClass;
 
         public DefaultHandler(BaseListAdapter clazz) {
             mClass = new WeakReference<>(clazz);

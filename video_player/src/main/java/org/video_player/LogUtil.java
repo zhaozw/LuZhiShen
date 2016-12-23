@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 class LogUtil {
 
-    private static boolean isDebugOn = false;
+    private static boolean isDebugOn = true;
 
     static void print(Object s) {
         if (isDebugOn)

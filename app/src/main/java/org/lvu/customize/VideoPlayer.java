@@ -5,7 +5,11 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import org.lvu.R;
+import org.lvu.models.Data;
+import org.lvu.utils.HttpUtil;
 import org.video_player.PlayManager;
+
+import java.util.List;
 
 /**
  * Created by wuyr on 12/22/16 11:55 PM.
@@ -14,17 +18,20 @@ import org.video_player.PlayManager;
 public class VideoPlayer extends org.video_player.VideoPlayer {
 
     private boolean isLoadedUrl;
+    private VideoPlayerManager mVideoManager;
 
     public VideoPlayer(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public VideoPlayer(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public VideoPlayer(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mVideoManager = VideoPlayerManager.getInstance();
+        mVideoManager.add(this);
     }
 
     @Override
@@ -33,13 +40,7 @@ public class VideoPlayer extends org.video_player.VideoPlayer {
         OnClickListener onClickListener = new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isLoadedUrl){
-                    showLoadingBar();
-                }
-                if (!isFullScreenNow) {
-                    mManager.setCurrentPlayer(VideoPlayer.this);
-                    mManager.setCurrentListener(mPlayListener);
-                }
+                if (handleOnClick()) return;
                 int i = view.getId();
                 if (i == R.id.fullscreen_button) {
                     if (isFullScreenNow)
@@ -77,17 +78,61 @@ public class VideoPlayer extends org.video_player.VideoPlayer {
         mRootView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isFullScreenNow) {
-                    mManager.setCurrentPlayer(VideoPlayer.this);
-                    mManager.setCurrentListener(mPlayListener);
-                }
-                if (mManager.getPlayStatus() == PlayManager.PlayStatus.ERROR || mManager.getPlayStatus() == PlayManager.PlayStatus.NORMAL)
-                    prepareAsync();
-                else
+                if (handleOnClick()) return;
+                if (mManager.getPlayStatus() != PlayManager.PlayStatus.ERROR && mManager.getPlayStatus() != PlayManager.PlayStatus.NORMAL)
                     setControlViewsVisibility(mControlView.getVisibility() == VISIBLE ? INVISIBLE : VISIBLE);
 
             }
         });
 
+    }
+
+    private synchronized boolean handleOnClick() {
+        mVideoManager.syncStatus(this);
+        if (!isFullScreenNow) {
+            mManager.setCurrentPlayer(VideoPlayer.this);
+            mManager.setCurrentListener(mPlayListener);
+        }
+        if (mManager.getPlayStatus() == PlayManager.PlayStatus.PREPARING)
+            return true;
+        if (!isLoadedUrl) {
+            mManager.onlyRelease();
+            HttpUtil.getVideoUrlByUrl(mCurrentVideoUrl, new HttpUtil.HttpRequestCallbackListener() {
+                @Override
+                public void onSuccess(List<Data> data, final String args) {
+                    mControlView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            setUrlPlay(args);
+                            isLoadedUrl = true;
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Exception e, String reason) {
+                    mControlView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPlayListener.onError(0, 0);
+                        }
+                    });
+                }
+            });
+            mManager.setPlayerStatus(PlayManager.PlayStatus.PREPARING);
+            mRootView.setFocusable(false);
+            mRootView.setClickable(false);
+            showLoadingBar();
+            setTitleViewVisibility(INVISIBLE);
+            mPlayStatusButton.setVisibility(INVISIBLE);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        isLoadedUrl = false;
     }
 }

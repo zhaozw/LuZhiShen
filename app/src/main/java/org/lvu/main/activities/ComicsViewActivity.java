@@ -28,7 +28,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import org.lvu.R;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
-import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
 
@@ -102,9 +101,6 @@ public class ComicsViewActivity extends BaseActivity {
             }
         } else {
             HttpUtil.getComicsContentAsync(url, new HttpUtil.HttpRequestCallbackListener() {
-                @Override
-                public void onSuccess(List<Data> data, String nextPage) {
-                }
 
                 @Override
                 public void onSuccess(Bitmap bitmap) {

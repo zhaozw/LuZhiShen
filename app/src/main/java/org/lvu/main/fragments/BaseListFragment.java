@@ -38,7 +38,7 @@ public abstract class BaseListFragment extends Fragment {
 
     protected View mRootView;
     protected RecyclerView mRecyclerView;
-    private RefreshLayout mRefreshLayout;
+    protected RefreshLayout mRefreshLayout;
     protected CircleProgressBar mJumpBar;
     protected boolean isJumping;
     protected BaseListAdapter mAdapter;
@@ -51,7 +51,7 @@ public abstract class BaseListFragment extends Fragment {
         return mRootView;
     }
 
-    private void init() {
+    protected void init() {
         initRefreshLayout();
         initAdapter();
         initRecyclerView();

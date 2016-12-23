@@ -29,7 +29,7 @@ public class PlayManager {
         mPlayer = new IjkMediaPlayer();
     }
 
-    static PlayManager getInstance() {
+    public static PlayManager getInstance() {
         LogUtil.print("get play manager instance");
         if (mInstance == null)
             synchronized (PlayManager.class) {
@@ -39,7 +39,7 @@ public class PlayManager {
         return mInstance;
     }
 
-    void prepareAsync(Context context, String url) {
+    synchronized void prepareAsync(Context context, String url) {
         LogUtil.print("prepareAsync");
         if (TextUtils.isEmpty(url)) {
             try {
@@ -115,21 +115,21 @@ public class PlayManager {
         return mPlayer.getVideoHeight();
     }
 
-    void play() {
+    synchronized void play() {
         if (mPlayer == null) return;
         if (!mPlayer.isPlaying())
             mPlayer.start();
         mStatus = PlayStatus.PLAYING;
     }
 
-    void pause() {
+    synchronized void pause() {
         if (mPlayer == null) return;
         if (mPlayer.isPlaying())
             mPlayer.pause();
         mStatus = PlayStatus.PAUSE;
     }
 
-    void stop() {
+    synchronized void stop() {
         if (mPlayer == null) return;
         if (mPlayer.isPlaying())
             mPlayer.stop();
@@ -141,10 +141,20 @@ public class PlayManager {
             mListener.onCompletion();
     }
 
-    void release() {
+    synchronized void release() {
         if (mPlayer == null) return;
         stop();
         mPlayer.release();
+    }
+
+    public synchronized void onlyRelease() {
+        if (mPlayer == null) return;
+        if (mPlayer.isPlaying())
+            mPlayer.stop();
+        mPlayer.release();
+        if (VideoPlayer.isFullScreenNow() && mFullScreenListener != null)
+            mFullScreenListener.onExit();
+
     }
 
     boolean isPlaying() {
@@ -168,7 +178,7 @@ public class PlayManager {
         return mPlayer.getCurrentPosition();
     }
 
-    void seekTo(long position) {
+    synchronized void seekTo(long position) {
         if (mPlayer == null) return;
         mPlayer.seekTo(position);
     }
@@ -201,11 +211,11 @@ public class PlayManager {
             mVideoPlayer = videoPlayer;
     }
 
-    VideoPlayer getLastPlayer() {
+    public VideoPlayer getLastPlayer() {
         return mVideoPlayer;
     }
 
-    interface PlayListener {
+    public interface PlayListener {
         void onPrepared();
 
         void onCompletion();
@@ -217,9 +227,11 @@ public class PlayManager {
         void onDisplayChanged(boolean isExitFullScreen);
 
         void onResetStatus();
+
+        void onExit();
     }
 
-    void setPlayerStatus(PlayStatus status) {
+    public void setPlayerStatus(PlayStatus status) {
         mStatus = status;
     }
 

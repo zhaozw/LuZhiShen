@@ -3,6 +3,7 @@ package org.lvu.adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.lvu.R;
+import org.lvu.customize.VideoPlayerManager;
 import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
@@ -74,9 +76,27 @@ public class EuropeVideoAdapter extends BaseListAdapter {
 
                 }
             });
+            if (mOnItemLongClickListener != null)
+                holder.player.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        try {
+                            int pos = holder.getAdapterPosition();
+                            return mOnItemLongClickListener.onLongClick(mData.get(pos != 0 && pos >= mData.size() ?
+                                    mData.size() - 1 : pos));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return false;
+                        }
+                    }
+                });
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void resetAllPlayers(){
+        VideoPlayerManager.getInstance().resetAll();
     }
 
     @Override
@@ -117,7 +137,7 @@ public class EuropeVideoAdapter extends BaseListAdapter {
 
     @Override
     protected Handler getHandler() {
-        return new DefaultHandler(this);
+        return new MyHandler(this);
     }
 
     public static class ViewHolder extends GifPictureAdapter.ViewHolder {
@@ -125,6 +145,27 @@ public class EuropeVideoAdapter extends BaseListAdapter {
         public ViewHolder(View itemView) {
             super(itemView);
             player = (VideoPlayer) itemView.findViewById(R.id.player);
+        }
+    }
+
+    private static class MyHandler extends DefaultHandler {
+
+        MyHandler(BaseListAdapter clazz) {
+            super(clazz);
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            int what = msg.what;
+            switch (what) {
+                case REFRESH_DATA_SUCCESS:
+                case SYNC_DATA_SUCCESS:
+                case LOAD_MORE_SUCCESS:
+                case JUMP_PAGE_SUCCESS:
+                    ((EuropeVideoAdapter)mClass.get()).resetAllPlayers();
+                    break;
+                default:
+            }
+            super.handleMessage(msg);
         }
     }
 }

@@ -16,6 +16,23 @@ import java.util.ArrayList;
  * Created by wuyr on 6/23/16 2:30 PM.
  */
 public class ChinaVideoFragment extends BaseListFragment {
+
+    @Override
+    protected void init() {
+        super.init();
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+    }
+
     @Override
     protected BaseListAdapter getAdapter() {
         return new ChinaVideoAdapter(getActivity(), R.layout.adapter_video_item, new ArrayList<Data>());

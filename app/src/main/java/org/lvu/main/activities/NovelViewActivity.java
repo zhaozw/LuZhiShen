@@ -129,11 +129,6 @@ public class NovelViewActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onSuccess(Bitmap bitmap) {
-
-                }
-
-                @Override
                 public void onFailure(Exception e, String reason) {
                     if (reason.equals("无可用网络。\t(向右滑动清除)")) {
                         try {

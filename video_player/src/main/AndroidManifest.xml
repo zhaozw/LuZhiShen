@@ -7,10 +7,16 @@
         android:supportsRtl="true">
 
         <activity
-            android:name=".FullScreenActivity"
+            android:name=".FullScreenActivityLandscape"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape" />
+
+        <activity
+            android:name=".FullScreenActivityPortrait"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

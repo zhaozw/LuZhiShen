@@ -139,6 +139,12 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
 
         mTotalPages = (TextView) mToolbar.findViewById(R.id.total_page);
         mCurrentPage = (TextInputEditText) mToolbar.findViewById(R.id.current_page);
+        mCurrentPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchInputMethod();
+            }
+        });
         mCurrentPage.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -155,7 +161,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                     if (cp < 1)
                         cp = 1;
                     mCurrentPage.clearFocus();
-                    hideInputMethod();
+                    switchInputMethod();
                     if (mShowingFragment != null)
                         ((BaseListFragment) mShowingFragment).jumpToPage(cp);
                     return true;
@@ -250,7 +256,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
         mCurrentPage.setVisibility(View.VISIBLE);
     }
 
-    private void hideInputMethod() {
+    private void switchInputMethod() {
         // 隐藏输入法
         InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         // 显示或者隐藏输入法

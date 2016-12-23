@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -75,8 +77,7 @@ public class HttpUtil {
                 List<Data> result = new ArrayList<>();
                 String nextPageUrl = "";
                 int currentPage, totalPages;
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                Document document = getDocument(url);
                 //<ul class="mainlist clearfix">
                 Elements div = document.select("ul[class=mainlist clearfix]").get(0).select("div");
 
@@ -103,24 +104,62 @@ public class HttpUtil {
         });
     }
 
+    public static void getVideoUrlByUrl(final String url, final HttpRequestCallbackListener listener) {
+        runOnBackground(listener, new BackgroundLogic() {
+            @Override
+            public void run() throws Exception {
+                String html = getDocument(url).select("div[class=mahua]").get(0).select("script").html();
+                listener.onSuccess(null, getVideoBaseUri(url) + html.substring(html.lastIndexOf("l+'") + 3, html.lastIndexOf(".mp4'];") + 4));
+            }
+        });
+    }
+
+    private static String getVideoBaseUri(String baseUrl) throws Exception {
+        Document document = getDocument(getBaseUrlByUrl(baseUrl) + "/g/playerurl/geturl.php");
+        String html = document.html();
+        return html.substring(html.indexOf("\"") + 1, html.lastIndexOf("\""));
+    }
+
+    private static String getBaseUrlByUrl(String url) {
+        return url.substring(0, url.indexOf(".com") + 4);
+    }
+
     private static String getChinaVideoUrl(int page) {
-        return getVideoBaseUri() + String.format(Locale.getDefault(), "/sj/vod-show-id-1-p-%d.html", page);
+        return getWebBaseUri() + String.format(Locale.getDefault(), "/sj/vod-show-id-1-p-%d.html", page);
     }
 
     private static String getJapanVideoUrl(int page) {
-        return getVideoBaseUri() + String.format(Locale.getDefault(), "/sj/vod-show-id-2-p-%d.html", page);
+        return getWebBaseUri() + String.format(Locale.getDefault(), "/sj/vod-show-id-2-p-%d.html", page);
     }
 
     private static String getEuropeVideoUrl(int page) {
-        return getVideoBaseUri() + String.format(Locale.getDefault(), "/sj/vod-show-id-3-p-%d.html", page);
+        return getWebBaseUri() + String.format(Locale.getDefault(), "/sj/vod-show-id-3-p-%d.html", page);
     }
 
-    private static String getVideoBaseUri() {
-        try {
-            return Jsoup.connect("http://www.9527shequ.com/so/wz.php").timeout(4000)
-                    .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get().baseUri();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private static String getWebBaseUri() {
+        int count = 0, count2 = 0;
+        while (true) {
+            try {
+                return Jsoup.connect("http://www.9527shequ.com/so/wz.php").timeout(4000)
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get().baseUri();
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof ConnectException) {
+                    count2++;
+                    if (count2 > 4)
+                        break;
+                    continue;
+                }
+                if (e instanceof SocketException ||
+                        e instanceof UnknownHostException ||
+                        e instanceof SocketTimeoutException) {
+                    count++;
+                    if (count > 4)
+                        break;
+                    continue;
+                }
+                break;
+            }
         }
         return "";
     }
@@ -171,8 +210,7 @@ public class HttpUtil {
                 List<Data> result = new ArrayList<>();
                 String nextPageUrl = "";
                 int currentPage = 0, totalPages = 0;
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                Document document = getDocument(url);
                 Elements li = document.select("ul[class=piclist listcon").get(0).children();
                 for (Element tmp : li) {
                     Element a = tmp.child(0);
@@ -242,9 +280,7 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                listener.onSuccess(ImageLoader.getInstance().loadImageSync(Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2")
-                        .get().select("img[alt]").get(0).attr("abs:src")));
+                listener.onSuccess(ImageLoader.getInstance().loadImageSync(getDocument(url).select("img[alt]").get(0).attr("abs:src"), new DisplayImageOptions.Builder().imageScaleType(ImageScaleType.NONE).build()));
             }
         });
     }
@@ -256,8 +292,7 @@ public class HttpUtil {
                 List<Data> result = new ArrayList<>();
                 String nextPageUrl = "";
                 int currentPage = 0, totalPages = 0;
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                Document document = getDocument(url);
                 Elements elements = document.select("section[class=article-content]");
                 Elements readMore;
                 for (Element tmp : elements) {
@@ -294,8 +329,7 @@ public class HttpUtil {
 
     private static String readMoreJoke(String url) throws Exception {
         StringBuilder result = new StringBuilder();
-        Document document = Jsoup.connect(url).timeout(4000)
-                .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+        Document document = getDocument(url);
         Elements elements = document.select("section[class=article-content]");
         for (Element tmp : elements)
             result.append(handleString3(tmp.text()));
@@ -315,8 +349,7 @@ public class HttpUtil {
                 List<Data> result = new ArrayList<>();
                 String nextPageUrl = "";
                 int currentPage = 0, totalPages = 0;
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                Document document = getDocument(url);
                 Elements items = document.select("div[class=lovefou]").get(0).children();
                 for (Element li : items) {
                     Element tmp = li.children().get(0);
@@ -346,13 +379,15 @@ public class HttpUtil {
         });
     }
 
+    private static Document getDocument(String url) throws IOException {
+        return Jsoup.connect(url).timeout(4000).header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+    }
+
     private static String getGifUrl(String url) {
         int count = 0, count2 = 0;
         while (true) {
             try {
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
-                return document.select("div[class=dongtai]").get(0).select("img").get(0).attr("src");
+                return getDocument(url).select("div[class=dongtai]").get(0).select("img").get(0).attr("src");
             } catch (Exception e) {
                 e.printStackTrace();
                 if (e instanceof ConnectException) {
@@ -443,10 +478,6 @@ public class HttpUtil {
                 replaceAll("妹子有图有声", "").replaceAll("图片", "").replaceAll("图", "");
     }
 
-    private static String handleString5(String src) {
-        return src.substring(32, src.indexOf(".mp4\";") + 4);
-    }
-
     private static int handleString6(String src) {
         return Integer.parseInt(src.substring(src.indexOf("_") + 1, src.indexOf(".html")));
     }
@@ -464,13 +495,16 @@ public class HttpUtil {
         return info != null && info.isConnected();
     }
 
-    public interface HttpRequestCallbackListener {
+    public abstract static class HttpRequestCallbackListener {
 
-        void onSuccess(List<Data> data, String args);
+        public void onSuccess(List<Data> data, String args) {
+        }
 
-        void onSuccess(Bitmap bitmap);
+        public void onSuccess(Bitmap bitmap) {
+        }
 
-        void onFailure(Exception e, String reason);
+        public void onFailure(Exception e, String reason) {
+        }
     }
 
     private interface BackgroundLogic {
