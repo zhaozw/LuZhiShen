@@ -15,6 +15,7 @@
         android:clickable="true"
         app:cardBackgroundColor="?attr/colorAccent"
         app:cardCornerRadius="@dimen/dp_0"
+        app:cardElevation="@dimen/dp_3"
         app:cardPreventCornerOverlap="true"
         app:cardUseCompatPadding="true">
 

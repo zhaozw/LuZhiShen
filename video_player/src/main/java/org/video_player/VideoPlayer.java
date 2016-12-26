@@ -45,12 +45,13 @@ public class VideoPlayer extends RelativeLayout {
     protected SurfaceView mSurfaceView;
     protected PlayManager mManager;
     protected PlayManager.PlayListener mPlayListener;
-    protected Timer mDismissControlViewTimer, mUpdateProgressTimer;
+    protected static Timer mDismissControlViewTimer, mUpdateProgressTimer;
     protected boolean isOriginallyPlaying, isShowTitleView = true, isTouching;
     protected float mStartX;
     protected int mMoveDistance, mResult, mTotalWidth = -1;
     protected static boolean isFullScreenNow;
     protected String mCurrentVideoUrl;
+    protected OnClickListener mOnClickListener;
 
     public VideoPlayer(Context context) {
         this(context, null);
@@ -397,6 +398,7 @@ public class VideoPlayer extends RelativeLayout {
     }
 
     protected void resetPlayerViews() {
+        LogUtil.print("resetPlayerViews");
         setTitleViewVisibility(VISIBLE);
         mPlayStatusButton.setVisibility(VISIBLE);
         mControlView.setVisibility(INVISIBLE);
@@ -413,18 +415,12 @@ public class VideoPlayer extends RelativeLayout {
         mLoadingBar.setVisibility(INVISIBLE);
     }
 
-    public void reset(){
-        resetPlayerData();
+    public void reset() {
         mSurfaceView = null;
+        resetPlayerData();
     }
 
     protected void exitFullScreen() {
-        LogUtil.print("exit full screen");
-        if (getContext() instanceof FullScreenActivityLandscape)
-            ((FullScreenActivityLandscape) getContext()).finish();
-    }
-
-    void exitFullScreenSpecial() {
         LogUtil.print("exit full screen");
         if (getContext() instanceof FullScreenActivityLandscape)
             ((FullScreenActivityLandscape) getContext()).finish();
@@ -623,9 +619,9 @@ public class VideoPlayer extends RelativeLayout {
     }
 
     public void release() {
-        resetPlayerData();
-        mSurfaceView = null;
         mManager.release();
+        reset();
+        mSurfaceViewContainer.removeAllViews();
     }
 
     public void setTitle(String title) {
@@ -643,6 +639,10 @@ public class VideoPlayer extends RelativeLayout {
     public void hideTitleView() {
         isShowTitleView = false;
         mTitleView.setVisibility(INVISIBLE);
+    }
+
+    public void setOnPlayerClickListener(OnClickListener listener) {
+        mOnClickListener = listener;
     }
 
     protected String formatTime(int time) {
@@ -697,6 +697,16 @@ public class VideoPlayer extends RelativeLayout {
             mSurfaceView.setLayoutParams(lp);
             mSurfaceView.getHolder().setFixedSize(lp.width, lp.height);
         }
+    }
+
+    private OnReleaseListener mOnReleaseListener;
+
+    public void setOnReleaseListener(OnReleaseListener listener) {
+        mOnReleaseListener = listener;
+    }
+
+    public interface OnReleaseListener {
+        void onRelease();
     }
 
     static class Status {

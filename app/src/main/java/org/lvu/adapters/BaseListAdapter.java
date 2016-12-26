@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -48,7 +49,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     int mLayoutId;
     List<Data> mData;
     private OnItemClickListener mOnItemClickListener;
-    protected OnItemLongClickListener mOnItemLongClickListener;
+    OnItemLongClickListener mOnItemLongClickListener;
     protected OnFinishListener mOnLoadNextFinishListener, mOnSyncDataFinishListener,
             mOnLoadPreviousFinishListener, mOnJumpPageFinishListener;
     protected String mNextPageUrl;
@@ -241,7 +242,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         mBottomCount = ImmerseUtil.isAboveKITKAT() && ImmerseUtil.isHasNavigationBar(mContext) ? 1 : 0;
     }
 
-    public void addData(List<Data> data, int what) {
+    private void addData(List<Data> data, int what) {
         if (data != null && !data.isEmpty()) {
             mCurrentPage = data.get(0).getCurrentPage();
             mTotalPages = data.get(0).getTotalPages();
@@ -380,6 +381,19 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             return tmp;
         }
         return mCurrentPage;
+    }
+
+    public BaseListAdapter.ViewHolder getHolderByPosition(RecyclerView recyclerView, int position) {
+        int firstItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        if (position - firstItemPosition >= 0) {
+            //得到要更新的item的view
+            View view = recyclerView.getChildAt(position - firstItemPosition);
+            if (view == null)
+                return null;
+            if (null != recyclerView.getChildViewHolder(view))
+                return (BaseListAdapter.ViewHolder) recyclerView.getChildViewHolder(view);
+        }
+        return null;
     }
 
     public void setCurrentPage(int currentPage) {

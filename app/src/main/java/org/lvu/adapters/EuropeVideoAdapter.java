@@ -28,6 +28,8 @@ import java.util.List;
 public class EuropeVideoAdapter extends BaseListAdapter {
 
     private ImageLoader mImageLoader;
+    private static int mLastOnClickPosition = -1;
+    private VideoPlayer mCurrentPlayer;
 
     public EuropeVideoAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
@@ -76,26 +78,33 @@ public class EuropeVideoAdapter extends BaseListAdapter {
 
                 }
             });
-            if (mOnItemLongClickListener != null)
-                holder.player.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        try {
-                            int pos = holder.getAdapterPosition();
-                            return mOnItemLongClickListener.onLongClick(mData.get(pos != 0 && pos >= mData.size() ?
-                                    mData.size() - 1 : pos));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return false;
-                        }
-                    }
-                });
+            holder.player.setOnPlayerClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mLastOnClickPosition = holder.getAdapterPosition();
+                    mCurrentPlayer = holder.player;
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    public void releaseCurrentPlayer(){
+        mLastOnClickPosition = -1;
+        if (mCurrentPlayer != null) {
+            mCurrentPlayer.release();
+            mCurrentPlayer = null;
+        }
+    }
+
+    public static int getLastOnClickPosition(){
+        return mLastOnClickPosition;
+    }
+
     private void resetAllPlayers(){
+        mLastOnClickPosition = -1;
+        mCurrentPlayer = null;
         VideoPlayerManager.getInstance().resetAll();
     }
 

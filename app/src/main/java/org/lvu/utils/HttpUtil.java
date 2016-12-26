@@ -380,7 +380,7 @@ public class HttpUtil {
     }
 
     private static Document getDocument(String url) throws IOException {
-        return Jsoup.connect(url).timeout(4000).header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+        return Jsoup.connect(url).ignoreContentType(true).timeout(4000).header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
     }
 
     private static String getGifUrl(String url) {

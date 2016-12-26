@@ -13,6 +13,7 @@ public class VideoPlayerManager {
 
     private HashSet<org.video_player.VideoPlayer> mPlayers;
     private volatile static VideoPlayerManager mInstance;
+    private VideoPlayer mLastSyncPlayer;
 
     private VideoPlayerManager() {
         mPlayers = new HashSet<>();
@@ -32,12 +33,15 @@ public class VideoPlayerManager {
     }
 
     void syncStatus(VideoPlayer player) {
-        if (!mPlayers.contains(player))
-            mPlayers.add(player);
-        for (VideoPlayer tmp : mPlayers) {
-            if (tmp != null && tmp != player)
-                tmp.reset();
+        if (mLastSyncPlayer != player) {
+            if (!mPlayers.contains(player))
+                mPlayers.add(player);
+            for (VideoPlayer tmp : mPlayers) {
+                if (tmp != null && tmp != player)
+                    tmp.reset();
+            }
         }
+        mLastSyncPlayer = player;
     }
 
     public void resetAll() {

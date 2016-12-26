@@ -154,7 +154,6 @@ public class PlayManager {
         mPlayer.release();
         if (VideoPlayer.isFullScreenNow() && mFullScreenListener != null)
             mFullScreenListener.onExit();
-
     }
 
     boolean isPlaying() {

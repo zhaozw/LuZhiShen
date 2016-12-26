@@ -26,7 +26,7 @@
             android:layout_marginLeft="@dimen/dp_8"
             android:layout_marginRight="@dimen/dp_8"
             android:padding="@dimen/dp_8"
-            tools:src="@drawable/ic_continue" />
+            tools:src="@drawable/ic_download" />
 
         <TextView
             android:id="@+id/name"

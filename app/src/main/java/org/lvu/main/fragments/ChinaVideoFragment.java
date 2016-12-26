@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.ChinaVideoAdapter;
+import org.lvu.adapters.EuropeVideoAdapter;
 import org.lvu.models.Data;
 
 import java.io.FileNotFoundException;
@@ -23,12 +24,26 @@ public class ChinaVideoFragment extends BaseListFragment {
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
+                   /* EuropeVideoAdapter.ViewHolder holder = (EuropeVideoAdapter.ViewHolder)
+                            mAdapter.getHolderByPosition(mRecyclerView,
+                                    ((EuropeVideoAdapter)mAdapter).getLastOnClickPosition());
+                    if (holder == null)
+                        ((EuropeVideoAdapter)mAdapter).releaseCurrentPlayer();
+                    // TODO: 12/26/16 if holder != null refreshSurfaceView*/
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager manager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+                if (EuropeVideoAdapter.getLastOnClickPosition() != -1 && manager.findFirstCompletelyVisibleItemPosition() != -1 && manager.findLastCompletelyVisibleItemPosition() != -1) {
+                    int lastOnClickPos = EuropeVideoAdapter.getLastOnClickPosition();
+                    if((manager.findFirstCompletelyVisibleItemPosition() > lastOnClickPos
+                            && manager.findFirstVisibleItemPosition() != lastOnClickPos)
+                            || (manager.findLastCompletelyVisibleItemPosition() < lastOnClickPos
+                            && manager.findLastVisibleItemPosition() != lastOnClickPos)) {
+                        ((EuropeVideoAdapter) mAdapter).releaseCurrentPlayer();
+                    }
+                }
             }
         });
     }
@@ -45,13 +60,7 @@ public class ChinaVideoFragment extends BaseListFragment {
 
     @Override
     protected BaseListAdapter.OnItemLongClickListener getOnItemLongClickListener() {
-        return new BaseListAdapter.OnItemLongClickListener() {
-            @Override
-            public boolean onLongClick(Data item) {
-                showDialog(item,getString(R.string.download_this_video));
-                return true;
-            }
-        };
+        return null;
     }
 
     @Override

@@ -15,6 +15,7 @@
         android:clickable="true"
         app:cardBackgroundColor="?attr/colorAccent"
         app:cardCornerRadius="@dimen/dp_0"
+        app:cardElevation="@dimen/dp_3"
         app:cardPreventCornerOverlap="true"
         app:cardUseCompatPadding="true">
         <!--android:foreground="@drawable/card_foreground"-->
@@ -39,10 +40,10 @@
                     android:layout_width="@dimen/dp_42"
                     android:layout_height="@dimen/dp_42"
                     android:layout_gravity="center"
-                    app:enable_circle_background="false"
-                    app:inner_radius="16dp"
                     android:visibility="gone"
                     app:background_color="@color/videoViewBBG"
+                    app:enable_circle_background="false"
+                    app:inner_radius="16dp"
                     app:progress_color="@android:color/white" />
             </FrameLayout>
 

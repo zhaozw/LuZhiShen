@@ -40,6 +40,8 @@ public class VideoPlayer extends org.video_player.VideoPlayer {
         OnClickListener onClickListener = new OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (mOnClickListener != null)
+                    mOnClickListener.onClick(view);
                 if (handleOnClick()) return;
                 int i = view.getId();
                 if (i == R.id.fullscreen_button) {
@@ -78,6 +80,8 @@ public class VideoPlayer extends org.video_player.VideoPlayer {
         mRootView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (mOnClickListener != null)
+                    mOnClickListener.onClick(view);
                 if (handleOnClick()) return;
                 if (mManager.getPlayStatus() != PlayManager.PlayStatus.ERROR && mManager.getPlayStatus() != PlayManager.PlayStatus.NORMAL)
                     setControlViewsVisibility(mControlView.getVisibility() == VISIBLE ? INVISIBLE : VISIBLE);

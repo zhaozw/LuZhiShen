@@ -49,68 +49,62 @@ public class GifPictureFragment extends BaseListFragment {
         return new BaseListAdapter.OnItemClickListener() {
             @Override
             public void onClick(String url, String text, final int position) {
-                int firstItemPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-                if (position - firstItemPosition >= 0) {
-                    //得到要更新的item的view
-                    View view = mRecyclerView.getChildAt(position - firstItemPosition);
-                    if (null != mRecyclerView.getChildViewHolder(view)) {
-
-                        final BasePictureListAdapter.ViewHolder holder = (BasePictureListAdapter.ViewHolder) mRecyclerView.getChildViewHolder(view);
-                        if (holder.progress.getVisibility() == View.VISIBLE)
-                            return;
-                        holder.progress.setVisibility(View.VISIBLE);
-                        final String gifUrl = mAdapter.getItem(position).getUrl();
-                        if (mNameGenerator == null)
-                            mNameGenerator = new HashCodeFileNameGenerator();
-                        if (mThreadPool == null)
-                            mThreadPool = Executors.newSingleThreadExecutor();
-                        File gifFile = new File(dir, mNameGenerator.generate(gifUrl));
-                        if (gifFile.exists()) {
-                            try {
-                                holder.image.setImageDrawable(new GifDrawable(gifFile));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                holder.progress.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        MySnackBar.show(mRootView.findViewById(R.id.coordinator), getString(R.string.load_pic_fail), Snackbar.LENGTH_SHORT);
-                                    }
-                                });
-                            } finally {
-                                holder.progress.setVisibility(View.GONE);
-                            }
-                        } else {
-                            new AsyncHttpClient().get(gifUrl, new AsyncHttpResponseHandler() {
+                final BasePictureListAdapter.ViewHolder holder = (BasePictureListAdapter.ViewHolder) mAdapter.getHolderByPosition(mRecyclerView,position);
+                if (holder != null) {
+                    if (holder.progress.getVisibility() == View.VISIBLE)
+                        return;
+                    holder.progress.setVisibility(View.VISIBLE);
+                    final String gifUrl = mAdapter.getItem(position).getUrl();
+                    if (mNameGenerator == null)
+                        mNameGenerator = new HashCodeFileNameGenerator();
+                    if (mThreadPool == null)
+                        mThreadPool = Executors.newSingleThreadExecutor();
+                    File gifFile = new File(dir, mNameGenerator.generate(gifUrl));
+                    if (gifFile.exists()) {
+                        try {
+                            holder.image.setImageDrawable(new GifDrawable(gifFile));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            holder.progress.post(new Runnable() {
                                 @Override
-                                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                                    try {
-                                        mThreadPool.execute(new WriteDataThread(mNameGenerator.generate(gifUrl), responseBody));
-                                        holder.image.setImageDrawable(new GifDrawable(responseBody));
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                        holder.progress.post(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                MySnackBar.show(mRootView.findViewById(R.id.coordinator), "加载图片失败", Snackbar.LENGTH_SHORT);
-                                            }
-                                        });
-                                    } finally {
-                                        holder.progress.setVisibility(View.GONE);
-                                    }
+                                public void run() {
+                                    MySnackBar.show(mRootView.findViewById(R.id.coordinator), getString(R.string.load_pic_fail), Snackbar.LENGTH_SHORT);
                                 }
-
-                                @Override
-                                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                                    holder.progress.setVisibility(View.GONE);
+                            });
+                        } finally {
+                            holder.progress.setVisibility(View.GONE);
+                        }
+                    } else {
+                        new AsyncHttpClient().get(gifUrl, new AsyncHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                try {
+                                    mThreadPool.execute(new WriteDataThread(mNameGenerator.generate(gifUrl), responseBody));
+                                    holder.image.setImageDrawable(new GifDrawable(responseBody));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                     holder.progress.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            MySnackBar.show(mRootView.findViewById(R.id.coordinator), HttpUtil.REASON_CONNECT_SERVER_FAILURE, Snackbar.LENGTH_SHORT);
+                                            MySnackBar.show(mRootView.findViewById(R.id.coordinator), "加载图片失败", Snackbar.LENGTH_SHORT);
                                         }
                                     });
+                                } finally {
+                                    holder.progress.setVisibility(View.GONE);
                                 }
-                            });
-                        }
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                holder.progress.setVisibility(View.GONE);
+                                holder.progress.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        MySnackBar.show(mRootView.findViewById(R.id.coordinator), HttpUtil.REASON_CONNECT_SERVER_FAILURE, Snackbar.LENGTH_SHORT);
+                                    }
+                                });
+                            }
+                        });
                     }
                 }
             }
