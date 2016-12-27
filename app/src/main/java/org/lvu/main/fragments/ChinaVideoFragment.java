@@ -21,7 +21,7 @@ public class ChinaVideoFragment extends BaseListFragment {
     @Override
     protected void init() {
         super.init();
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        /*mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                    /* EuropeVideoAdapter.ViewHolder holder = (EuropeVideoAdapter.ViewHolder)
@@ -29,7 +29,6 @@ public class ChinaVideoFragment extends BaseListFragment {
                                     ((EuropeVideoAdapter)mAdapter).getLastOnClickPosition());
                     if (holder == null)
                         ((EuropeVideoAdapter)mAdapter).releaseCurrentPlayer();
-                    // TODO: 12/26/16 if holder != null refreshSurfaceView*/
             }
 
             @Override
@@ -44,6 +43,12 @@ public class ChinaVideoFragment extends BaseListFragment {
                         ((EuropeVideoAdapter) mAdapter).releaseCurrentPlayer();
                     }
                 }
+            }
+        });*/
+        mRecyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
+            @Override
+            public void onViewRecycled(RecyclerView.ViewHolder holder) {
+                ((EuropeVideoAdapter.ViewHolder)holder).releasePlayer();
             }
         });
     }

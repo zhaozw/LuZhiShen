@@ -38,6 +38,10 @@ public abstract class BasePictureListAdapter extends BaseListAdapter {
     @Override
     public void onBindViewHolder(final BaseListAdapter.ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
+        initItemImage(holder, position);
+    }
+
+    void initItemImage(BaseListAdapter.ViewHolder holder, int position) {
         if (mData.isEmpty())
             return;
         try {

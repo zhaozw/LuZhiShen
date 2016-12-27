@@ -4,15 +4,9 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.view.View;
-import android.widget.LinearLayout;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-
-import org.lvu.R;
 import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
-import org.lvu.utils.ImmerseUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -28,40 +22,11 @@ public class PicturesViewAdapter extends BasePictureListAdapter {
 
     @Override
     public void onBindViewHolder(final BaseListAdapter.ViewHolder holder, int position) {
-        if (holder instanceof FooterHolder) {
-            FooterHolder footerHolder = (FooterHolder) holder;
-            LinearLayout.LayoutParams bottomLP = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    ImmerseUtil.getNavigationBarHeight(mContext));
-            footerHolder.bottomView.setLayoutParams(bottomLP);
-        } else {
+        if (!handleFooterHolder(holder)) {
             if (mData.isEmpty())
                 return;
-            try {
-                mImageLoader.displayImage(mData.get(position != 0 && position >= mData.size() ?
-                                mData.size() - 1 : position).getSrc(), holder.image,
-                        new DisplayImageOptions.Builder()
-                                .showImageOnFail(R.drawable.ic_pic_bad)
-                                .showImageOnLoading(R.drawable.ic_pic_loading)
-                                .showImageForEmptyUri(R.drawable.ic_pic_bad)
-                                .cacheInMemory(true).cacheOnDisk(true).build());
-                if (mOnItemLongClickListener != null)
-                    holder.root.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            try {
-                                int pos = holder.getAdapterPosition();
-                                return mOnItemLongClickListener.onLongClick(mData.get(pos != 0 && pos >= mData.size() ?
-                                        mData.size() - 1 : pos));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                return false;
-                            }
-                        }
-                    });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            initItemImage(holder, position);
+            initItemLongClickListener(holder);
         }
     }
 

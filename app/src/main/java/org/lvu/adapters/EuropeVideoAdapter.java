@@ -28,8 +28,6 @@ import java.util.List;
 public class EuropeVideoAdapter extends BaseListAdapter {
 
     private ImageLoader mImageLoader;
-    private static int mLastOnClickPosition = -1;
-    private VideoPlayer mCurrentPlayer;
 
     public EuropeVideoAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
@@ -81,8 +79,7 @@ public class EuropeVideoAdapter extends BaseListAdapter {
             holder.player.setOnPlayerClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mLastOnClickPosition = holder.getAdapterPosition();
-                    mCurrentPlayer = holder.player;
+                    ((EuropeVideoAdapter.ViewHolder) holder).setPlayActive(true);
                 }
             });
         } catch (Exception e) {
@@ -90,21 +87,7 @@ public class EuropeVideoAdapter extends BaseListAdapter {
         }
     }
 
-    public void releaseCurrentPlayer(){
-        mLastOnClickPosition = -1;
-        if (mCurrentPlayer != null) {
-            mCurrentPlayer.release();
-            mCurrentPlayer = null;
-        }
-    }
-
-    public static int getLastOnClickPosition(){
-        return mLastOnClickPosition;
-    }
-
-    private void resetAllPlayers(){
-        mLastOnClickPosition = -1;
-        mCurrentPlayer = null;
+    private void resetAllPlayers() {
         VideoPlayerManager.getInstance().resetAll();
     }
 
@@ -151,9 +134,21 @@ public class EuropeVideoAdapter extends BaseListAdapter {
 
     public static class ViewHolder extends GifPictureAdapter.ViewHolder {
 
+        private boolean isPlayActive;
+
         public ViewHolder(View itemView) {
             super(itemView);
             player = (VideoPlayer) itemView.findViewById(R.id.player);
+        }
+
+        void setPlayActive(boolean playActive) {
+            isPlayActive = playActive;
+        }
+
+        public void releasePlayer() {
+            if (player != null && isPlayActive)
+                player.release();
+            isPlayActive = false;
         }
     }
 
@@ -162,6 +157,7 @@ public class EuropeVideoAdapter extends BaseListAdapter {
         MyHandler(BaseListAdapter clazz) {
             super(clazz);
         }
+
         @Override
         public void handleMessage(Message msg) {
             int what = msg.what;
@@ -170,7 +166,7 @@ public class EuropeVideoAdapter extends BaseListAdapter {
                 case SYNC_DATA_SUCCESS:
                 case LOAD_MORE_SUCCESS:
                 case JUMP_PAGE_SUCCESS:
-                    ((EuropeVideoAdapter)mClass.get()).resetAllPlayers();
+                    ((EuropeVideoAdapter) mClass.get()).resetAllPlayers();
                     break;
                 default:
             }

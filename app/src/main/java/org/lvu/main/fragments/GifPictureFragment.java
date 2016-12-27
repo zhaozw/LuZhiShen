@@ -13,7 +13,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
-import org.lvu.adapters.BasePictureListAdapter;
 import org.lvu.adapters.GifPictureAdapter;
 import org.lvu.customize.MySnackBar;
 import org.lvu.models.Data;
@@ -40,6 +39,22 @@ public class GifPictureFragment extends BaseListFragment {
     private File dir = ImageLoader.getInstance().getDiskCache().getDirectory();
 
     @Override
+    protected void init() {
+        super.init();
+        mRecyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
+            @Override
+            public void onViewRecycled(RecyclerView.ViewHolder holder) {
+                GifPictureAdapter.ViewHolder gifHolder = (GifPictureAdapter.ViewHolder) holder;
+                if (gifHolder != null) {
+                    if (gifHolder.progress != null)
+                        gifHolder.progress.setVisibility(View.GONE);
+                    gifHolder.setGifPlaying(false);
+                }
+            }
+        });
+    }
+
+    @Override
     protected BaseListAdapter getAdapter() {
         return new GifPictureAdapter(getActivity(), R.layout.adapter_gif_item, new ArrayList<Data>());
     }
@@ -49,9 +64,9 @@ public class GifPictureFragment extends BaseListFragment {
         return new BaseListAdapter.OnItemClickListener() {
             @Override
             public void onClick(String url, String text, final int position) {
-                final BasePictureListAdapter.ViewHolder holder = (BasePictureListAdapter.ViewHolder) mAdapter.getHolderByPosition(mRecyclerView,position);
+                final GifPictureAdapter.ViewHolder holder = (GifPictureAdapter.ViewHolder) mAdapter.getHolderByPosition(mRecyclerView, position);
                 if (holder != null) {
-                    if (holder.progress.getVisibility() == View.VISIBLE)
+                    if (holder.progress.getVisibility() == View.VISIBLE || holder.isGifPlaying())
                         return;
                     holder.progress.setVisibility(View.VISIBLE);
                     final String gifUrl = mAdapter.getItem(position).getUrl();
@@ -62,7 +77,11 @@ public class GifPictureFragment extends BaseListFragment {
                     File gifFile = new File(dir, mNameGenerator.generate(gifUrl));
                     if (gifFile.exists()) {
                         try {
-                            holder.image.setImageDrawable(new GifDrawable(gifFile));
+                            if (holder.progress.getVisibility() != View.GONE) {
+                                holder.image.setImageDrawable(new GifDrawable(gifFile));
+                                holder.setGifPlaying(true);
+                                mRecyclerView.smoothScrollToPosition(position);
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                             holder.progress.post(new Runnable() {
@@ -80,7 +99,11 @@ public class GifPictureFragment extends BaseListFragment {
                             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                                 try {
                                     mThreadPool.execute(new WriteDataThread(mNameGenerator.generate(gifUrl), responseBody));
-                                    holder.image.setImageDrawable(new GifDrawable(responseBody));
+                                    if (holder.progress.getVisibility() != View.GONE) {
+                                        holder.image.setImageDrawable(new GifDrawable(responseBody));
+                                        holder.setGifPlaying(true);
+                                        mRecyclerView.smoothScrollToPosition(position);
+                                    }
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                     holder.progress.post(new Runnable() {
@@ -109,6 +132,15 @@ public class GifPictureFragment extends BaseListFragment {
                 }
             }
         };
+    }
+
+    public static boolean isThisGifLoaded(String url) {
+        return getGifFileByUrl(url).exists();
+    }
+
+    public static File getGifFileByUrl(String url) {
+        return new File(ImageLoader.getInstance().getDiskCache().getDirectory(),
+                new HashCodeFileNameGenerator().generate(url));
     }
 
     @Override
@@ -150,7 +182,7 @@ public class GifPictureFragment extends BaseListFragment {
         }
     }
 
-    public class WriteDataThread extends Thread {
+    private class WriteDataThread extends Thread {
 
         private String name;
         private byte[] data;

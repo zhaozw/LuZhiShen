@@ -148,49 +148,66 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        if (!handleFooterHolder(holder))
+            initDefaultItemData(holder, position);
+    }
+
+    void initDefaultItemData(final ViewHolder holder, int position) {
+        if (mData.isEmpty())
+            return;
+        try {
+            holder.text.setText(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getText());
+            initItemOnClickListener(holder);
+            initItemLongClickListener(holder);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initItemOnClickListener(final ViewHolder holder) {
+        if (mOnItemClickListener != null)
+            holder.root.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        int pos = holder.getAdapterPosition();
+                        Data data = mData.get(pos != 0 && pos >= mData.size() ?
+                                mData.size() - 1 : pos);
+                        mOnItemClickListener.onClick(data.getUrl(), data.getText(), pos);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+    }
+
+    void initItemLongClickListener(final ViewHolder holder) {
+        if (mOnItemLongClickListener != null)
+            holder.root.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    try {
+                        int pos = holder.getAdapterPosition();
+                        return mOnItemLongClickListener.onLongClick(mData.get(pos != 0 && pos >= mData.size() ?
+                                mData.size() - 1 : pos));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+            });
+    }
+
+    boolean handleFooterHolder(ViewHolder holder) {
         if (holder instanceof FooterHolder) {
             FooterHolder footerHolder = (FooterHolder) holder;
             LinearLayout.LayoutParams bottomLP = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     ImmerseUtil.getNavigationBarHeight(mContext));
             footerHolder.bottomView.setLayoutParams(bottomLP);
-        } else {
-            if (mData.isEmpty())
-                return;
-            try {
-                holder.text.setText(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getText());
-                if (mOnItemClickListener != null)
-                    holder.root.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            try {
-                                int pos = holder.getAdapterPosition();
-                                Data data = mData.get(pos != 0 && pos >= mData.size() ?
-                                        mData.size() - 1 : pos);
-                                mOnItemClickListener.onClick(data.getUrl(), data.getText(), pos);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                if (mOnItemLongClickListener != null)
-                    holder.root.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            try {
-                                int pos = holder.getAdapterPosition();
-                                return mOnItemLongClickListener.onLongClick(mData.get(pos != 0 && pos >= mData.size() ?
-                                        mData.size() - 1 : pos));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                return false;
-                            }
-                        }
-                    });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            return true;
         }
+        return false;
     }
 
     //判断当前item类型
@@ -375,7 +392,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     }
 
     public int getCurrentPage() {
-        if (mCurrentPageTmp!=-1){
+        if (mCurrentPageTmp != -1) {
             int tmp = mCurrentPageTmp;
             mCurrentPageTmp = -1;
             return tmp;
