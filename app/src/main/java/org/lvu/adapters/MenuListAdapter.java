@@ -131,7 +131,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.ViewHo
 
         ViewHolder(View itemView) {
             super(itemView);
-            root = itemView.findViewById(R.id.root);
+            root = itemView.findViewById(R.id.root_view);
             icon = (ImageView) itemView.findViewById(R.id.icon);
             name = (TextView) itemView.findViewById(R.id.name);
         }

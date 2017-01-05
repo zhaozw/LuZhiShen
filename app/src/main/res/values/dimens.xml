@@ -37,4 +37,8 @@
     <dimen name="sp_16">16sp</dimen>
     <dimen name="dp_77">77dp</dimen>
     <dimen name="dp_61">61dp</dimen>
+    <dimen name="dp_180">180dp</dimen>
+    <dimen name="sp_60">60sp</dimen>
+    <dimen name="sp_45">45sp</dimen>
+    <dimen name="sp_50">50sp</dimen>
 </resources>

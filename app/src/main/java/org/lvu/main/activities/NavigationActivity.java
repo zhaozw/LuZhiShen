@@ -223,7 +223,7 @@ public class NavigationActivity extends BaseActivity {
         if ((System.currentTimeMillis() - mLastTime) < 2000)
             finish();
         mLastTime = System.currentTimeMillis();
-        MySnackBar.show(findViewById(R.id.coordinator),
+        MySnackBar.show(findViewById(R.id.root_view),
                 getString(R.string.press_back_exit), Snackbar.LENGTH_SHORT);
     }
 

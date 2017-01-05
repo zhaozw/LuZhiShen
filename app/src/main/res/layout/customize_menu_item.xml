@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:id="@+id/ripple_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:mrl_rippleColor="@color/menu_item_bg"
+        app:mrl_rippleOverlay="true">
+
+        <org.lvu.customize.MyLinearLayout
+            android:id="@+id/root_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/menu_item_selector"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/dp_6"
+            android:paddingTop="@dimen/dp_6">
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/icon"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
+                android:layout_marginLeft="@dimen/dp_8"
+                android:layout_marginRight="@dimen/dp_8"
+                android:gravity="center_vertical"
+                android:padding="@dimen/dp_8"
+                android:tint="?attr/colorPrimary" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:padding="@dimen/dp_6"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="@dimen/sp_15" />
+        </org.lvu.customize.MyLinearLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
+
+    <View
+        android:visibility="gone"
+        android:id="@+id/space"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginBottom="@dimen/dp_8"
+        android:layout_marginTop="@dimen/dp_8"
+        android:background="?attr/color_light" />
+</LinearLayout>

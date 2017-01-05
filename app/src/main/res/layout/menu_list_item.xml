@@ -9,7 +9,7 @@
     app:mrl_rippleOverlay="true">
 
     <LinearLayout
-        android:id="@+id/root"
+        android:id="@+id/root_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/menu_selector"

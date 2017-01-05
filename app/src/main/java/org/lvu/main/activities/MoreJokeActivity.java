@@ -1,6 +1,5 @@
 package org.lvu.main.activities;
 
-import android.graphics.Bitmap;
 import android.os.Message;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -42,7 +41,7 @@ public class MoreJokeActivity extends NovelViewActivity {
                             hideLoadMoreBar();
                         }
                     });
-                MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
+                MySnackBar.show(findViewById(R.id.root_view), reason, Snackbar.LENGTH_INDEFINITE,
                         getString(R.string.back), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

@@ -21,11 +21,6 @@
             android:launchMode="singleTop">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
                 <action android:name="cat.ereza.customactivityoncrash.RESTART" />
             </intent-filter>
         </activity>
@@ -33,7 +28,8 @@
         <activity
             android:name=".main.activities.MainActivity"
             android:configChanges="orientation|screenSize"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".main.activities.PicturesViewActivity"
@@ -56,6 +52,30 @@
             android:launchMode="singleTop" />
 
         <activity
+            android:name=".main.activities.DownloadManagerActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop" />
+
+        <activity
+            android:name=".main.activities.SettingActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".main.activities.NewMainActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".main.activities.ErrorActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/customactivityoncrash_error_activity_error_details_title"
@@ -65,13 +85,6 @@
                 <action android:name="cat.ereza.customactivityoncrash.ERROR" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="io.vov.vitamio.activity.InitActivity"
-            android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
-            android:launchMode="singleTop"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:windowSoftInputMode="stateAlwaysHidden" />
 
         <activity
             android:name="com.tencent.bugly.beta.ui.BetaActivity"

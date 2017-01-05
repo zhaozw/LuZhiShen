@@ -1,6 +1,7 @@
 package org.lvu;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;

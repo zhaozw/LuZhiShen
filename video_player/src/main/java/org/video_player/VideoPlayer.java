@@ -217,7 +217,7 @@ public class VideoPlayer extends RelativeLayout {
                         break;
                     default:
                 }
-                return false;
+                return mSeekView.getVisibility() == VISIBLE;
             }
         });
         mProgressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

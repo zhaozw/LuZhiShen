@@ -28,4 +28,8 @@
             <enum name="invisible" value="1"/>
         </attr>
     </declare-styleable>
+    <declare-styleable name="NavigationView">
+        <attr name="header" format="reference" />
+        <attr name="high_light_tint" format="color" />
+    </declare-styleable>
 </resources>

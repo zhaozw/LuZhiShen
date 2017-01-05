@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/navigation_bar_view"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:background="@android:color/transparent"
+    android:clickable="false"
+    android:focusable="false"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/root_view"
+        android:layout_width="0dp"
+        android:visibility="gone"
+        android:layout_height="0dp" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/icon"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/text"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
+    <View
+        android:visibility="gone"
+        android:id="@+id/space"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1" />
+</LinearLayout>

@@ -140,7 +140,7 @@ public class HttpUtil {
         int count = 0, count2 = 0;
         while (true) {
             try {
-                return Jsoup.connect("http://www.9527shequ.com/so/wz.php").timeout(4000)
+                return Jsoup.connect("http://www.xiaoming000.com/so/wz.php").timeout(4000)
                         .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get().baseUri();
             } catch (Exception e) {
                 e.printStackTrace();

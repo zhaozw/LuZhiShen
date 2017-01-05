@@ -28,7 +28,7 @@
             android:gravity="center_vertical|start"
             android:padding="@dimen/dp_12"
             android:textColor="@color/menu_text_color"
-            android:textSize="@dimen/sp_18"
+            android:textSize="@dimen/sp_16"
             tools:text="“蒜你狠”卷土重来 每斤价格直逼20元" />
     </android.support.v7.widget.CardView>
 </com.balysv.materialripple.MaterialRippleLayout>

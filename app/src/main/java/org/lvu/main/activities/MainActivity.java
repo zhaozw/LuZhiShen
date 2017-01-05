@@ -29,21 +29,21 @@ import org.lvu.R;
 import org.lvu.adapters.MenuListAdapter;
 import org.lvu.customize.MenuList;
 import org.lvu.customize.MySnackBar;
-import org.lvu.main.fragments.AsiaPictureFragment;
-import org.lvu.main.fragments.BaseListFragment;
-import org.lvu.main.fragments.ChinaVideoFragment;
-import org.lvu.main.fragments.DownloadManagerFragment;
-import org.lvu.main.fragments.EuropePictureFragment;
-import org.lvu.main.fragments.EuropeVideoFragment;
-import org.lvu.main.fragments.EvilComicsFragment;
-import org.lvu.main.fragments.ExcitedNovelFragment;
-import org.lvu.main.fragments.FamilyMessNovelFragment;
-import org.lvu.main.fragments.FamilyPhotoFragment;
-import org.lvu.main.fragments.FunnyJokeFragment;
-import org.lvu.main.fragments.GifPictureFragment;
-import org.lvu.main.fragments.JapanVideoFragment;
-import org.lvu.main.fragments.LewdWifeNovelFragment;
-import org.lvu.main.fragments.SchoolNovelFragment;
+import org.lvu.main.fragments.view_pager_content.AsiaPictureFragment;
+import org.lvu.main.fragments.view_pager_content.BaseListFragment;
+import org.lvu.main.fragments.view_pager_content.ChinaVideoFragment;
+import org.lvu.main.fragments.DownloadManagerActivity;
+import org.lvu.main.fragments.view_pager_content.EuropePictureFragment;
+import org.lvu.main.fragments.view_pager_content.EuropeVideoFragment;
+import org.lvu.main.fragments.view_pager_content.EvilComicsFragment;
+import org.lvu.main.fragments.view_pager_content.ExcitedNovelFragment;
+import org.lvu.main.fragments.view_pager_content.FamilyMessNovelFragment;
+import org.lvu.main.fragments.view_pager_content.FamilyPhotoFragment;
+import org.lvu.main.fragments.view_pager_content.FunnyJokeFragment;
+import org.lvu.main.fragments.view_pager_content.GifPictureFragment;
+import org.lvu.main.fragments.view_pager_content.JapanVideoFragment;
+import org.lvu.main.fragments.view_pager_content.LewdWifeNovelFragment;
+import org.lvu.main.fragments.view_pager_content.SchoolNovelFragment;
 import org.lvu.utils.ImmerseUtil;
 
 import java.io.File;
@@ -62,10 +62,10 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
     private TextView mTitle, mTotalPages;
     private TextInputEditText mCurrentPage;
     private DrawerLayout mDrawerLayout;
+    private int totalPages;
     private MenuList mMenuList;
     private static int mFragmentPosition = -1, mStringId = -1;
     private Fragment mShowingFragment;
-    private int totalPages;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,7 +78,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
 
     private void initFragment() {
         if (mStringId == -2 && mFragmentPosition == -2) {
-            showFragment(new DownloadManagerFragment());
+            showFragment(new DownloadManagerActivity());
             mMenuList.setSelectedItem(MenuList.MenuItem.DOWNLOAD_MANAGER);
             mTitle.setText(R.string.download_manager);
         } else {
@@ -97,8 +97,8 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
     private void showFragment(Fragment fragment) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())
             return;
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.wait_replace, fragment).commitAllowingStateLoss();
+        /*getSupportFragmentManager().beginTransaction()
+                .replace(R.id.wait_replace, fragment).commitAllowingStateLoss();*/
         mShowingFragment = fragment;
         mCurrentPage.setText("");
         mCurrentPage.setVisibility(View.GONE);
@@ -185,9 +185,9 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                         changeSkin();
                         break;
                     case R.id.download_manager:
-                        if (mShowingFragment instanceof DownloadManagerFragment)
+                        if (mShowingFragment instanceof DownloadManagerActivity)
                             break;
-                        showFragment(new DownloadManagerFragment());
+                        showFragment(new DownloadManagerActivity());
                         mMenuList.setSelectedItem(MenuList.MenuItem.DOWNLOAD_MANAGER);
                         mStringId = -2;
                         mFragmentPosition = -2;
@@ -331,7 +331,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
             if ((System.currentTimeMillis() - mLastTime) < 2000)
                 finish();
             mLastTime = System.currentTimeMillis();
-            MySnackBar.show(findViewById(R.id.coordinator),
+            MySnackBar.show(findViewById(R.id.root_view),
                     getString(R.string.press_back_exit), Snackbar.LENGTH_SHORT);
         }
     }
@@ -368,6 +368,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
             mDrawerLayout.closeDrawer(GravityCompat.START);
     }
 
+
     @Override
     public void finish() {
         super.finish();
@@ -384,6 +385,11 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                 ((BaseListFragment) mShowingFragment).saveAdapterData();
             mShowingFragment = null;
         }
+        clearCache();
+        android.os.Process.killProcess(android.os.Process.myPid());
+    }
+
+    private void clearCache() {
         ImageLoader.getInstance().clearMemoryCache();
         //ImageLoader.getInstance().clearDiskCache();
         //获取缓存路径
@@ -431,7 +437,6 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                     break;
             }
         }
-        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     @Override

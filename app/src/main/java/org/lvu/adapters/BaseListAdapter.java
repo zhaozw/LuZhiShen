@@ -1,7 +1,6 @@
 package org.lvu.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -57,7 +56,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             mLoadNextCallbackListener, mLoadPreviousCallbackListener, mOnJumpPageCallbackListener;
     private Handler mHandler;
     private boolean isOwnerDestroyed;
-    private int mCurrentPage, mCurrentPageTmp = -1, mTotalPages;
+    private int mCurrentPage = -1, mCurrentPageTmp = -1, mTotalPages = -1;
 
     public BaseListAdapter(Context context, int layoutId, List<Data> data) {
         mContext = context;
@@ -293,8 +292,14 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     }
 
     public void saveDataToStorage(OutputStream os) {
-        if (mData == null || mData.isEmpty())
+        if (mData == null || mData.isEmpty()) {
+            try {
+                os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return;
+        }
         ObjectOutputStream oos = null;
         try {
             mData.get(0).setNextPageUrl(mNextPageUrl);
@@ -324,11 +329,6 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             }
 
             @Override
-            public void onSuccess(Bitmap bitmap) {
-
-            }
-
-            @Override
             public void onFailure(Exception e, String reason) {
                 syncData("");
             }
@@ -348,6 +348,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
                     mTotalPages = result.get(0).getTotalPages();
                     listener.onSuccess(result, result.get(0).getNextPageUrl());
                 } catch (Exception e) {
+                    e.printStackTrace();
                     listener.onFailure(e, "");
                 } finally {
                     if (ois != null) {

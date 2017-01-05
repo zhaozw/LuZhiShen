@@ -95,7 +95,7 @@ public class ComicsViewActivity extends BaseActivity {
                 mContent.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(bitmapFile)));
             } catch (Exception e) {
                 e.printStackTrace();
-                MySnackBar.show(findViewById(R.id.coordinator), getString(R.string.load_pic_fail), Snackbar.LENGTH_SHORT);
+                MySnackBar.show(findViewById(R.id.root_view), getString(R.string.load_pic_fail), Snackbar.LENGTH_SHORT);
             } finally {
                 mLoadMoreBar.setVisibility(View.GONE);
             }
@@ -125,7 +125,7 @@ public class ComicsViewActivity extends BaseActivity {
                                 hideLoadMoreBar();
                             }
                         });
-                    MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
+                    MySnackBar.show(findViewById(R.id.root_view), reason, Snackbar.LENGTH_INDEFINITE,
                             getString(R.string.back), new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {

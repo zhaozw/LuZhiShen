@@ -33,8 +33,7 @@ public class HttpTest {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                String html = getDocument(url).select("div[class=mahua]").get(0).select("script").html();
-                listener.onSuccess(null, getVideoBaseUri(url) + html.substring(html.lastIndexOf("l+'") + 3, html.lastIndexOf(".mp4'];") + 4));
+                println(getDocument(getWebBaseUri()).html());
             }
         });
     }

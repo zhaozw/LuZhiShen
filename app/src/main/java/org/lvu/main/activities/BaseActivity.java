@@ -3,6 +3,7 @@ package org.lvu.main.activities;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -143,6 +144,13 @@ public class BaseActivity extends AppCompatActivity {
             result.add(new Menu(R.color.greyPrimary, R.string.skin_grey));
         if (!curSkin.equals(getString(R.string.skin_black)))
             result.add(new Menu(R.color.darkPrimary, R.string.skin_black));
+        return result;
+    }
+
+    public int getThemeColor(int index) {
+        TypedArray a = obtainStyledAttributes(new int[]{R.attr.colorPrimary, R.attr.colorAccent, R.attr.color_light, R.attr.colorPrimaryDark});
+        int result = a.getColor(index, getResources().getColor(R.color.bluePrimary));
+        a.recycle();
         return result;
     }
 

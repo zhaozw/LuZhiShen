@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/title"
+            android:icon="@drawable/ic_video"
+            android:title="视频区" />
+        <item
+            android:id="@+id/title2"
+            android:icon="@drawable/ic_pic"
+            android:title="图片区" />
+        <item
+            android:id="@+id/title3"
+            android:icon="@drawable/ic_book"
+            android:title="文字区" />
+        <item
+            android:id="@+id/title4"
+            android:icon="@drawable/ic_menu_download"
+            android:title="下载区" />
+    </group>
+    <item android:title="其他">
+        <menu>
+            <item
+                android:id="@+id/other"
+                android:checkable="true"
+                android:icon="@drawable/ic_menu_download"
+                android:title="下载管理" />
+            <item
+                android:id="@+id/other2"
+                android:checkable="true"
+                android:icon="@drawable/ic_menu_skin"
+                android:title="切换皮肤" />
+            <item
+                android:id="@+id/other3"
+                android:checkable="true"
+                android:icon="@drawable/ic_settings"
+                android:title="设置" />
+            <item
+                android:id="@+id/other4"
+                android:checkable="true"
+                android:icon="@drawable/ic_menu_exit"
+                android:title="退出" />
+        </menu>
+    </item>
+</menu>

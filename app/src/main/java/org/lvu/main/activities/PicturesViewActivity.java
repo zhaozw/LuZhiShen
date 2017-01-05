@@ -77,7 +77,7 @@ public class PicturesViewActivity extends BaseActivity {
                             hideLoadMoreBar();
                         }
                     });
-                MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
+                MySnackBar.show(findViewById(R.id.root_view), reason, Snackbar.LENGTH_INDEFINITE,
                         getString(R.string.back), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

@@ -5,9 +5,11 @@
     <string name="blank" />
 
     <string name="menu_navigation">导航</string>
+    <string name="area_index">首页</string>
     <string name="area_video">视频区</string>
     <string name="area_picture">图片区</string>
     <string name="area_text">文字区</string>
+    <string name="area_torrent">种子区</string>
     <string name="menu_china_video">国产自拍</string>
     <string name="menu_europe_video">欧美视频</string>
     <string name="menu_japan_video">日本无码</string>

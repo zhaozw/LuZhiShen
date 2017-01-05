@@ -58,4 +58,6 @@
     <color name="menu_text_color">#fafafa</color>
     <color name="menu_text_color_dark">#212121</color>
     <color name="ripple_color">#30ffffff</color>
+    <color name="nav_item_bg">#333</color>
+    <color name="menu_item_bg">#305e5e5e</color>
 </resources>

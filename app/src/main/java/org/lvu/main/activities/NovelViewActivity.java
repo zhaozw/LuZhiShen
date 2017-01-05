@@ -2,7 +2,6 @@ package org.lvu.main.activities;
 
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -107,7 +106,7 @@ public class NovelViewActivity extends BaseActivity {
                 mContent.setText(content);
             } catch (Exception e) {
                 e.printStackTrace();
-                MySnackBar.show(findViewById(R.id.coordinator), getString(R.string.load_data_fail), Snackbar.LENGTH_SHORT);
+                MySnackBar.show(findViewById(R.id.root_view), getString(R.string.load_data_fail), Snackbar.LENGTH_SHORT);
             } finally {
                 mLoadMoreBar.setVisibility(View.GONE);
                 if (br != null) {
@@ -143,7 +142,7 @@ public class NovelViewActivity extends BaseActivity {
                                 hideLoadMoreBar();
                             }
                         });
-                    MySnackBar.show(findViewById(R.id.coordinator), reason, Snackbar.LENGTH_INDEFINITE,
+                    MySnackBar.show(findViewById(R.id.root_view), reason, Snackbar.LENGTH_INDEFINITE,
                             getString(R.string.back), new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
