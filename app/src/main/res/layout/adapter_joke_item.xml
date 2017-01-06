@@ -24,7 +24,6 @@
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorAccent"
             android:gravity="center_vertical|start"
             android:padding="@dimen/dp_12"
             android:textColor="@color/menu_text_color"

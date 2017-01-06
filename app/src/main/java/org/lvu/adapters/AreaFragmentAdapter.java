@@ -36,7 +36,7 @@ public class AreaFragmentAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public Fragment getItem(int position) {
+    public BaseListFragment getItem(int position) {
         return mFragments[position];
     }
 

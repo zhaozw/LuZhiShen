@@ -1,6 +1,5 @@
 package org.lvu.main.fragments;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -12,7 +11,9 @@ import android.view.ViewGroup;
 
 import org.lvu.R;
 import org.lvu.adapters.AreaFragmentAdapter;
+import org.lvu.main.activities.NewMainActivity;
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
+import org.lvu.utils.LogUtil;
 import org.video_player.PlayManager;
 
 /**
@@ -25,6 +26,8 @@ public abstract class BaseFragment extends Fragment {
     protected TabLayout mTabLayout;
     protected ViewPager mViewPager;
     protected AreaFragmentAdapter mAdapter;
+    private boolean isTabLayoutExpanded = true;
+    private ViewPager.SimpleOnPageChangeListener mSimpleOnPageChangeListener;
 
     @Nullable
     @Override
@@ -43,15 +46,52 @@ public abstract class BaseFragment extends Fragment {
             mTabLayout.addTab(mTabLayout.newTab().setText(tmp));
 
         mViewPager.setAdapter((mAdapter = new AreaFragmentAdapter(getChildFragmentManager(), getFragments(), getStrings(tabs))));
-        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mViewPager.addOnPageChangeListener((mSimpleOnPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+                LogUtil.print(position);
+                int backgroundColor = NewMainActivity.getBackgroundColor();
+                if (backgroundColor != -1 && mAdapter.getItem(position) != null) {
+                    int themeColor = ((NewMainActivity) getActivity()).getThemeColor(1);
+                    LogUtil.print(NewMainActivity.isAppBarExpanded());
+                    if (NewMainActivity.isAppBarExpanded() || !NewMainActivity.isScrimsShown()) {
+                        if (isTabLayoutExpanded) {
+                            mTabLayout.setBackground(NewMainActivity.getAnimation(
+                                    ((NewMainActivity) getActivity()).getThemeColor(0), themeColor));
+                            isTabLayoutExpanded = false;
+                            mAdapter.getItem(position).refreshViewsColor(themeColor, backgroundColor);
+                        }
+                    } else {
+                        if (!isTabLayoutExpanded) {
+                            mTabLayout.setBackground(NewMainActivity.getAnimation(themeColor,
+                                    ((NewMainActivity) getActivity()).getThemeColor(0)));
+                            isTabLayoutExpanded = true;
+                            mAdapter.getItem(position).resetViewsColor(backgroundColor, themeColor);
+                        }
+                    }
+                }
                 PlayManager.getInstance().onlyRelease();
             }
-        });
+        }));
 
         mTabLayout.setupWithViewPager(mViewPager);
+        ((NewMainActivity) getActivity()).setOnAppBarExpandedListener(new NewMainActivity.OnAppBarExpandedListener() {
+            @Override
+            public void onExpanded(int startColor, int endColor) {
+                mTabLayout.setBackground(NewMainActivity.getAnimation(
+                        ((NewMainActivity) getActivity()).getThemeColor(0), endColor));
+                mAdapter.getCurrentFragment().refreshViewsColor(startColor, endColor);
+            }
+
+            @Override
+            public void onCollapsed(int startColor, int endColor) {
+                mTabLayout.setBackground(NewMainActivity.getAnimation(startColor,
+                        ((NewMainActivity) getActivity()).getThemeColor(0)));
+                mAdapter.getCurrentFragment().resetViewsColor(startColor, endColor);
+            }
+        });
     }
+
 
     private String[] getStrings(int[] src) {
         String[] result = new String[src.length];
@@ -86,8 +126,4 @@ public abstract class BaseFragment extends Fragment {
     protected abstract int[] getTabs();
 
     protected abstract BaseListFragment[] getFragments();
-
-    public void setTabLayoutBackground(Drawable drawable) {
-        mTabLayout.setBackground(drawable);
-    }
 }

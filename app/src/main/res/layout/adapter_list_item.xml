@@ -24,7 +24,6 @@
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorAccent"
             android:ellipsize="marquee"
             android:gravity="center_vertical|start"
             android:marqueeRepeatLimit="marquee_forever"

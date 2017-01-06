@@ -9,7 +9,9 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +28,11 @@ import org.lvu.main.activities.NewMainActivity;
 import org.lvu.models.Data;
 import org.lvu.utils.ImmerseUtil;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -43,6 +50,7 @@ public abstract class BaseListFragment extends Fragment {
     protected boolean isJumping;
     protected BaseListAdapter mAdapter;
     protected NewMainActivity mActivity;
+    private boolean isLoaded;
 
     @Nullable
     @Override
@@ -80,6 +88,11 @@ public abstract class BaseListFragment extends Fragment {
         mAdapter.setOnItemClickListener(getOnItemClickListener());
         mAdapter.setOnItemLongClickListener(getOnItemLongClickListener());
         restoreAdapterData();
+        /*if (this instanceof JapanVideoFragment || this instanceof FamilyPhotoFragment
+                || this instanceof ExcitedNovelFragment) {
+            restoreAdapterData();
+            isLoaded = true;
+        }*/
     }
 
     private void handleOnFinish() {
@@ -99,7 +112,7 @@ public abstract class BaseListFragment extends Fragment {
      */
 
     public void refreshPagesInfo() {
-        if (mActivity == null || mAdapter == null ||
+        /*if (mActivity == null || mAdapter == null ||
                 mActivity.getShowingFragment() == null ||
                 mActivity.getShowingFragment().getShowingFragment() == null)
             return;
@@ -107,7 +120,68 @@ public abstract class BaseListFragment extends Fragment {
         if (tp != -1 && cp != -1) {
             mActivity.setTotalPages(tp);
             mActivity.setCurrentPage(cp);
-        } else mActivity.hidePagesView();
+        } else mActivity.hidePagesView();*/
+    }
+
+    public void refreshViewsColor(int startColor, int endColor) {
+        List<BaseListAdapter.ViewHolder> holders = getVisibilityHolders();
+        for (BaseListAdapter.ViewHolder tmp : holders) {
+            if (tmp != null && mActivity != null) {
+                mActivity.startAnimation(tmp.root, startColor, endColor);
+                tmp.isBgColorChanged = true;
+            }
+        }
+    }
+
+    /*@Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (!isLoaded) {
+            restoreAdapterData();
+            isLoaded = true;
+        }
+    }*/
+
+    public void resetViewsColor(int startColor, int endColor) {
+        List<BaseListAdapter.ViewHolder> holders = getColorChangedHolders();
+        for (BaseListAdapter.ViewHolder tmp : holders) {
+            if (tmp != null && tmp.isBgColorChanged && mActivity != null) {
+                mActivity.startAnimation(tmp.root, startColor, endColor);
+                tmp.isBgColorChanged = false;
+            }
+        }
+    }
+
+    public List<BaseListAdapter.ViewHolder> getVisibilityHolders() {
+        List<BaseListAdapter.ViewHolder> result = new ArrayList<>();
+        if (mRecyclerView != null) {
+            if (mRecyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+                int firstPos = layoutManager.findFirstVisibleItemPosition(),
+                        lastPos = layoutManager.findLastVisibleItemPosition();
+                for (int i = firstPos; i < lastPos; i++)
+                    result.add(mAdapter.getHolderByPosition(mRecyclerView, i));
+            } else if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+                StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) mRecyclerView.getLayoutManager();
+                int[] pos = layoutManager.findFirstVisibleItemPositions(null);
+                int firstPos = Math.min(pos[0], pos[1]);
+                int[] pos2 = layoutManager.findLastVisibleItemPositions(null);
+                int lastPos = Math.max(pos2[0], pos2[1]);
+                for (int i = firstPos; i < lastPos; i++)
+                    result.add(mAdapter.getHolderByPosition(mRecyclerView, i));
+            }
+        }
+        return result;
+    }
+
+    private List<BaseListAdapter.ViewHolder> getColorChangedHolders() {
+        List<BaseListAdapter.ViewHolder> result = new ArrayList<>(),
+                tmp = getVisibilityHolders();
+        for (BaseListAdapter.ViewHolder holder : tmp) {
+            if (holder != null && holder.isBgColorChanged)
+                result.add(holder);
+        }
+        return result;
     }
 
     private boolean flag = true;
@@ -393,6 +467,22 @@ public abstract class BaseListFragment extends Fragment {
                 longClickLogic(data);
             }
         }).show();
+    }
+
+    protected BufferedReader openFileInput(String name) throws Exception {
+        return new BufferedReader(new FileReader(makeFilename(getActivity().getFilesDir(), name)));
+    }
+
+    protected BufferedWriter openFileOutput(String name) throws Exception {
+        return new BufferedWriter(new FileWriter(makeFilename(getActivity().getFilesDir(), name)));
+    }
+
+    private File makeFilename(File base, String name) {
+        if (name.indexOf(File.separatorChar) < 0) {
+            return new File(base, name);
+        }
+        throw new IllegalArgumentException(
+                "File " + name + " contains a path separator");
     }
 
     protected abstract void longClickLogic(Data data);

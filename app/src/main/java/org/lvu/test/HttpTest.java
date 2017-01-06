@@ -1,9 +1,21 @@
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -28,12 +40,58 @@ public class HttpTest {
         if (args.length != 0)
             url = args[0];
         else
-            url = getWebBaseUri() + "/sj/play-18153-0-1.html";
+            url = "http://www.52kkm.org/xieemanhua/";
 
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                println(getDocument(getWebBaseUri()).html());
+                List<Data> result = new ArrayList<>();
+                String nextPageUrl = "";
+                int currentPage = 0, totalPages = 0;
+                /*Document document = getDocument(url);
+                Elements li = document.select("ul[class=piclist listcon").get(0).children();
+                for (Element tmp : li) {
+                    Element a = tmp.child(0);
+                    result.add(new Data(a.attr("abs:href"), a.child(2).attr("xSrc"), handleString(a.child(0).text())));
+                }
+                Elements pageList = document.select("ul[class=pagelist]").get(0).children();
+                try {
+                    currentPage = Integer.parseInt(pageList.select("li[class=thisclass]").get(0).text());
+                    totalPages = Integer.parseInt(pageList.select("span[class=pageinfo").get(0).children().get(0).text());
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                Elements nextPageUrlList = pageList.select("a");
+                for (Element tmp : nextPageUrlList)
+                    if (tmp.text().equals("下一页")) {
+                        nextPageUrl = tmp.attr("abs:href");
+                        break;
+                    }
+                if (currentPage == totalPages)
+                    nextPageUrl = "";
+                result.get(0).setCurrentPage(currentPage);
+                result.get(0).setTotalPages(totalPages);*/
+                FileInputStream fis = null;
+                try {
+                    Gson gson = new Gson();
+                    String json;
+                    fis = new FileInputStream("./jsonTest");
+                    BufferedReader br = new BufferedReader(new FileReader("./jsonTest"));
+                    String tmp;
+                    StringBuilder sb = new StringBuilder();
+                    while ((tmp = br.readLine()) != null)
+                        sb.append(tmp);
+                    json = sb.toString();
+                    println(json);
+                    result = gson.fromJson(json, new TypeToken<ArrayList<Data>>() {
+                    }.getType());
+                    listener.onSuccess(result, nextPageUrl);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (fis != null)
+                        fis.close();
+                }
             }
         });
     }
@@ -42,6 +100,10 @@ public class HttpTest {
         Document document = getDocument(getBaseUrlByUrl(baseUrl) + "/g/playerurl/geturl.php");
         String html = document.html();
         return html.substring(html.indexOf("\"") + 1, html.lastIndexOf("\""));
+    }
+
+    private static String handleString(String src) {
+        return src.replaceAll("邪恶漫画", "");
     }
 
     private static String handleString7(String src) {
@@ -110,14 +172,31 @@ public class HttpTest {
     private static HttpRequestCallbackListener listener = new HttpRequestCallbackListener() {
         @Override
         public void onSuccess(List<Data> data, String args) {
-            println(args);
-            /*if (data != null) {
+            if (data != null) {
                 println("currentPage: " + data.get(0).getCurrentPage());
                 println("totalPages: " + data.get(0).getTotalPages());
                 println("nextPageUrl: " + args);
                 for (Data tmp : data)
                     printf("%s\t%s\t%s\n", tmp.getUrl(), tmp.getSrc(), tmp.getText());
-            }*/
+                /*Gson gson = new Gson();
+                String json = gson.toJson(data);
+                println(json);
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream("./jsonTest");
+                    fos.write(json.getBytes());
+                    fos.flush();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }finally {
+                    try {
+                        if (fos != null)
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }*/
+            }
         }
 
         @Override

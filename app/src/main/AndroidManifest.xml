@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.lvu">
 
@@ -14,55 +15,45 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Red">
-
         <activity
             android:name=".main.activities.NavigationActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop">
-
             <intent-filter>
                 <action android:name="cat.ereza.customactivityoncrash.RESTART" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".main.activities.MainActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".main.activities.PicturesViewActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop" />
-
         <activity
             android:name=".main.activities.ComicsViewActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop" />
-
         <activity
             android:name=".main.activities.NovelViewActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop" />
-
         <activity
             android:name=".main.activities.MoreJokeActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop" />
-
         <activity
             android:name=".main.activities.DownloadManagerActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
-
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".main.activities.SettingActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".main.activities.NewMainActivity"
             android:configChanges="orientation|screenSize"
@@ -74,7 +65,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".main.activities.ErrorActivity"
             android:configChanges="orientation|screenSize"
@@ -85,10 +75,17 @@
                 <action android:name="cat.ereza.customactivityoncrash.ERROR" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="com.tencent.bugly.beta.ui.BetaActivity"
             android:theme="@android:style/Theme.Translucent" />
+        <activity
+            android:name=".main.activities.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".main.activities.BaseActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.lvu.main.activities.BaseActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -164,8 +164,8 @@ public class VideoPlayer extends RelativeLayout {
                         mStartX = event.getX();
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        float endY = event.getX();
-                        mMoveDistance = (int) (endY - mStartX);
+                        float endX = event.getX();
+                        mMoveDistance = (int) (endX - mStartX);
                         if (mControlView.getVisibility() != VISIBLE) {
                             if (mManager.getDuration() <= 0 || mTotalWidth <= 0) {
                                 break;

@@ -15,17 +15,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.lvu.R;
 import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
 import org.video_player.VideoPlayer;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -291,38 +292,37 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         }
     }
 
-    public void saveDataToStorage(OutputStream os) {
+    public void saveDataToStorage(BufferedWriter writer) {
+        if (writer == null) return;
         if (mData == null || mData.isEmpty()) {
             try {
-                os.close();
-            } catch (IOException e) {
+                writer.close();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return;
         }
-        ObjectOutputStream oos = null;
+        mData.get(0).setNextPageUrl(mNextPageUrl);
+        mData.get(0).setCurrentPage(mCurrentPage);
+        mData.get(0).setTotalPages(mTotalPages);
+        Gson gson = new Gson();
+        String json = gson.toJson(mData);
         try {
-            mData.get(0).setNextPageUrl(mNextPageUrl);
-            mData.get(0).setCurrentPage(mCurrentPage);
-            mData.get(0).setTotalPages(mTotalPages);
-            oos = new ObjectOutputStream(os);
-            oos.writeObject(mData);
-            oos.flush();
-        } catch (IOException e) {
+            writer.write(json);
+            writer.flush();
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (oos != null) {
-                try {
-                    oos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            try {
+                writer.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
-    public void restoreDataFromStorage(InputStream is) {
-        restoreDataFromStorage(is, new HttpUtil.HttpRequestCallbackListener() {
+    public void restoreDataFromStorage(BufferedReader reader) {
+        restoreDataFromStorage(reader, new HttpUtil.HttpRequestCallbackListener() {
             @Override
             public void onSuccess(List<Data> data, String args) {
                 mSyncDataCallbackListener.onSuccess(data, args);
@@ -335,28 +335,31 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         });
     }
 
-    protected void restoreDataFromStorage(final InputStream is, final HttpUtil.HttpRequestCallbackListener listener) {
+    protected void restoreDataFromStorage(final BufferedReader reader, final HttpUtil.HttpRequestCallbackListener listener) {
+        if (reader == null) return;
         new Thread() {
             @Override
             public void run() {
-                List<Data> result;
-                ObjectInputStream ois = null;
                 try {
-                    ois = new ObjectInputStream(is);
-                    result = (List<Data>) ois.readObject();
-                    mCurrentPage = result.get(0).getCurrentPage();
-                    mTotalPages = result.get(0).getTotalPages();
+                    List<Data> result;
+                    String json;
+                    Gson gson = new Gson();
+                    String tmp;
+                    StringBuilder sb = new StringBuilder();
+                    while ((tmp = reader.readLine()) != null)
+                        sb.append(tmp);
+                    json = sb.toString();
+                    result = gson.fromJson(json, new TypeToken<ArrayList<Data>>() {
+                    }.getType());
                     listener.onSuccess(result, result.get(0).getNextPageUrl());
                 } catch (Exception e) {
                     e.printStackTrace();
                     listener.onFailure(e, "");
                 } finally {
-                    if (ois != null) {
-                        try {
-                            ois.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -402,7 +405,13 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     }
 
     public BaseListAdapter.ViewHolder getHolderByPosition(RecyclerView recyclerView, int position) {
-        int firstItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        int firstItemPosition;
+        if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+            firstItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        } else {
+            int[] pos = ((StaggeredGridLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPositions(null);
+            firstItemPosition = Math.max(pos[0], pos[1]);
+        }
         if (position - firstItemPosition >= 0) {
             //得到要更新的item的view
             View view = recyclerView.getChildAt(position - firstItemPosition);
@@ -468,13 +477,14 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         void onFailure(String reason);
     }
 
-    protected static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        CardView root;
+        public CardView root;
         public TextView text;
         public ImageView image;
         VideoPlayer player;
         public View progress;
+        public boolean isBgColorChanged;
 
         ViewHolder(View itemView) {
             super(itemView);

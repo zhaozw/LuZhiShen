@@ -1,15 +1,12 @@
 package org.lvu.main.fragments.view_pager_content;
 
-import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.ChinaVideoAdapter;
 import org.lvu.adapters.EuropeVideoAdapter;
-import org.lvu.main.activities.NewMainActivity;
 import org.lvu.models.Data;
 
 import java.util.ArrayList;
@@ -84,7 +81,7 @@ public class ChinaVideoFragment extends BaseListFragment {
     public void saveAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.saveDataToStorage(Application.getContext().openFileOutput(ChinaVideoFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+            mAdapter.saveDataToStorage(openFileOutput(ChinaVideoFragment.class.getSimpleName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,7 +91,7 @@ public class ChinaVideoFragment extends BaseListFragment {
     protected void restoreAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.restoreDataFromStorage(Application.getContext().openFileInput(ChinaVideoFragment.class.getSimpleName()));
+            mAdapter.restoreDataFromStorage(openFileInput(ChinaVideoFragment.class.getSimpleName()));
         } catch (Exception e) {
             mAdapter.syncData("");
         }

@@ -1,11 +1,9 @@
 package org.lvu.main.fragments.view_pager_content;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
-import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.EvilComicsAdapter;
@@ -62,7 +60,7 @@ public class EvilComicsFragment extends BaseListFragment {
     public void saveAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.saveDataToStorage(Application.getContext().openFileOutput(EvilComicsFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+            mAdapter.saveDataToStorage(openFileOutput(EvilComicsFragment.class.getSimpleName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,7 +70,7 @@ public class EvilComicsFragment extends BaseListFragment {
     protected void restoreAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.restoreDataFromStorage(Application.getContext().openFileInput(EvilComicsFragment.class.getSimpleName()));
+            mAdapter.restoreDataFromStorage(openFileInput(EvilComicsFragment.class.getSimpleName()));
         } catch (Exception e) {
             mAdapter.syncData("");
         }

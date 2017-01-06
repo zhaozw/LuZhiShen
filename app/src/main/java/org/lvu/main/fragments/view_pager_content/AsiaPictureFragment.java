@@ -1,8 +1,5 @@
 package org.lvu.main.fragments.view_pager_content;
 
-import android.content.Context;
-
-import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.BaseListAdapterSubs.AsiaPictureAdapter;
@@ -23,7 +20,7 @@ public class AsiaPictureFragment extends EuropePictureFragment {
     public void saveAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.saveDataToStorage(Application.getContext().openFileOutput(AsiaPictureFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+            mAdapter.saveDataToStorage(openFileOutput(AsiaPictureFragment.class.getSimpleName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -33,7 +30,7 @@ public class AsiaPictureFragment extends EuropePictureFragment {
     protected void restoreAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.restoreDataFromStorage(Application.getContext().openFileInput(AsiaPictureFragment.class.getSimpleName()));
+            mAdapter.restoreDataFromStorage(openFileInput(AsiaPictureFragment.class.getSimpleName()));
         } catch (Exception e) {
             mAdapter.syncData("");
         }

@@ -1,6 +1,5 @@
 package org.lvu.main.fragments.view_pager_content;
 
-import android.content.Context;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +10,6 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.GifPictureAdapter;
@@ -172,7 +170,7 @@ public class GifPictureFragment extends BaseListFragment {
     public void saveAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.saveDataToStorage(Application.getContext().openFileOutput(GifPictureFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+            mAdapter.saveDataToStorage(openFileOutput(GifPictureFragment.class.getSimpleName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -182,7 +180,7 @@ public class GifPictureFragment extends BaseListFragment {
     protected void restoreAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.restoreDataFromStorage(Application.getContext().openFileInput(GifPictureFragment.class.getSimpleName()));
+            mAdapter.restoreDataFromStorage(openFileInput(GifPictureFragment.class.getSimpleName()));
         } catch (Exception e) {
             mAdapter.syncData("");
         }

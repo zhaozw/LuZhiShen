@@ -1,11 +1,9 @@
 package org.lvu.main.fragments.view_pager_content;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.BaseListAdapterSubs.EuropePictureAdapter;
@@ -62,7 +60,7 @@ public class EuropePictureFragment extends BaseListFragment {
     public void saveAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.saveDataToStorage(Application.getContext().openFileOutput(EuropePictureFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+            mAdapter.saveDataToStorage(openFileOutput(EuropePictureFragment.class.getSimpleName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,7 +70,7 @@ public class EuropePictureFragment extends BaseListFragment {
     protected void restoreAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.restoreDataFromStorage(Application.getContext().openFileInput(EuropePictureFragment.class.getSimpleName()));
+            mAdapter.restoreDataFromStorage(openFileInput(EuropePictureFragment.class.getSimpleName()));
         } catch (Exception e) {
             mAdapter.syncData("");
         }

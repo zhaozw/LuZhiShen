@@ -1,8 +1,5 @@
 package org.lvu.main.fragments.view_pager_content;
 
-import android.content.Context;
-
-import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.JapanVideoAdapter;
@@ -24,7 +21,7 @@ public class JapanVideoFragment extends ChinaVideoFragment  {
     public void saveAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.saveDataToStorage(Application.getContext().openFileOutput(JapanVideoFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+            mAdapter.saveDataToStorage(openFileOutput(JapanVideoFragment.class.getSimpleName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -34,7 +31,7 @@ public class JapanVideoFragment extends ChinaVideoFragment  {
     protected void restoreAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.restoreDataFromStorage(Application.getContext().openFileInput(JapanVideoFragment.class.getSimpleName()));
+            mAdapter.restoreDataFromStorage(openFileInput(JapanVideoFragment.class.getSimpleName()));
         } catch (Exception e) {
             mAdapter.syncData("");
         }

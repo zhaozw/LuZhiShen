@@ -2,14 +2,12 @@ package org.lvu.main.fragments.view_pager_content;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 
-import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.BaseListAdapterSubs.FunnyJokeAdapter;
@@ -75,7 +73,7 @@ public class FunnyJokeFragment extends BaseListFragment {
     public void saveAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.saveDataToStorage(Application.getContext().openFileOutput(FunnyJokeFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+            mAdapter.saveDataToStorage(openFileOutput(FunnyJokeFragment.class.getSimpleName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -85,7 +83,7 @@ public class FunnyJokeFragment extends BaseListFragment {
     protected void restoreAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.restoreDataFromStorage(Application.getContext().openFileInput(FunnyJokeFragment.class.getSimpleName()));
+            mAdapter.restoreDataFromStorage(openFileInput(FunnyJokeFragment.class.getSimpleName()));
         } catch (Exception e) {
             mAdapter.syncData("");
         }

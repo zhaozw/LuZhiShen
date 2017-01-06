@@ -547,8 +547,10 @@ public class RefreshLayout extends ViewGroup {
                 if (!isTopDirection && canChildScrollDown() || isTopDirection && canChildScrollUp()) {
                     return false;
                 }
-                if (isTopDirection && !NewMainActivity.isAppBarExpanded())
+                if ((isTopDirection && !NewMainActivity.isAppBarExpanded()) ||
+                        (!isTopDirection && !NewMainActivity.isAppBarCollapsed())) {
                     return false;
+                }
                 float yDiff = isTopDirection ? y - mInitialMotionY : mInitialMotionY - y;
                 if (yDiff > mTouchSlop && !mIsBeingDragged) {
                     mIsBeingDragged = true;

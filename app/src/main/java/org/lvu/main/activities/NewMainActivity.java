@@ -23,19 +23,19 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -60,20 +60,22 @@ import org.video_player.PlayManager;
 
 public class NewMainActivity extends BaseActivity {
 
-    private final int ANIMATION_DURATION = 700;
+    private static final int ANIMATION_DURATION = 800;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
     private AppBarLayout mAppBarLayout;
     private MyCollapsingToolbarLayout mCollapsingToolbarLayout;
     private Toolbar mToolbar;
-    private TextView mTitle, mTotalPages;
-    private TextInputEditText mCurrentPage;
+    private View mPageInfo;
+    private TextView mTotalPages;
+    private EditText mCurrentPage;
     private FloatingActionButton mFloatingButton;
-    private int mBackgroundColor = -1;
+    private static int mBackgroundColor = -1;
     private int totalPages;
     private boolean isStateChanged, isBackgroundChanged;
-    private static boolean isAppBarExpanded;
+    private static boolean isAppBarExpanded = true, isAppBarCollapsed, isScrimsShown;
     private BaseFragment mShowingFragment;
+    private OnAppBarExpandedListener mOnAppBarExpandedListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,7 +102,7 @@ public class NewMainActivity extends BaseActivity {
                 if (swatch != null) {
                     mBackgroundColor = swatch.getRgb();
                     if (!isBackgroundChanged && isAppBarExpanded)
-                        refreshViewColors();
+                        refreshViewsColor();
                 }
             }
         });
@@ -112,9 +114,9 @@ public class NewMainActivity extends BaseActivity {
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         mCollapsingToolbarLayout = (MyCollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mTitle = (TextView) mToolbar.findViewById(R.id.title);
+        /*mPageInfo = findViewById(R.id.page_info);
         mTotalPages = (TextView) mToolbar.findViewById(R.id.total_page);
-        mCurrentPage = (TextInputEditText) mToolbar.findViewById(R.id.current_page);
+        mCurrentPage = (EditText) mToolbar.findViewById(R.id.current_page);*/
         mFloatingButton = (FloatingActionButton) findViewById(R.id.floating_button);
     }
 
@@ -124,13 +126,7 @@ public class NewMainActivity extends BaseActivity {
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        mCurrentPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchInputMethod();
-            }
-        });
-        mCurrentPage.setOnKeyListener(new View.OnKeyListener() {
+        /*mCurrentPage.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -138,22 +134,20 @@ public class NewMainActivity extends BaseActivity {
                     try {
                         cp = Integer.parseInt(mCurrentPage.getText().toString());
                     } catch (NumberFormatException e) {
-                        setCurrentPage(1);
+                        //setCurrentPage(1);
                         cp = 1;
                     }
                     if (cp > totalPages)
                         cp = totalPages;
                     if (cp < 1)
                         cp = 1;
-                    mCurrentPage.clearFocus();
-                    switchInputMethod();
                     if (mShowingFragment != null)
                         mShowingFragment.jumpToPage(cp);
                     return true;
                 }
                 return false;
             }
-        });
+        });*/
         mNavigationView.setOnItemClickListener(new NavigationViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(int stringId) {
@@ -180,7 +174,7 @@ public class NewMainActivity extends BaseActivity {
                         break;
                     case R.string.settings:
                         fragment = null;
-                        startActivity(new Intent(NewMainActivity.this, SettingActivity.class));
+                        startActivity(new Intent(NewMainActivity.this, SettingsActivity.class));
                         break;
                     case R.string.exit:
                         fragment = mShowingFragment;
@@ -191,7 +185,7 @@ public class NewMainActivity extends BaseActivity {
                         break;
                 }
                 if (fragment != null && showFragment(fragment))
-                    mTitle.setText(stringId);
+                    mCollapsingToolbarLayout.setTitle(getString(stringId));
                 closeDrawer();
             }
         });
@@ -200,23 +194,29 @@ public class NewMainActivity extends BaseActivity {
             public void onStateChanged(AppBarLayout appBarLayout, State state) {
                 if (state == State.EXPANDED) {
                     isAppBarExpanded = true;
+                    isAppBarCollapsed = false;
                     if (isStateChanged)
-                        refreshViewColors();
+                        refreshViewsColor();
                 } else if (state == State.COLLAPSED) {
                     isAppBarExpanded = false;
+                    isAppBarCollapsed = true;
                     if (isStateChanged)
-                        resetViewColors();
-                } else isAppBarExpanded = false;
+                        resetViewsColor();
+                } else {
+                    isAppBarExpanded = false;
+                    isAppBarCollapsed = false;
+                }
             }
         });
         mCollapsingToolbarLayout.setOnScrimsCHangedListener(new MyCollapsingToolbarLayout.OnScrimsChangedListener() {
             @Override
             public void onChanged(boolean isShown) {
                 isStateChanged = flag != isShown;
+                isScrimsShown = isShown;
                 if (isStateChanged) {
                     if (isShown)
-                        resetViewColors();
-                    else refreshViewColors();
+                        resetViewsColor();
+                    else refreshViewsColor();
                 }
                 flag = isShown;
             }
@@ -237,32 +237,35 @@ public class NewMainActivity extends BaseActivity {
                 .replace(R.id.wait_replace, fragment).commitAllowingStateLoss();
         if (fragment instanceof BaseFragment)
             mShowingFragment = (BaseFragment) fragment;
-        mCurrentPage.setText("");
-        mCurrentPage.setVisibility(View.INVISIBLE);
+        /*mCurrentPage.setText("");
         mCurrentPage.clearFocus();
         mTotalPages.setText("");
-        mTotalPages.setVisibility(View.INVISIBLE);
+        hidePagesView();*/
         PlayManager.getInstance().onlyRelease();
         return true;
     }
 
     private boolean flag = true;
 
-    private synchronized void refreshViewColors() {
+    private synchronized void refreshViewsColor() {
         if (mBackgroundColor != -1) {
+            int themeColor = getThemeColor(1);
+            startAnimation(mFloatingButton, themeColor, mBackgroundColor);
+            if (mOnAppBarExpandedListener != null) {
+                mOnAppBarExpandedListener.onExpanded(themeColor, mBackgroundColor);
+            }
             notifyChanged();
-            if (mShowingFragment != null)
-                mShowingFragment.setTabLayoutBackground(startAnimation(getThemeColor(0), mBackgroundColor));
-            startAnimation(mFloatingButton, getThemeColor(1), mBackgroundColor);
         }
     }
 
-    private void resetViewColors() {
+    private void resetViewsColor() {
         if (mBackgroundColor != -1) {
+            int themeColor = getThemeColor(1);
+            startAnimation(mFloatingButton, mBackgroundColor, themeColor);
+            if (mOnAppBarExpandedListener != null) {
+                mOnAppBarExpandedListener.onCollapsed(mBackgroundColor, themeColor);
+            }
             notifyChanged();
-            if (mShowingFragment != null)
-                mShowingFragment.setTabLayoutBackground(startAnimation(mBackgroundColor, getThemeColor(0)));
-            startAnimation(mFloatingButton, mBackgroundColor, getThemeColor(1));
         }
     }
 
@@ -271,7 +274,7 @@ public class NewMainActivity extends BaseActivity {
         isStateChanged = false;
     }
 
-    private TransitionDrawable startAnimation(int startColor, int endColor) {
+    public static TransitionDrawable getAnimation(int startColor, int endColor) {
         TransitionDrawable result = new TransitionDrawable(new Drawable[]{
                 new ColorDrawable(startColor), new ColorDrawable(endColor)});
         result.startTransition(ANIMATION_DURATION);
@@ -296,6 +299,39 @@ public class NewMainActivity extends BaseActivity {
             @Override
             public void onAnimationEnd(Animator animation) {
                 fab.setBackgroundTintList(ColorStateList.valueOf(endColor));
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        valueAnimator.setDuration(ANIMATION_DURATION);
+        valueAnimator.start();
+    }
+
+    public void startAnimation(final CardView cardView, int startColor, final int endColor) {
+        final ValueAnimator valueAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startColor, endColor);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(final ValueAnimator animator) {
+                cardView.setCardBackgroundColor(ColorStateList.valueOf((int) animator.getAnimatedValue()));
+            }
+        });
+        valueAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                cardView.setCardBackgroundColor(ColorStateList.valueOf(endColor));
             }
 
             @Override
@@ -381,6 +417,10 @@ public class NewMainActivity extends BaseActivity {
         return isAppBarExpanded;
     }
 
+    public static boolean isAppBarCollapsed() {
+        return isAppBarCollapsed;
+    }
+
     //上次按下返回键的时间
     private long mLastTime;
 
@@ -450,11 +490,20 @@ public class NewMainActivity extends BaseActivity {
         return (CoordinatorLayout) findViewById(R.id.root_view);
     }
 
+    public static int getBackgroundColor() {
+        return mBackgroundColor;
+    }
+
+    public static boolean isScrimsShown() {
+        return isScrimsShown;
+    }
+/*
     public void setTotalPages(int totalPages) {
         if (totalPages > 0) {
             this.totalPages = totalPages;
             mTotalPages.setText(String.format("页共%s页", totalPages + ""));
-            mTotalPages.setVisibility(View.VISIBLE);
+            showPagesView();
+            LogUtil.print(mTotalPages.getText().toString());
         }
     }
 
@@ -465,16 +514,29 @@ public class NewMainActivity extends BaseActivity {
             if (currentPage < 1)
                 currentPage = 1;
             mCurrentPage.setText(String.valueOf(currentPage));
-            mCurrentPage.setVisibility(View.VISIBLE);
+            showPagesView();
         }
     }
 
-    public void hidePagesView() {
-        mTotalPages.setVisibility(View.INVISIBLE);
-        mCurrentPage.setVisibility(View.INVISIBLE);
+    private void showPagesView(){
+        mPageInfo.setVisibility(View.VISIBLE);
     }
+
+    public void hidePagesView() {
+        mPageInfo.setVisibility(View.GONE);
+    }*/
 
     public BaseFragment getShowingFragment() {
         return mShowingFragment;
+    }
+
+    public void setOnAppBarExpandedListener(OnAppBarExpandedListener listener) {
+        mOnAppBarExpandedListener = listener;
+    }
+
+    public interface OnAppBarExpandedListener {
+        void onExpanded(int startColor, int endColor);
+
+        void onCollapsed(int startColor, int endColor);
     }
 }

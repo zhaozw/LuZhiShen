@@ -1,8 +1,5 @@
 package org.lvu.main.fragments.view_pager_content;
 
-import android.content.Context;
-
-import org.lvu.Application;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.BaseListAdapterSubs.FamilyMessNovelAdapter;
@@ -23,7 +20,7 @@ public class FamilyMessNovelFragment extends ExcitedNovelFragment {
     public void saveAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.saveDataToStorage(Application.getContext().openFileOutput(FamilyMessNovelFragment.class.getSimpleName(), Context.MODE_PRIVATE));
+            mAdapter.saveDataToStorage(openFileOutput(FamilyMessNovelFragment.class.getSimpleName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -33,7 +30,7 @@ public class FamilyMessNovelFragment extends ExcitedNovelFragment {
     protected void restoreAdapterData() {
         if (mAdapter == null) return;
         try {
-            mAdapter.restoreDataFromStorage(Application.getContext().openFileInput(FamilyMessNovelFragment.class.getSimpleName()));
+            mAdapter.restoreDataFromStorage(openFileInput(FamilyMessNovelFragment.class.getSimpleName()));
         } catch (Exception e) {
             mAdapter.syncData("");
         }
