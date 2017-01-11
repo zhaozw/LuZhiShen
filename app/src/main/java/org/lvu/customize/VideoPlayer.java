@@ -2,14 +2,6 @@ package org.lvu.customize;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
-
-import org.lvu.R;
-import org.lvu.models.Data;
-import org.lvu.utils.HttpUtil;
-import org.video_player.PlayManager;
-
-import java.util.List;
 
 /**
  * Created by wuyr on 12/22/16 11:55 PM.
@@ -34,7 +26,7 @@ public class VideoPlayer extends org.video_player.VideoPlayer {
         mVideoManager.add(this);
     }
 
-    @Override
+  /*  @Override
     protected void setListeners() {
         super.setListeners();
         OnClickListener onClickListener = new OnClickListener() {
@@ -132,7 +124,7 @@ public class VideoPlayer extends org.video_player.VideoPlayer {
             return true;
         }
         return false;
-    }
+    }*/
 
     @Override
     public void reset() {

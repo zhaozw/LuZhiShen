@@ -11,7 +11,8 @@
         android:id="@+id/text_view"
         android:layout_height="wrap_content"
         android:gravity="end"
-        android:textSize="@dimen/sp_50"
+        android:textSize="35sp"
         android:layout_gravity="center"
-        android:textColor="?attr/colorPrimaryDark" />
+        android:textColor="?attr/colorPrimaryDark"
+        tools:text="垂死病中惊坐起\n突然想看撸至深" />
 </FrameLayout>

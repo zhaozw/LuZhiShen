@@ -13,7 +13,6 @@ import org.lvu.R;
 import org.lvu.adapters.AreaFragmentAdapter;
 import org.lvu.main.activities.NewMainActivity;
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
-import org.lvu.utils.LogUtil;
 import org.video_player.PlayManager;
 
 /**
@@ -26,8 +25,6 @@ public abstract class BaseFragment extends Fragment {
     protected TabLayout mTabLayout;
     protected ViewPager mViewPager;
     protected AreaFragmentAdapter mAdapter;
-    private boolean isTabLayoutExpanded = true;
-    private ViewPager.SimpleOnPageChangeListener mSimpleOnPageChangeListener;
 
     @Nullable
     @Override
@@ -46,48 +43,40 @@ public abstract class BaseFragment extends Fragment {
             mTabLayout.addTab(mTabLayout.newTab().setText(tmp));
 
         mViewPager.setAdapter((mAdapter = new AreaFragmentAdapter(getChildFragmentManager(), getFragments(), getStrings(tabs))));
-        mViewPager.addOnPageChangeListener((mSimpleOnPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                LogUtil.print(position);
                 int backgroundColor = NewMainActivity.getBackgroundColor();
                 if (backgroundColor != -1 && mAdapter.getItem(position) != null) {
                     int themeColor = ((NewMainActivity) getActivity()).getThemeColor(1);
-                    LogUtil.print(NewMainActivity.isAppBarExpanded());
-                    if (NewMainActivity.isAppBarExpanded() || !NewMainActivity.isScrimsShown()) {
-                        if (isTabLayoutExpanded) {
-                            mTabLayout.setBackground(NewMainActivity.getAnimation(
-                                    ((NewMainActivity) getActivity()).getThemeColor(0), themeColor));
-                            isTabLayoutExpanded = false;
-                            mAdapter.getItem(position).refreshViewsColor(themeColor, backgroundColor);
-                        }
-                    } else {
-                        if (!isTabLayoutExpanded) {
-                            mTabLayout.setBackground(NewMainActivity.getAnimation(themeColor,
-                                    ((NewMainActivity) getActivity()).getThemeColor(0)));
-                            isTabLayoutExpanded = true;
-                            mAdapter.getItem(position).resetViewsColor(backgroundColor, themeColor);
-                        }
-                    }
+                    if (NewMainActivity.isAppBarExpanded() || !NewMainActivity.isScrimsShown())
+                        mAdapter.getItem(position).refreshViewsColor(themeColor, backgroundColor);
+                    else
+                        mAdapter.getItem(position).resetViewsColor(backgroundColor, themeColor);
+
                 }
                 PlayManager.getInstance().onlyRelease();
             }
-        }));
+        });
 
         mTabLayout.setupWithViewPager(mViewPager);
+        mViewPager.setCurrentItem(0);
         ((NewMainActivity) getActivity()).setOnAppBarExpandedListener(new NewMainActivity.OnAppBarExpandedListener() {
             @Override
             public void onExpanded(int startColor, int endColor) {
                 mTabLayout.setBackground(NewMainActivity.getAnimation(
                         ((NewMainActivity) getActivity()).getThemeColor(0), endColor));
-                mAdapter.getCurrentFragment().refreshViewsColor(startColor, endColor);
+                if (mAdapter.getCurrentFragment() != null)
+                    mAdapter.getCurrentFragment().refreshViewsColor(startColor, endColor);
             }
 
             @Override
             public void onCollapsed(int startColor, int endColor) {
-                mTabLayout.setBackground(NewMainActivity.getAnimation(startColor,
+                if (getActivity() != null)
+                    mTabLayout.setBackground(NewMainActivity.getAnimation(startColor,
                         ((NewMainActivity) getActivity()).getThemeColor(0)));
-                mAdapter.getCurrentFragment().resetViewsColor(startColor, endColor);
+                if (mAdapter != null && mAdapter.getCurrentFragment() != null)
+                    mAdapter.getCurrentFragment().resetViewsColor(startColor, endColor);
             }
         });
     }
@@ -104,6 +93,7 @@ public abstract class BaseFragment extends Fragment {
     public void onDetach() {
         saveAdapterData();
         super.onDetach();
+        System.gc();
     }
 
     public void saveAdapterData() {

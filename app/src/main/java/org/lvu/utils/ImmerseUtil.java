@@ -1,18 +1,9 @@
 package org.lvu.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import java.lang.reflect.Method;
 
@@ -21,53 +12,9 @@ import java.lang.reflect.Method;
  */
 public class ImmerseUtil {
 
-    private static final int DEFAULT_COLOR = Color.parseColor("#009688");
     private static final String STATUS_BAR_HEIGHT = "status_bar_height",
             NAVIGATION_BAT_HEIGHT = "navigation_bar_height",
             DIMEN = "dimen", ANDROID = "android";
-
-    private ImmerseUtil() {
-    }
-
-    public static void setImmerseBar(Activity activity) {
-        setImmerseBar(activity, DEFAULT_COLOR);
-    }
-
-    public static void setImmerseBar(Activity activity, int color) {
-        /*activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);*/
-        Window window = activity.getWindow();
-        // Translucent status bar
-        window.setFlags(
-                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        // Translucent navigation bar
-        window.setFlags(
-                WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
-                WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        //ViewGroup vg = (ViewGroup) activity.getWindow().getDecorView();
-        LinearLayout vg = (LinearLayout) ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
-        //statusBar
-        View statusBar = new View(activity);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, getStatusBarHeight(activity));
-        lp.gravity = Gravity.TOP;
-        statusBar.setBackgroundColor(color);
-        statusBar.setLayoutParams(lp);
-        vg.addView(statusBar,0);
-        //navigationBar
-        if (isHasNavigationBar(activity)) {
-            View navigationBar = new View(activity);
-            FrameLayout.LayoutParams lp2 = new FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT, getNavigationBarHeight(activity));
-            lp2.gravity = Gravity.BOTTOM;
-            navigationBar.setBackgroundColor(color);
-            navigationBar.setLayoutParams(lp2);
-            vg.addView(navigationBar);
-            vg.invalidate();
-
-        }
-    }
 
     public static boolean isHasNavigationBar(Context context) {
         boolean isHasNavigationBar = false;

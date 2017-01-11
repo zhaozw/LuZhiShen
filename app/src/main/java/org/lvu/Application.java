@@ -1,8 +1,8 @@
 package org.lvu;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.tencent.bugly.Bugly;
@@ -32,6 +32,7 @@ public class Application extends android.app.Application {
         //or Fabric.with(this, new Crashlytics())
         Bugly.init(getApplicationContext(), "900037586", false);
         ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(this)
+                .memoryCache(new WeakMemoryCache())
                 .imageDownloader(new AuthImageDownloader(this)).threadPoolSize(7).build());
     }
 

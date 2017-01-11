@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.lvu.R;
+import org.lvu.adapters.newAdapters.video.Video1Adapter;
 import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
@@ -45,11 +46,11 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     protected static final int ITEM_TYPE_CONTENT = 0, ITEM_TYPE_BOTTOM = 1;
     private int mBottomCount;//底部View个数
     protected Context mContext;
-    LayoutInflater mLayoutInflater;
-    int mLayoutId;
-    List<Data> mData;
-    private OnItemClickListener mOnItemClickListener;
-    OnItemLongClickListener mOnItemLongClickListener;
+    protected LayoutInflater mLayoutInflater;
+    protected int mLayoutId;
+    protected List<Data> mData;
+    private OnItemClickListener mOnItemClickListener, mOnFavoritesOnClickListener;
+    private OnItemLongClickListener mOnItemLongClickListener;
     protected OnFinishListener mOnLoadNextFinishListener, mOnSyncDataFinishListener,
             mOnLoadPreviousFinishListener, mOnJumpPageFinishListener;
     protected String mNextPageUrl;
@@ -147,7 +148,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         if (!handleFooterHolder(holder))
             initDefaultItemData(holder, position);
     }
@@ -156,7 +157,11 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         if (mData.isEmpty())
             return;
         try {
-            holder.text.setText(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getText());
+            Data item = mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position);
+            holder.text.setText(item.getText());
+            if (!item.getDate().isEmpty())
+                holder.date.setText(item.getDate());
+            holder.favorites.setImageResource(item.isFavorites() ? R.drawable.ic_favorite_selected : R.drawable.ic_favorite);
             initItemOnClickListener(holder);
             initItemLongClickListener(holder);
         } catch (Exception e) {
@@ -179,6 +184,14 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
                     }
                 }
             });
+        // TODO: 1/10/17 handle on favorites on click
+            /*holder.favorites.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mOnFavoritesOnClickListener != null)
+                        mOnFavoritesOnClickListener.onClick();
+                }
+            });*/
     }
 
     void initItemLongClickListener(final ViewHolder holder) {
@@ -198,7 +211,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             });
     }
 
-    boolean handleFooterHolder(ViewHolder holder) {
+    protected boolean handleFooterHolder(ViewHolder holder) {
         if (holder instanceof FooterHolder) {
             FooterHolder footerHolder = (FooterHolder) holder;
             LinearLayout.LayoutParams bottomLP = new LinearLayout.LayoutParams(
@@ -263,12 +276,14 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         if (data != null && !data.isEmpty()) {
             mCurrentPage = data.get(0).getCurrentPage();
             mTotalPages = data.get(0).getTotalPages();
-            mData = new ArrayList<>();
-            notifyDataSetChanged();
+            mData = data;
+            notifyItemChanged(0, data.size());
+            /*notifyDataSetChanged();
             for (int i = 0; i < data.size(); i++) {
                 mData.add(data.get(i));
                 notifyItemInserted(i);
-            }
+            }*/
+
             switch (what) {
                 case SYNC_DATA_SUCCESS:
                     if (mOnSyncDataFinishListener != null)
@@ -431,8 +446,8 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         return mTotalPages;
     }
 
-    public void setOwnerIsDestroyed() {
-        isOwnerDestroyed = true;
+    public void setOwnerIsDestroyed(boolean isDestroyed) {
+        isOwnerDestroyed = isDestroyed;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -480,9 +495,10 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public CardView root;
-        public TextView text;
+        public TextView text, date;
         public ImageView image;
-        VideoPlayer player;
+        public ImageView favorites;
+        public VideoPlayer player;
         public View progress;
         public boolean isBgColorChanged;
 
@@ -490,14 +506,16 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             super(itemView);
             root = (CardView) itemView.findViewById(R.id.card_view);
             text = (TextView) itemView.findViewById(R.id.text);
+            favorites = (ImageView) itemView.findViewById(R.id.favorites);
+            date = (TextView) itemView.findViewById(R.id.date);
         }
     }
 
-    static class FooterHolder extends EuropeVideoAdapter.ViewHolder {
+    public static class FooterHolder extends Video1Adapter.ViewHolder {
 
         View bottomView;
 
-        FooterHolder(View itemView) {
+        public FooterHolder(View itemView) {
             super(itemView);
             bottomView = itemView.findViewById(R.id.navigation_bar_view);
         }
@@ -505,7 +523,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     public static class DefaultHandler extends Handler {
 
-        WeakReference<BaseListAdapter> mClass;
+        protected WeakReference<BaseListAdapter> mClass;
 
         public DefaultHandler(BaseListAdapter clazz) {
             mClass = new WeakReference<>(clazz);

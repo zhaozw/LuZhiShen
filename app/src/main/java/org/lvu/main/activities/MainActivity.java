@@ -32,7 +32,6 @@ import org.lvu.customize.MySnackBar;
 import org.lvu.main.fragments.view_pager_content.AsiaPictureFragment;
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
 import org.lvu.main.fragments.view_pager_content.ChinaVideoFragment;
-import org.lvu.main.fragments.DownloadManagerActivity;
 import org.lvu.main.fragments.view_pager_content.EuropePictureFragment;
 import org.lvu.main.fragments.view_pager_content.EuropeVideoFragment;
 import org.lvu.main.fragments.view_pager_content.EvilComicsFragment;
@@ -78,7 +77,7 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
 
     private void initFragment() {
         if (mStringId == -2 && mFragmentPosition == -2) {
-            showFragment(new DownloadManagerActivity());
+            // showFragment(new DownloadManagerActivity());
             mMenuList.setSelectedItem(MenuList.MenuItem.DOWNLOAD_MANAGER);
             mTitle.setText(R.string.download_manager);
         } else {
@@ -185,9 +184,9 @@ public class MainActivity extends BaseActivity implements MenuListAdapter.OnItem
                         changeSkin();
                         break;
                     case R.id.download_manager:
-                        if (mShowingFragment instanceof DownloadManagerActivity)
+                        /*if (mShowingFragment instanceof DownloadManagerActivity)
                             break;
-                        showFragment(new DownloadManagerActivity());
+                        showFragment(new DownloadManagerActivity());*/
                         mMenuList.setSelectedItem(MenuList.MenuItem.DOWNLOAD_MANAGER);
                         mStringId = -2;
                         mFragmentPosition = -2;

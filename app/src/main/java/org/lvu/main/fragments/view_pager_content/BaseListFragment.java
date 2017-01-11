@@ -1,5 +1,6 @@
 package org.lvu.main.fragments.view_pager_content;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 
@@ -37,6 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 /**
  * Created by wuyr on 4/6/16 2:22 PM.
@@ -124,21 +128,45 @@ public abstract class BaseListFragment extends Fragment {
     }
 
     public void refreshViewsColor(int startColor, int endColor) {
-        List<BaseListAdapter.ViewHolder> holders = getVisibilityHolders();
-        for (BaseListAdapter.ViewHolder tmp : holders) {
-            if (tmp != null && mActivity != null) {
-                mActivity.startAnimation(tmp.root, startColor, endColor);
-                tmp.isBgColorChanged = true;
+        try {
+            List<BaseListAdapter.ViewHolder> holders = getVisibilityHolders();
+            for (BaseListAdapter.ViewHolder tmp : holders) {
+                if (tmp != null && mActivity != null) {
+                    mActivity.startAnimation(tmp.root, startColor, endColor);
+                    tmp.isBgColorChanged = true;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     /*@Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (!isLoaded) {
-            restoreAdapterData();
-            isLoaded = true;
+        if (isVisibleToUser){
+            if (mAdapter != null) {
+                mAdapter.setOwnerIsDestroyed(false);
+                restoreAdapterData();
+            }
+        }else {
+            if (mAdapter != null)
+                mAdapter.setOwnerIsDestroyed(true);
+            new Thread(){
+                @Override
+                public void run() {
+                    if (mAdapter != null && mAdapter.getItemCount() > 0) {
+                        saveAdapterData();
+                        if (mActivity != null)
+                            mActivity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mAdapter.clearData();
+                                }
+                            });
+                    }
+                }
+            }.start();
         }
     }*/
 
@@ -210,6 +238,7 @@ public abstract class BaseListFragment extends Fragment {
         mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recycler_view);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(getLayoutManager());
+        mRecyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f)));
        /* mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             //用来标记是否正在向最后一个滑动，既是否向下滑动
@@ -448,16 +477,22 @@ public abstract class BaseListFragment extends Fragment {
             mAdapter.changeToPortrait();
     }
 
-    public BaseListFragment setActivity(NewMainActivity activity) {
-        mActivity = activity;
-        return this;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof NewMainActivity)
+            mActivity = (NewMainActivity) context;
     }
 
     @Override
     public void onDetach() {
-        mAdapter.setOwnerIsDestroyed();
-        saveAdapterData();
+        if (mAdapter != null) {
+            mAdapter.setOwnerIsDestroyed(true);
+            saveAdapterData();
+        }
         super.onDetach();
+        if (mActivity != null)
+            mActivity = null;
     }
 
     protected void showDialog(final Data data, String itemName) {

@@ -1,12 +1,15 @@
 package org.lvu.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.lvu.R;
 import org.lvu.models.Data;
@@ -36,22 +39,39 @@ public abstract class BasePictureListAdapter extends BaseListAdapter {
     }
 
     @Override
-    public void onBindViewHolder(final BaseListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(BaseListAdapter.ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         initItemImage(holder, position);
     }
 
-    void initItemImage(BaseListAdapter.ViewHolder holder, int position) {
+    protected void initItemImage(final BaseListAdapter.ViewHolder holder, int position) {
         if (mData.isEmpty())
             return;
         try {
-            mImageLoader.displayImage(mData.get(position != 0 && position >= mData.size() ?
-                            mData.size() - 1 : position).getSrc(), holder.image,
-                    new DisplayImageOptions.Builder()
-                            .showImageOnFail(R.drawable.ic_pic_bad)
-                            .showImageOnLoading(R.drawable.ic_pic_loading)
-                            .showImageForEmptyUri(R.drawable.ic_pic_bad)
-                            .cacheInMemory(true).cacheOnDisk(true).build());
+            holder.image.setImageResource(R.drawable.ic_pic_loading);
+            mImageLoader.loadImage(mData.get(position != 0 && position >= mData.size() ?
+                            mData.size() - 1 : position).getSrc(),
+                    new DisplayImageOptions.Builder().cacheInMemory(true).cacheOnDisk(true).build(),
+                    new ImageLoadingListener() {
+                        @Override
+                        public void onLoadingStarted(String imageUri, View view) {
+
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            holder.image.setImageResource(R.drawable.ic_pic_bad);
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                            holder.image.setImageBitmap(loadedImage);
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String imageUri, View view) {
+                        }
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }

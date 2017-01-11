@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.ChinaVideoAdapter;
-import org.lvu.adapters.EuropeVideoAdapter;
 import org.lvu.models.Data;
 
 import java.util.ArrayList;
@@ -42,13 +41,13 @@ public class ChinaVideoFragment extends BaseListFragment {
                     }
                 }
             }
-        });*/
+        });*
         mRecyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
             @Override
             public void onViewRecycled(RecyclerView.ViewHolder holder) {
                 ((EuropeVideoAdapter.ViewHolder)holder).releasePlayer();
             }
-        });
+        });*/
     }
 
     @Override

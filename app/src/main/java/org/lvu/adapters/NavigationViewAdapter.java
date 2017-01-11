@@ -34,6 +34,7 @@ public class NavigationViewAdapter extends RecyclerView.Adapter<NavigationViewAd
     private ViewHolder mSelectedHolder;
     private int mSelectedPos = -1;
     private HashSet<ViewHolder> holders;
+    private boolean isInited;
 
     public NavigationViewAdapter(Context context, @LayoutRes int layoutId, List<Menu> data) {
         mContext = context;
@@ -58,7 +59,7 @@ public class NavigationViewAdapter extends RecyclerView.Adapter<NavigationViewAd
             if (mSelectedPos == position)
                 syncStatus(holder);
             else holder.setSelected(false);
-            holder.space.setVisibility(position == 4 ? View.VISIBLE : View.GONE);
+            holder.space.setVisibility(position == 3 ? View.VISIBLE : View.GONE);
             Menu menu = mData.get(position);
             holder.title.setText(menu.getNameId());
             holder.icon.setImageResource(menu.getImageId());
@@ -76,6 +77,10 @@ public class NavigationViewAdapter extends RecyclerView.Adapter<NavigationViewAd
                     }
                 }
             });
+            if (position == 0 && !isInited) {
+                holder.rootView.callOnClick();
+                isInited = true;
+            }
         }
     }
 

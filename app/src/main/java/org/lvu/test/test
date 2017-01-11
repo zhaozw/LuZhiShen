@@ -1,13 +1,58 @@
-<div class='pagebox' id='_function_code_page'>
-    共6249部影片当前:1/521页
-    <em>首页</em>
-    <em>上一页</em>
-    <span>1</span>
-    <a href="/sj/vod-show-id-1-p-2.html">2</a>
-    <a href="/sj/vod-show-id-1-p-3.html">3</a>
-    <a href="/sj/vod-show-id-1-p-4.html">4</a>
-    <a href="/sj/vod-show-id-1-p-2.html" class="pagegbk">下一页</a>
-    <a href="/sj/vod-show-id-1-p-521.html" class="pagegbk">尾页</a>
-    <input type="input" name="page" id="page" size=4 class="pagego"/>
-    <input type="button" value="跳 转" onclick="pagego('/sj/vod-show-id-1-p-{!page!}.html',521)" class="pagebtn"/>
+<center>
+    <div id="postmessage" class="t_msgfont">
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/01.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/02.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/03.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/04.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/06.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/08.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/09.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/10.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/01.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/02.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/03.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/04.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/05.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/01.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/02.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/03.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/04.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/05.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/06.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/07.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/08.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/09.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/01.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/02.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/03.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/04.jpg"/>
+        <br/>
+        <img src="http://pic.55avtp.com/images/jlksxlkxld/3495409/05.jpg"/>
+        <br/>
 </div>
+</center>

@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -16,8 +15,6 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import org.lvu.R;
 import org.lvu.customize.VideoPlayerManager;
 import org.lvu.models.Data;
-import org.lvu.utils.HttpUtil;
-import org.lvu.utils.ImmerseUtil;
 import org.video_player.VideoPlayer;
 
 import java.util.List;
@@ -34,14 +31,14 @@ public class EuropeVideoAdapter extends BaseListAdapter {
         mImageLoader = ImageLoader.getInstance();
     }
 
-    @Override
+    /*@Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == ITEM_TYPE_BOTTOM && ImmerseUtil.isAboveKITKAT()
                 && ImmerseUtil.isHasNavigationBar(mContext))
             return new FooterHolder(mLayoutInflater.inflate(
                     R.layout.recycler_view_item_footer, parent, false));
         return new ViewHolder(mLayoutInflater.inflate(mLayoutId, parent, false));
-    }
+    }*/
 
     @Override
     public void onBindViewHolder(final BaseListAdapter.ViewHolder holder, int position) {
@@ -93,7 +90,7 @@ public class EuropeVideoAdapter extends BaseListAdapter {
 
     @Override
     public void syncData(@NonNull String url) {
-        HttpUtil.getEuropeVideoListAsync(1, mSyncDataCallbackListener);
+        //HttpUtil.getEuropeVideoListAsync(1, mSyncDataCallbackListener);
     }
 
     @Override
@@ -101,7 +98,7 @@ public class EuropeVideoAdapter extends BaseListAdapter {
         int page = getCurrentPage() + 1;
         if (page > getTotalPages())
             page = getCurrentPage();
-        HttpUtil.getEuropeVideoListAsync(page, mLoadNextCallbackListener);
+        //HttpUtil.getEuropeVideoListAsync(page, mLoadNextCallbackListener);
     }
 
     @Override
@@ -109,12 +106,12 @@ public class EuropeVideoAdapter extends BaseListAdapter {
         int page = getCurrentPage() - 1;
         if (page < 1)
             page = 1;
-        HttpUtil.getEuropeVideoListAsync(page, mLoadPreviousCallbackListener);
+        //HttpUtil.getEuropeVideoListAsync(page, mLoadPreviousCallbackListener);
     }
 
     @Override
     public void jumpToPage(int page) {
-        HttpUtil.getEuropeVideoListAsync(page, mOnJumpPageCallbackListener);
+        //HttpUtil.getEuropeVideoListAsync(page, mOnJumpPageCallbackListener);
     }
 
     @Override

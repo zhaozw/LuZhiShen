@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class EvilComicsFragment extends BaseListFragment {
     @Override
     protected BaseListAdapter getAdapter() {
-        return new EvilComicsAdapter(getActivity(), R.layout.adapter_picture_list_item, new ArrayList<Data>());
+        return new EvilComicsAdapter(getActivity(), R.layout.adapter_comics_item, new ArrayList<Data>());
     }
 
     @Override

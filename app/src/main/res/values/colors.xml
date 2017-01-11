@@ -60,4 +60,8 @@
     <color name="ripple_color">#30ffffff</color>
     <color name="nav_item_bg">#333</color>
     <color name="menu_item_bg">#305e5e5e</color>
+
+    <color name="bg_video">#37343a</color>
+    <color name="bg_pic">#727f84</color>
+    <color name="bg_novel">#a4705e</color>
 </resources>

@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -17,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -28,7 +28,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -46,10 +45,10 @@ import org.lvu.customize.MySnackBar;
 import org.lvu.customize.NavigationView;
 import org.lvu.customize.OnAppBarStateChangedListener;
 import org.lvu.main.fragments.BaseFragment;
+import org.lvu.main.fragments.FavoritesFragment;
 import org.lvu.main.fragments.IndexFragment;
 import org.lvu.main.fragments.PictureAreaFragment;
 import org.lvu.main.fragments.TextAreaFragment;
-import org.lvu.main.fragments.TorrentAreaFragment;
 import org.lvu.main.fragments.VideoAreaFragment;
 import org.lvu.utils.ImmerseUtil;
 import org.video_player.PlayManager;
@@ -65,6 +64,7 @@ public class NewMainActivity extends BaseActivity {
     private NavigationView mNavigationView;
     private AppBarLayout mAppBarLayout;
     private MyCollapsingToolbarLayout mCollapsingToolbarLayout;
+    private ImageView mBackground;
     private Toolbar mToolbar;
     private View mPageInfo;
     private TextView mTotalPages;
@@ -88,24 +88,38 @@ public class NewMainActivity extends BaseActivity {
     private void initView() {
         findViews();
         setSupportActionBar(mToolbar);
-        initPalette();
         setListeners();
     }
 
-    private void initPalette() {
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test);
+    private void initPalette(@DrawableRes int resId) {
+        switch (resId) {
+            case R.drawable.bg_video:
+                mBackgroundColor = getResources().getColor(R.color.bg_video);
+                break;
+            case R.drawable.bg_pic:
+                mBackgroundColor = getResources().getColor(R.color.bg_pic);
+                break;
+            case R.drawable.bg_novel:
+                mBackgroundColor = getResources().getColor(R.color.bg_novel);
+                break;
+            default:
+        }
+        mBackground.setImageResource(resId);
+        //getVibrantSwatch == null
+        /*Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resId);
         ((ImageView) findViewById(R.id.collapsing_background)).setImageBitmap(bitmap);
         new Palette.Builder(bitmap).generate(new Palette.PaletteAsyncListener() {
             @Override
             public void onGenerated(Palette palette) {
-                Palette.Swatch swatch = palette.getMutedSwatch();
+                Palette.Swatch swatch = palette.getVibrantSwatch();
                 if (swatch != null) {
                     mBackgroundColor = swatch.getRgb();
-                    if (!isBackgroundChanged && isAppBarExpanded)
-                        refreshViewsColor();
+                    /*if (!isBackgroundChanged && isAppBarExpanded)
+                        refreshViewsColor();*
                 }
             }
-        });
+        });*/
+
     }
 
     private void findViews() {
@@ -113,6 +127,7 @@ public class NewMainActivity extends BaseActivity {
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         mCollapsingToolbarLayout = (MyCollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
+        mBackground = (ImageView) findViewById(R.id.collapsing_background);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         /*mPageInfo = findViewById(R.id.page_info);
         mTotalPages = (TextView) mToolbar.findViewById(R.id.total_page);
@@ -158,23 +173,30 @@ public class NewMainActivity extends BaseActivity {
                         break;
                     case R.string.area_video:
                         fragment = new VideoAreaFragment();
+                        initPalette(R.drawable.bg_video);
                         break;
                     case R.string.area_picture:
                         fragment = new PictureAreaFragment();
+                        initPalette(R.drawable.bg_pic);
                         break;
                     case R.string.area_text:
                         fragment = new TextAreaFragment();
+                        initPalette(R.drawable.bg_novel);
                         break;
-                    case R.string.area_torrent:
-                        fragment = new TorrentAreaFragment();
+                    case R.string.favorites:
+                        fragment = new FavoritesFragment();
                         break;
                     case R.string.download_manager:
                         fragment = null;
                         startActivity(new Intent(NewMainActivity.this, DownloadManagerActivity.class));
                         break;
+                    case R.string.change_skin:
+                        fragment = null;
+                        changeSkin();
+                        break;
                     case R.string.settings:
                         fragment = null;
-                        startActivity(new Intent(NewMainActivity.this, SettingsActivity.class));
+                        startActivity(new Intent(NewMainActivity.this, SettingActivity.class));
                         break;
                     case R.string.exit:
                         fragment = mShowingFragment;
@@ -186,6 +208,7 @@ public class NewMainActivity extends BaseActivity {
                 }
                 if (fragment != null && showFragment(fragment))
                     mCollapsingToolbarLayout.setTitle(getString(stringId));
+                mAppBarLayout.setExpanded(false);
                 closeDrawer();
             }
         });
@@ -497,6 +520,13 @@ public class NewMainActivity extends BaseActivity {
     public static boolean isScrimsShown() {
         return isScrimsShown;
     }
+
+    /**
+     * Slide Up Animation
+     * mContent.setY(mContent.getY() + 120);
+     * mContent.setAlpha(0);
+     * mContent.animate().translationY(0).setDuration(500).alpha(1);
+     */
 /*
     public void setTotalPages(int totalPages) {
         if (totalPages > 0) {

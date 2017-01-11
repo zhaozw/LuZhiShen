@@ -193,7 +193,7 @@ public class PicturesViewActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         mAdapter.clearData();
-        mAdapter.setOwnerIsDestroyed();
+        mAdapter.setOwnerIsDestroyed(true);
         super.onBackPressed();
     }
 

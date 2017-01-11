@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <org.lvu.customize.VideoPlayer
+        <org.video_player.VideoPlayer
             android:id="@+id/player"
             android:layout_width="match_parent"
             android:layout_height="250dp" />
@@ -38,5 +38,31 @@
             android:textColor="@color/menu_text_color"
             android:textSize="@dimen/sp_15"
             tools:text="“蒜你狠”卷土重来 每斤价格直逼20元" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_12"
+            android:layout_marginRight="@dimen/dp_12"
+            android:layout_marginLeft="@dimen/dp_12">
+
+            <ImageView
+                android:id="@+id/favorites"
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_favorite"
+                tools:src="@drawable/ic_favorite_selected" />
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:textColor="@color/menu_text_color"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                tools:text="2017-01-09" />
+        </RelativeLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

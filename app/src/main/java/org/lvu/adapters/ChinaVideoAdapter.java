@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.lvu.models.Data;
-import org.lvu.utils.HttpUtil;
 
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class ChinaVideoAdapter extends EuropeVideoAdapter {
 
     @Override
     public void syncData(@NonNull String url) {
-        HttpUtil.getChinaVideoListAsync(1, mSyncDataCallbackListener);
+        //HttpUtil.getChinaVideoListAsync(1, mSyncDataCallbackListener);
     }
 
     @Override
@@ -27,7 +26,7 @@ public class ChinaVideoAdapter extends EuropeVideoAdapter {
         int page = getCurrentPage() + 1;
         if (page > getTotalPages())
             page = getCurrentPage();
-        HttpUtil.getChinaVideoListAsync(page, mLoadNextCallbackListener);
+        // HttpUtil.getChinaVideoListAsync(page, mLoadNextCallbackListener);
     }
 
     @Override
@@ -35,11 +34,11 @@ public class ChinaVideoAdapter extends EuropeVideoAdapter {
         int page = getCurrentPage() - 1;
         if (page < 1)
             page = 1;
-        HttpUtil.getChinaVideoListAsync(page, mLoadPreviousCallbackListener);
+        // HttpUtil.getChinaVideoListAsync(page, mLoadPreviousCallbackListener);
     }
 
     @Override
     public void jumpToPage(int page) {
-        HttpUtil.getChinaVideoListAsync(page, mOnJumpPageCallbackListener);
+        //  HttpUtil.getChinaVideoListAsync(page, mOnJumpPageCallbackListener);
     }
 }

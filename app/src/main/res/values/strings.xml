@@ -26,6 +26,7 @@
     <string name="change_skin">更换皮肤</string>
     <string name="settings">设置</string>
     <string name="download_manager">下载管理</string>
+    <string name="favorites">收藏夹</string>
     <string name="about">关于我们</string>
     <string name="clear_cache">清除缓存</string>
 
@@ -148,4 +149,34 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+
+    <string name="video1">日韩女优</string>
+    <string name="video2">欧美激情</string>
+    <string name="video3">偷拍自拍</string>
+    <string name="video4">成人动漫</string>
+    <string name="video5">经典三级</string>
+    <string name="video6">强奸乱伦</string>
+    <string name="video7">变态另类</string>
+    <string name="video8">制服丝袜</string>
+    <string name="video9">激情3P</string>
+
+    <string name="picture1">亚洲色图</string>
+    <string name="picture2">欧美色图</string>
+    <string name="picture3">偷窥自拍</string>
+    <string name="picture4">卡通动漫</string>
+    <string name="picture5">另类口味</string>
+    <string name="picture6">精品套图</string>
+    <string name="picture7">少妇熟女</string>
+    <string name="picture8">清纯唯美</string>
+    <string name="picture9">美腿丝袜</string>
+
+    <string name="text1">都市言情</string>
+    <string name="text2">校园春色</string>
+    <string name="text3">人妻女友</string>
+    <string name="text4">古典武侠</string>
+    <string name="text5">家庭乱伦</string>
+    <string name="text6">另类小说</string>
+    <string name="text7">性爱技巧</string>
+    <string name="text8">情色笑话</string>
+    <string name="text9">其它小说</string>
 </resources>

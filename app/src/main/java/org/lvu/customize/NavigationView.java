@@ -73,8 +73,9 @@ public class NavigationView extends LinearLayout {
         result.add(new Menu(R.drawable.ic_video, R.string.area_video));
         result.add(new Menu(R.drawable.ic_pic, R.string.area_picture));
         result.add(new Menu(R.drawable.ic_book, R.string.area_text));
-        result.add(new Menu(R.drawable.ic_menu_download, R.string.area_torrent));
-        result.add(new Menu(R.drawable.ic_menu_skin, R.string.download_manager));
+        result.add(new Menu(R.drawable.ic_favorite_selected, R.string.favorites));
+        result.add(new Menu(R.drawable.ic_menu_download, R.string.download_manager));
+        result.add(new Menu(R.drawable.ic_menu_skin, R.string.change_skin));
         result.add(new Menu(R.drawable.ic_settings, R.string.settings));
         result.add(new Menu(R.drawable.ic_menu_exit, R.string.exit));
         return result;
@@ -96,7 +97,7 @@ public class NavigationView extends LinearLayout {
 
     public void setHeader(Context context) {
         //if (!isHasHeader)
-        ((LinearLayout) mRootView.findViewById(R.id.root_view)).addView(new NavigationHeader(context).setText("有的人撸着他已经睡着了\n有的人睡着了他还在撸着"), 0);
+        ((LinearLayout) mRootView.findViewById(R.id.root_view)).addView(new NavigationHeader(context).setText("垂死病中惊坐起\n突然想看撸至深\n洛阳亲友如相问\n就说我在撸至深"), 0);
     }
 
     public void setOnItemClickListener(NavigationViewAdapter.OnItemClickListener listener) {
