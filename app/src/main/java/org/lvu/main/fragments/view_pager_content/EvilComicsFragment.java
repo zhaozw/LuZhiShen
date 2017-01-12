@@ -7,6 +7,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.EvilComicsAdapter;
+import org.lvu.customize.MyStaggeredGridLayoutManager;
 import org.lvu.main.activities.ComicsViewActivity;
 import org.lvu.main.activities.PicturesViewActivity;
 import org.lvu.models.Data;
@@ -48,7 +49,7 @@ public class EvilComicsFragment extends BaseListFragment {
 
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        return new MyStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
     }
 
     @Override

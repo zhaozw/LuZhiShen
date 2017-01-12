@@ -29,7 +29,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'tv.danmaku.ijk.media:ijkplayer-java:0.7.5'
     compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.7.5'
-    //compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.7.5'
+    compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.7.5'
     compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.7.5'
     testCompile 'junit:junit:4.12'
 }

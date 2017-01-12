@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.lvu.R;
@@ -44,14 +45,17 @@ public abstract class BasePictureListAdapter extends BaseListAdapter {
         initItemImage(holder, position);
     }
 
-    protected void initItemImage(final BaseListAdapter.ViewHolder holder, int position) {
+    void initItemImage(final BaseListAdapter.ViewHolder holder, int position) {
         if (mData.isEmpty())
             return;
         try {
             holder.image.setImageResource(R.drawable.ic_pic_loading);
             mImageLoader.loadImage(mData.get(position != 0 && position >= mData.size() ?
                             mData.size() - 1 : position).getSrc(),
-                    new DisplayImageOptions.Builder().cacheInMemory(true).cacheOnDisk(true).build(),
+                    new DisplayImageOptions.Builder()
+                            .bitmapConfig(Bitmap.Config.RGB_565)
+                            .imageScaleType(ImageScaleType.EXACTLY)
+                            .cacheInMemory(true).cacheOnDisk(true).build(),
                     new ImageLoadingListener() {
                         @Override
                         public void onLoadingStarted(String imageUri, View view) {

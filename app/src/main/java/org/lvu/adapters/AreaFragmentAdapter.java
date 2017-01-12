@@ -1,23 +1,25 @@
 package org.lvu.adapters;
 
-import android.os.Parcelable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.view.View;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.ViewGroup;
 
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
+import org.lvu.utils.LogUtil;
 
 /**
  * Created by wuyr on 1/5/17 1:43 PM.
  */
 
-public class AreaFragmentAdapter extends FragmentStatePagerAdapter {
+public class AreaFragmentAdapter extends FragmentPagerAdapter {
 
     private BaseListFragment[] mFragments;
     private String[] mTitles;
     private BaseListFragment mShowingFragment;
+    private int mCurrentPos;
+    private ViewPager.OnPageChangeListener mListener;
+    private boolean isInited;
 
     public AreaFragmentAdapter(FragmentManager fm, BaseListFragment[] fragments, String[] titles) {
         super(fm);
@@ -41,29 +43,33 @@ public class AreaFragmentAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        super.setPrimaryItem(container, position, object);
-        mShowingFragment = (BaseListFragment) object;
-        mShowingFragment.refreshPagesInfo();
+    public Object instantiateItem(ViewGroup container, int position) {
+        LogUtil.print("current:  " + mCurrentPos + " pos: " + position);
+        return super.instantiateItem(container, position);
     }
 
     @Override
-    public Parcelable saveState() {
-        return null;
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        super.setPrimaryItem(container, position, object);
+        if (!isInited || mCurrentPos != position) {
+            mShowingFragment = (BaseListFragment) object;
+            mCurrentPos = position;
+            LogUtil.print(position);
+            if (mListener != null)
+                mListener.onPageSelected(position);
+            isInited = true;
+        }
+    }
+
+    public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener){
+        mListener = listener;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
+        super.destroyItem(container, position, object);
+        LogUtil.print(position);
         mFragments[position].saveAdapterData();
-    }
-
-    @Override
-    public void restoreState(Parcelable state, ClassLoader loader) {
-    }
-
-    @Override
-    public boolean isViewFromObject(View view, Object object) {
-        return ((Fragment) object).getView() == view;
     }
 
     public BaseListFragment[] getAllFragments() {

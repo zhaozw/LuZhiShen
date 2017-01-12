@@ -19,9 +19,6 @@
             android:name=".main.activities.NavigationActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="cat.ereza.customactivityoncrash.RESTART" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".main.activities.MainActivity"
@@ -63,6 +60,9 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="cat.ereza.customactivityoncrash.RESTART" />
             </intent-filter>
         </activity>
         <activity

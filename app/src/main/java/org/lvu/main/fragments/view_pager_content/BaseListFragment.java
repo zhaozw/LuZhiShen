@@ -45,7 +45,7 @@ import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 /**
  * Created by wuyr on 4/6/16 2:22 PM.
  */
-public abstract class BaseListFragment extends Fragment {
+public abstract class BaseListFragment extends Fragment{
 
     protected View mRootView;
     protected RecyclerView mRecyclerView;
@@ -54,7 +54,6 @@ public abstract class BaseListFragment extends Fragment {
     protected boolean isJumping;
     protected BaseListAdapter mAdapter;
     protected NewMainActivity mActivity;
-    private boolean isLoaded;
 
     @Nullable
     @Override
@@ -92,11 +91,20 @@ public abstract class BaseListFragment extends Fragment {
         mAdapter.setOnItemClickListener(getOnItemClickListener());
         mAdapter.setOnItemLongClickListener(getOnItemLongClickListener());
         restoreAdapterData();
-        /*if (this instanceof JapanVideoFragment || this instanceof FamilyPhotoFragment
-                || this instanceof ExcitedNovelFragment) {
+    }
+
+    /*@Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        saveAdapterData();
+        if (mAdapter != null)
+            mAdapter.clearData();
+        if (isVisibleToUser)
             restoreAdapterData();
-            isLoaded = true;
-        }*/
+    }*/
+
+    public void loadData(){
+        restoreAdapterData();
     }
 
     private void handleOnFinish() {
@@ -140,35 +148,6 @@ public abstract class BaseListFragment extends Fragment {
             e.printStackTrace();
         }
     }
-
-    /*@Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser){
-            if (mAdapter != null) {
-                mAdapter.setOwnerIsDestroyed(false);
-                restoreAdapterData();
-            }
-        }else {
-            if (mAdapter != null)
-                mAdapter.setOwnerIsDestroyed(true);
-            new Thread(){
-                @Override
-                public void run() {
-                    if (mAdapter != null && mAdapter.getItemCount() > 0) {
-                        saveAdapterData();
-                        if (mActivity != null)
-                            mActivity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mAdapter.clearData();
-                                }
-                            });
-                    }
-                }
-            }.start();
-        }
-    }*/
 
     public void resetViewsColor(int startColor, int endColor) {
         List<BaseListAdapter.ViewHolder> holders = getColorChangedHolders();
@@ -460,7 +439,6 @@ public abstract class BaseListFragment extends Fragment {
         }*/
         if (mAdapter != null)
             mAdapter.changeToLandscape();
-
     }
 
     public void changeToPortrait() {

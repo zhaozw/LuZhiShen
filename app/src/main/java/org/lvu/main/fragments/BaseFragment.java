@@ -43,24 +43,22 @@ public abstract class BaseFragment extends Fragment {
             mTabLayout.addTab(mTabLayout.newTab().setText(tmp));
 
         mViewPager.setAdapter((mAdapter = new AreaFragmentAdapter(getChildFragmentManager(), getFragments(), getStrings(tabs))));
-        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mAdapter.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 int backgroundColor = NewMainActivity.getBackgroundColor();
-                if (backgroundColor != -1 && mAdapter.getItem(position) != null) {
+                if (backgroundColor != -1 && mAdapter.getCurrentFragment() != null) {
                     int themeColor = ((NewMainActivity) getActivity()).getThemeColor(1);
                     if (NewMainActivity.isAppBarExpanded() || !NewMainActivity.isScrimsShown())
-                        mAdapter.getItem(position).refreshViewsColor(themeColor, backgroundColor);
+                        mAdapter.getCurrentFragment().refreshViewsColor(themeColor, backgroundColor);
                     else
-                        mAdapter.getItem(position).resetViewsColor(backgroundColor, themeColor);
+                        mAdapter.getCurrentFragment().resetViewsColor(backgroundColor, themeColor);
 
                 }
                 PlayManager.getInstance().onlyRelease();
             }
         });
-
         mTabLayout.setupWithViewPager(mViewPager);
-        mViewPager.setCurrentItem(0);
         ((NewMainActivity) getActivity()).setOnAppBarExpandedListener(new NewMainActivity.OnAppBarExpandedListener() {
             @Override
             public void onExpanded(int startColor, int endColor) {

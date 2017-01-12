@@ -206,10 +206,10 @@ public class NewMainActivity extends BaseActivity {
                         fragment = null;
                         break;
                 }
-                if (fragment != null && showFragment(fragment))
-                    mCollapsingToolbarLayout.setTitle(getString(stringId));
                 mAppBarLayout.setExpanded(false);
                 closeDrawer();
+                if (fragment != null && showFragment(fragment))
+                    mCollapsingToolbarLayout.setTitle(getString(stringId));
             }
         });
         mAppBarLayout.addOnOffsetChangedListener(new OnAppBarStateChangedListener() {

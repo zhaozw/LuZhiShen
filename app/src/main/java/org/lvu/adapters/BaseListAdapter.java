@@ -211,7 +211,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             });
     }
 
-    protected boolean handleFooterHolder(ViewHolder holder) {
+    boolean handleFooterHolder(ViewHolder holder) {
         if (holder instanceof FooterHolder) {
             FooterHolder footerHolder = (FooterHolder) holder;
             LinearLayout.LayoutParams bottomLP = new LinearLayout.LayoutParams(

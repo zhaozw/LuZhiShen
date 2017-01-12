@@ -6,6 +6,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.newAdapters.picture.Picture1Adapter;
+import org.lvu.customize.MyStaggeredGridLayoutManager;
 import org.lvu.main.fragments.view_pager_content.EuropePictureFragment;
 import org.lvu.models.Data;
 
@@ -18,7 +19,8 @@ import java.util.ArrayList;
 public class Picture1Fragment extends EuropePictureFragment {
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        return new MyStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        //return new LinearLayoutManager(getActivity());
     }
 
     @Override
