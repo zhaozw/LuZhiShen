@@ -45,7 +45,7 @@ public abstract class BasePictureListAdapter extends BaseListAdapter {
         initItemImage(holder, position);
     }
 
-    void initItemImage(final BaseListAdapter.ViewHolder holder, int position) {
+    protected void initItemImage(final BaseListAdapter.ViewHolder holder, int position) {
         if (mData.isEmpty())
             return;
         try {

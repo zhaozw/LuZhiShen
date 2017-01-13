@@ -150,7 +150,7 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
     }
 
     /**
-     * @param scale Set the scale of the arrowhead for the spinner.
+     * @param scale Set the compress of the arrowhead for the spinner.
      */
     public void setArrowScale(float scale) {
         mRing.setArrowScale(scale);
@@ -476,7 +476,7 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
                 float y = (float) (mRingCenterRadius * Math.sin(0) + bounds.exactCenterY());
 
                 // Update the path each time. This works around an issue in SKIA
-                // where concatenating a rotation matrix to a scale matrix
+                // where concatenating a rotation matrix to a compress matrix
                 // ignored a starting negative rotation. This appears to have
                 // been fixed as of API 21.
                 mArrow.moveTo(0, 0);
@@ -634,7 +634,7 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
         }
 
         /**
-         * @param scale Set the scale of the arrowhead for the spinner.
+         * @param scale Set the compress of the arrowhead for the spinner.
          */
         public void setArrowScale(float scale) {
             if (scale != mArrowScale) {

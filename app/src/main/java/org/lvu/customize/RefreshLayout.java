@@ -219,7 +219,7 @@ public class RefreshLayout extends ViewGroup {
     }
 
     /**
-     * Pre API 11, alpha is used to make the progress circle appear instead of scale.
+     * Pre API 11, alpha is used to make the progress circle appear instead of compress.
      */
     private boolean isAlphaUsedForScale() {
         return android.os.Build.VERSION.SDK_INT < 11;
@@ -229,7 +229,7 @@ public class RefreshLayout extends ViewGroup {
     private void startScaleUpAnimation(AnimationListener listener) {
         mCircleView.setVisibility(View.VISIBLE);
         if (android.os.Build.VERSION.SDK_INT >= 11) {
-            // Pre API 11, alpha is used in place of scale up to show the
+            // Pre API 11, alpha is used in place of compress up to show the
             // progress circle appearing.
             // Don't adjust the alpha during appearance otherwise.
             mProgress.setAlpha(MAX_ALPHA);
@@ -270,7 +270,7 @@ public class RefreshLayout extends ViewGroup {
      */
     public void setRefreshing(boolean refreshing) {
         if (refreshing && !mRefreshing) {
-            // scale and show
+            // compress and show
             mRefreshing = true;
             int endTarget = (int) (mSpinnerFinalOffset + mOriginalOffsetTop);
             setTargetOffsetTopAndBottom(endTarget - mCurrentTargetOffsetTop,
@@ -331,7 +331,7 @@ public class RefreshLayout extends ViewGroup {
     }
 
     private Animation startAlphaAnimation(final int startingAlpha, final int endingAlpha) {
-        // Pre API 11, alpha is used in place of scale. Don't also use it to
+        // Pre API 11, alpha is used in place of compress. Don't also use it to
         // show the trigger point.
         Animation alpha = new Animation() {
             @Override

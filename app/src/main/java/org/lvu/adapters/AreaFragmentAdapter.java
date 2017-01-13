@@ -6,7 +6,6 @@ import android.support.v4.view.ViewPager;
 import android.view.ViewGroup;
 
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
-import org.lvu.utils.LogUtil;
 
 /**
  * Created by wuyr on 1/5/17 1:43 PM.
@@ -43,18 +42,11 @@ public class AreaFragmentAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-        LogUtil.print("current:  " + mCurrentPos + " pos: " + position);
-        return super.instantiateItem(container, position);
-    }
-
-    @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
         super.setPrimaryItem(container, position, object);
         if (!isInited || mCurrentPos != position) {
             mShowingFragment = (BaseListFragment) object;
             mCurrentPos = position;
-            LogUtil.print(position);
             if (mListener != null)
                 mListener.onPageSelected(position);
             isInited = true;
@@ -68,7 +60,6 @@ public class AreaFragmentAdapter extends FragmentPagerAdapter {
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         super.destroyItem(container, position, object);
-        LogUtil.print(position);
         mFragments[position].saveAdapterData();
     }
 

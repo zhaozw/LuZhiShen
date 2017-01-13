@@ -1,10 +1,20 @@
 package org.lvu.adapters.newAdapters.picture;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
+import android.view.View;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+
+import org.lvu.R;
+import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.EvilComicsAdapter;
 import org.lvu.models.Data;
+import org.lvu.utils.BitmapUtil;
 import org.lvu.utils.HttpUtil;
 
 import java.util.List;
@@ -16,6 +26,43 @@ import java.util.List;
 public class Picture1Adapter extends EvilComicsAdapter {
     public Picture1Adapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
+    }
+
+    @Override
+    protected void initItemImage(final BaseListAdapter.ViewHolder holder, int position) {
+        if (mData.isEmpty())
+            return;
+        try {
+            holder.image.setImageResource(R.drawable.ic_pic_loading);
+            mImageLoader.loadImage(mData.get(position != 0 && position >= mData.size() ?
+                            mData.size() - 1 : position).getSrc(),
+                    new DisplayImageOptions.Builder()
+                            .bitmapConfig(Bitmap.Config.RGB_565)
+                            .imageScaleType(ImageScaleType.EXACTLY)
+                            .cacheInMemory(true).cacheOnDisk(true).build(),
+                    new ImageLoadingListener() {
+                        @Override
+                        public void onLoadingStarted(String imageUri, View view) {
+
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            holder.image.setImageResource(R.drawable.ic_pic_bad);
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                            holder.image.setImageBitmap(BitmapUtil.compress(loadedImage));
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String imageUri, View view) {
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
