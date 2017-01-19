@@ -108,10 +108,12 @@ public class PlayManager {
     }
 
     int getVideoWidth() {
+        if (mPlayer == null) return 0;
         return mPlayer.getVideoWidth();
     }
 
     int getVideoHeight() {
+        if (mPlayer == null) return 0;
         return mPlayer.getVideoHeight();
     }
 

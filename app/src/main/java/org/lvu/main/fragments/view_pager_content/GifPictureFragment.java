@@ -5,8 +5,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -25,7 +23,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import cz.msebera.android.httpclient.Header;
 import pl.droidsonroids.gif.GifDrawable;
 
 /**
@@ -94,17 +91,27 @@ public class GifPictureFragment extends BaseListFragment {
                             holder.progress.setVisibility(View.GONE);
                         }
                     } else {
-                        new AsyncHttpClient().get(gifUrl, new AsyncHttpResponseHandler() {
+                        mThreadPool.execute(new Runnable() {
                             @Override
-                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            public void run() {
                                 try {
-                                    mThreadPool.execute(new WriteDataThread(mNameGenerator.generate(gifUrl), responseBody));
+                                    final byte[] gif = HttpUtil.getGifFile(gifUrl);
+                                    mThreadPool.execute(new WriteDataThread(mNameGenerator.generate(gifUrl), gif));
                                     if (holder.progress.getVisibility() != View.GONE) {
-                                        holder.image.setImageDrawable(new GifDrawable(responseBody));
-                                        holder.setGifPlaying(true);
-                                        mRecyclerView.smoothScrollToPosition(position);
+                                        holder.image.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    holder.image.setImageDrawable(new GifDrawable(gif));
+                                                    holder.setGifPlaying(true);
+                                                    mRecyclerView.smoothScrollToPosition(position);
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
                                     }
-                                } catch (IOException e) {
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                     holder.progress.post(new Runnable() {
                                         @Override
@@ -114,20 +121,13 @@ public class GifPictureFragment extends BaseListFragment {
                                         }
                                     });
                                 } finally {
-                                    holder.progress.setVisibility(View.GONE);
+                                    holder.progress.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            holder.progress.setVisibility(View.GONE);
+                                        }
+                                    });
                                 }
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                                holder.progress.setVisibility(View.GONE);
-                                holder.progress.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (getActivity() != null && ((NewMainActivity) getActivity()).getRootView() != null)
-                                            MySnackBar.show(((NewMainActivity) getActivity()).getRootView(), HttpUtil.REASON_CONNECT_SERVER_FAILURE, Snackbar.LENGTH_SHORT);
-                                    }
-                                });
                             }
                         });
                     }
@@ -163,7 +163,6 @@ public class GifPictureFragment extends BaseListFragment {
 
     @Override
     protected void longClickLogic(Data data) {
-        //TODO: if gif is cached auto play gif
     }
 
     @Override

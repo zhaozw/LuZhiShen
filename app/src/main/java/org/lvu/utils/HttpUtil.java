@@ -32,6 +32,9 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+
 /**
  * Created by wuyr on 4/7/16 1:24 PM.
  */
@@ -42,9 +45,11 @@ public class HttpUtil {
             REASON_CONNECT_SERVER_FAILURE = "连接服务器失败，请检查网络后重试。\t(向右滑动清除)",
             REASON_INTERNET_NO_GOOD = "网络不给力，请重试。\t(向右滑动清除)";
     private static ExecutorService mThreadPool;
+    private static OkHttpClient mHttpClient;
 
     static {
         mThreadPool = Executors.newFixedThreadPool(7);
+        mHttpClient = new OkHttpClient();
     }
 
     public static void getVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
@@ -184,7 +189,7 @@ public class HttpUtil {
                 List<Data> result = new ArrayList<>();
                 String nextPageUrl = "";
                 int currentPage = 0, totalPages = 0;
-                Document document = getDocument(url);
+                Document document = getDocument2(url);
                 Elements li = document.select("ul[class=piclist listcon").get(0).children();
                 for (Element tmp : li) {
                     Element a = tmp.child(0);
@@ -261,11 +266,11 @@ public class HttpUtil {
                 List<Data> result = new ArrayList<>();
                 String nextPageUrl = "";
                 int currentPage = 0, totalPages = 0;
-                Document document = getDocument(url);
+                Document document = getDocument2(url);
                 Elements items = document.select("div[class=lovefou]").get(0).children();
                 for (Element li : items) {
                     Element tmp = li.children().get(0);
-                    result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"), handleString4(tmp.child(0).attr("alt")), ""));
+                    result.add(new Data(getGifUrl(tmp.attr("abs:href")), tmp.child(0).attr("src"), handleString4(tmp.child(0).attr("alt")), tmp.lastElementSibling().text()));
                 }
                 Elements pagination = document.select("div[class=pagination]").get(0).child(0).children();
                 for (Element tmp : pagination)
@@ -291,6 +296,10 @@ public class HttpUtil {
         });
     }
 
+    private static Document getDocument2(String url) throws IOException {
+        return Jsoup.connect(url).timeout(8000).header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+    }
+
     public static void getPicturesAsync(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
@@ -314,8 +323,7 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                Document document = Jsoup.connect(url).timeout(4000)
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+                Document document = getDocument(url);
                 String content = document.select("textarea[id=nr]").get(0).text();
                 if (content.isEmpty())
                     listener.onFailure(new Exception("novel content is empty!"), REASON_SERVER_404);
@@ -332,6 +340,10 @@ public class HttpUtil {
                 listener.onSuccess(ImageLoader.getInstance().loadImageSync(getDocument(url).select("img[alt]").get(0).attr("abs:src"), new DisplayImageOptions.Builder().imageScaleType(ImageScaleType.NONE).build()));
             }
         });
+    }
+
+    public static byte[] getGifFile(String url) throws Exception {
+        return mHttpClient.newCall(new Request.Builder().url(url).build()).execute().body().bytes();
     }
 
     public static void readMoreJokeAsync(final String url, final HttpRequestCallbackListener listener) {
@@ -358,8 +370,8 @@ public class HttpUtil {
         return result.toString();
     }
 
-    private static Document getDocument(String url) throws IOException {
-        return Jsoup.connect(url).ignoreContentType(true).timeout(4000).header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").get();
+    private static Document getDocument(String url) throws Exception {
+        return Jsoup.parse(mHttpClient.newCall(new Request.Builder().url(url).build()).execute().body().string(), url.substring(0, url.indexOf(".com") + 4));
     }
 
     private static String getGifUrl(String url) {
@@ -387,54 +399,6 @@ public class HttpUtil {
             }
         }
         return "";
-    }
-
-    private static void runOnBackground(final HttpRequestCallbackListener listener, final BackgroundLogic backgroundLogic) {
-        mThreadPool.execute(new Thread() {
-            @Override
-            public void run() {
-                int count = 0, count2 = 0;
-                while (true) {
-                    try {
-                        backgroundLogic.run();
-                        break;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (e instanceof ConnectException) {
-                            if (!isNetWorkAvailable()) {
-                                listener.onFailure(e, REASON_NO_INTERNET_CONNECT);
-                                break;
-                            } else {
-                                count2++;
-                                if (count2 > 3) {
-                                    listener.onFailure(e, REASON_INTERNET_NO_GOOD);
-                                    break;
-                                }
-                                continue;
-                            }
-                        }
-                        if (e instanceof SocketException ||
-                                e instanceof UnknownHostException ||
-                                e instanceof SocketTimeoutException) {
-                            count++;
-                            if (count > 3) {
-                                String reason = REASON_CONNECT_SERVER_FAILURE;
-                                if (e instanceof SocketTimeoutException)
-                                    reason = REASON_INTERNET_NO_GOOD;
-                                if (!isNetWorkAvailable())
-                                    reason = REASON_NO_INTERNET_CONNECT;
-                                listener.onFailure(e, reason);
-                                break;
-                            }
-                            continue;
-                        }
-                        listener.onFailure(e, e instanceof HttpStatusException ? REASON_SERVER_404 :
-                                !isNetWorkAvailable() ? REASON_NO_INTERNET_CONNECT : REASON_CONNECT_SERVER_FAILURE);
-                        break;
-                    }
-                }
-            }
-        });
     }
 
     private static String handleString(String src) {
@@ -510,6 +474,54 @@ public class HttpUtil {
             return false;
         NetworkInfo info = manager.getActiveNetworkInfo();
         return info != null && info.isConnected();
+    }
+
+    private static void runOnBackground(final HttpRequestCallbackListener listener, final BackgroundLogic backgroundLogic) {
+        mThreadPool.execute(new Thread() {
+            @Override
+            public void run() {
+                int count = 0, count2 = 0;
+                while (true) {
+                    try {
+                        backgroundLogic.run();
+                        break;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        if (e instanceof ConnectException) {
+                            if (!isNetWorkAvailable()) {
+                                listener.onFailure(e, REASON_NO_INTERNET_CONNECT);
+                                break;
+                            } else {
+                                count2++;
+                                if (count2 > 3) {
+                                    listener.onFailure(e, REASON_INTERNET_NO_GOOD);
+                                    break;
+                                }
+                                continue;
+                            }
+                        }
+                        if (e instanceof SocketException ||
+                                e instanceof UnknownHostException ||
+                                e instanceof SocketTimeoutException) {
+                            count++;
+                            if (count > 3) {
+                                String reason = REASON_CONNECT_SERVER_FAILURE;
+                                if (e instanceof SocketTimeoutException)
+                                    reason = REASON_INTERNET_NO_GOOD;
+                                if (!isNetWorkAvailable())
+                                    reason = REASON_NO_INTERNET_CONNECT;
+                                listener.onFailure(e, reason);
+                                break;
+                            }
+                            continue;
+                        }
+                        listener.onFailure(e, e instanceof HttpStatusException ? REASON_SERVER_404 :
+                                !isNetWorkAvailable() ? REASON_NO_INTERNET_CONNECT : REASON_CONNECT_SERVER_FAILURE);
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     public abstract static class HttpRequestCallbackListener {

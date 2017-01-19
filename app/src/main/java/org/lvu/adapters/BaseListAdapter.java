@@ -149,23 +149,24 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (!handleFooterHolder(holder))
-            initDefaultItemData(holder, position);
+        initDefaultItemData(holder, position);
     }
 
     void initDefaultItemData(final ViewHolder holder, int position) {
-        if (mData.isEmpty())
-            return;
-        try {
-            Data item = mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position);
-            holder.text.setText(item.getText());
-            if (!item.getDate().isEmpty())
-                holder.date.setText(item.getDate());
-            holder.favorites.setImageResource(item.isFavorites() ? R.drawable.ic_favorite_selected : R.drawable.ic_favorite);
-            initItemOnClickListener(holder);
-            initItemLongClickListener(holder);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!handleFooterHolder(holder)) {
+            if (mData.isEmpty())
+                return;
+            try {
+                Data item = mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position);
+                holder.text.setText(item.getText());
+                if (!item.getDate().isEmpty())
+                    holder.date.setText(item.getDate());
+                holder.favorites.setImageResource(item.isFavorites() ? R.drawable.ic_favorite_selected : R.drawable.ic_favorite);
+                initItemOnClickListener(holder);
+                initItemLongClickListener(holder);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -277,7 +278,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             mCurrentPage = data.get(0).getCurrentPage();
             mTotalPages = data.get(0).getTotalPages();
             mData = data;
-            notifyItemChanged(0, data.size());
+            notifyItemRangeChanged(0, data.size());
             /*notifyDataSetChanged();
             for (int i = 0; i < data.size(); i++) {
                 mData.add(data.get(i));
