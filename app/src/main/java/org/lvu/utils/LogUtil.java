@@ -21,7 +21,7 @@ public class LogUtil {
         if (isDebugOn)
             if (format != null && args != null) {
                 StackTraceElement element = Thread.currentThread().getStackTrace()[3];
-                Log.i(String.format("%s-->%s", element.getClassName(), element.getMethodName()), String.format(format, args));
+                Log.e(String.format("%s-->%s", element.getClassName(), element.getMethodName()), String.format(format, args));
             }
     }
 }

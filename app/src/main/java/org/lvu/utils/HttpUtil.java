@@ -49,7 +49,7 @@ public class HttpUtil {
 
     static {
         mThreadPool = Executors.newFixedThreadPool(7);
-        mHttpClient = new OkHttpClient();
+        mHttpClient = Application.getOkHttpClient();
     }
 
     public static void getVideoListAsync(final String url, final HttpRequestCallbackListener listener) {

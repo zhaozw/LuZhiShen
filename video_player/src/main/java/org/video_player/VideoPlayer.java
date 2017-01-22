@@ -263,7 +263,6 @@ public class VideoPlayer extends RelativeLayout {
                 LogUtil.print("onPrepared");
                 if (isPortraitVideo() || mSurfaceView == null)
                     initSurfaceView(true);
-                setKeepScreenOn(true);
                 mTotalWidth = mManager.getVideoWidth();
                 mRootView.setFocusable(true);
                 mRootView.setClickable(true);
@@ -281,7 +280,6 @@ public class VideoPlayer extends RelativeLayout {
             @Override
             public void onCompletion() {
                 LogUtil.print("onCompletion");
-                setKeepScreenOn(false);
                 mPlayStatusButton.setImageResource(R.drawable.ic_play);
                 setControlViewsVisibility(VISIBLE);
             }
@@ -334,7 +332,6 @@ public class VideoPlayer extends RelativeLayout {
     }
 
     protected void resetPlayerData() {
-        setKeepScreenOn(false);
         LogUtil.print("reset player data");
         cancelDismissControlViewTimer();
         cancelProgressTimer();

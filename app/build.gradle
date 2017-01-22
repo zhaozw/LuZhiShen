@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "org.lvu"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 7
         versionName "1.7"

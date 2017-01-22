@@ -12,6 +12,7 @@ import org.lvu.main.activities.ErrorActivity;
 import org.lvu.main.activities.MainActivity;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
+import okhttp3.OkHttpClient;
 
 /**
  * Created by wuyr on 3/31/16 6:17 PM.
@@ -19,6 +20,7 @@ import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 public class Application extends android.app.Application {
 
     private static Context mContext;
+    private static OkHttpClient mClient;
 
     @Override
     public void onCreate() {
@@ -43,5 +45,11 @@ public class Application extends android.app.Application {
     public static String getCurrentSkin(){
         return mContext.getSharedPreferences(MainActivity.class.getName(),
                 MODE_PRIVATE).getString("skin", "");
+    }
+
+    public static synchronized OkHttpClient getOkHttpClient() {
+        if (mClient == null)
+            mClient = new OkHttpClient();
+        return mClient;
     }
 }
