@@ -32,11 +32,12 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ImageView
+            <org.lvu.customize.WrapContentDraweeView
                 android:id="@+id/image_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"/>
+                android:adjustViewBounds="true"
+                app:placeholderImage="@drawable/ic_video_pic_loading" />
 
             <View
                 android:id="@+id/navigation_bar_view"
@@ -45,12 +46,4 @@
                 android:background="@android:color/transparent" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
-
-    <org.lvu.customize.CircleProgressBar
-        android:id="@+id/progressbar"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="@dimen/dp_28"
-        app:background_color="?attr/colorPrimary" />
 </android.support.design.widget.CoordinatorLayout>

@@ -20,7 +20,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
 
-import org.lvu.main.activities.NewMainActivity;
+import org.lvu.main.activities.MainActivity;
 import org.lvu.utils.ImmerseUtil;
 
 
@@ -547,8 +547,8 @@ public class RefreshLayout extends ViewGroup {
                 if (!isTopDirection && canChildScrollDown() || isTopDirection && canChildScrollUp()) {
                     return false;
                 }
-                if ((isTopDirection && !NewMainActivity.isAppBarExpanded()) ||
-                        (!isTopDirection && !NewMainActivity.isAppBarCollapsed())) {
+                if ((isTopDirection && !MainActivity.isAppBarExpanded()) ||
+                        (!isTopDirection && !MainActivity.isAppBarCollapsed())) {
                     return false;
                 }
                 float yDiff = isTopDirection ? y - mInitialMotionY : mInitialMotionY - y;

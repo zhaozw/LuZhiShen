@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import org.lvu.R;
 import org.lvu.adapters.AreaFragmentAdapter;
-import org.lvu.main.activities.NewMainActivity;
+import org.lvu.main.activities.MainActivity;
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
 import org.video_player.PlayManager;
 
@@ -46,10 +46,10 @@ public abstract class BaseFragment extends Fragment {
         mAdapter.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                int backgroundColor = NewMainActivity.getBackgroundColor();
+                int backgroundColor = MainActivity.getBackgroundColor();
                 if (backgroundColor != -1 && mAdapter.getCurrentFragment() != null) {
-                    int themeColor = ((NewMainActivity) getActivity()).getThemeColor(1);
-                    if (NewMainActivity.isAppBarExpanded() || !NewMainActivity.isScrimsShown())
+                    int themeColor = ((MainActivity) getActivity()).getThemeColor(1);
+                    if (MainActivity.isAppBarExpanded() || !MainActivity.isScrimsShown())
                         mAdapter.getCurrentFragment().refreshViewsColor(themeColor, backgroundColor);
                     else
                         mAdapter.getCurrentFragment().resetViewsColor(backgroundColor, themeColor);
@@ -59,11 +59,11 @@ public abstract class BaseFragment extends Fragment {
             }
         });
         mTabLayout.setupWithViewPager(mViewPager);
-        ((NewMainActivity) getActivity()).setOnAppBarExpandedListener(new NewMainActivity.OnAppBarExpandedListener() {
+        ((MainActivity) getActivity()).setOnAppBarExpandedListener(new MainActivity.OnAppBarExpandedListener() {
             @Override
             public void onExpanded(int startColor, int endColor) {
-                mTabLayout.setBackground(NewMainActivity.getAnimation(
-                        ((NewMainActivity) getActivity()).getThemeColor(0), endColor));
+                mTabLayout.setBackground(MainActivity.getAnimation(
+                        ((MainActivity) getActivity()).getThemeColor(0), endColor));
                 if (mAdapter.getCurrentFragment() != null)
                     mAdapter.getCurrentFragment().refreshViewsColor(startColor, endColor);
             }
@@ -71,8 +71,8 @@ public abstract class BaseFragment extends Fragment {
             @Override
             public void onCollapsed(int startColor, int endColor) {
                 if (getActivity() != null)
-                    mTabLayout.setBackground(NewMainActivity.getAnimation(startColor,
-                        ((NewMainActivity) getActivity()).getThemeColor(0)));
+                    mTabLayout.setBackground(MainActivity.getAnimation(startColor,
+                            ((MainActivity) getActivity()).getThemeColor(0)));
                 if (mAdapter != null && mAdapter.getCurrentFragment() != null)
                     mAdapter.getCurrentFragment().resetViewsColor(startColor, endColor);
             }

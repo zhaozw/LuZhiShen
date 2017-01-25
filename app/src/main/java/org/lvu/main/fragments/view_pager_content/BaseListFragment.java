@@ -25,7 +25,7 @@ import org.lvu.adapters.BaseListAdapter;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
 import org.lvu.customize.RefreshLayout;
-import org.lvu.main.activities.NewMainActivity;
+import org.lvu.main.activities.MainActivity;
 import org.lvu.models.Data;
 import org.lvu.utils.ImmerseUtil;
 
@@ -52,7 +52,7 @@ public abstract class BaseListFragment extends Fragment{
     protected CircleProgressBar mJumpBar;
     protected boolean isJumping;
     protected BaseListAdapter mAdapter;
-    protected NewMainActivity mActivity;
+    protected MainActivity mActivity;
 
     @Nullable
     @Override
@@ -208,8 +208,8 @@ public abstract class BaseListFragment extends Fragment{
         if (mRefreshLayout.isRefreshing())
             mRefreshLayout.setRefreshing(false);
         flag = false;
-        if (getActivity() != null && ((NewMainActivity) getActivity()).getRootView() != null)
-            MySnackBar.show(((NewMainActivity) getActivity()).getRootView(), reason, Snackbar.LENGTH_INDEFINITE);
+        if (getActivity() != null && ((MainActivity) getActivity()).getRootView() != null)
+            MySnackBar.show(((MainActivity) getActivity()).getRootView(), reason, Snackbar.LENGTH_INDEFINITE);
     }
 
     private void initRecyclerView() {
@@ -458,8 +458,8 @@ public abstract class BaseListFragment extends Fragment{
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof NewMainActivity)
-            mActivity = (NewMainActivity) context;
+        if (context instanceof MainActivity)
+            mActivity = (MainActivity) context;
     }
 
     @Override

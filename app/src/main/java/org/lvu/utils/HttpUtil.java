@@ -5,9 +5,8 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -40,6 +39,7 @@ import okhttp3.Request;
  */
 public class HttpUtil {
 
+    public static final String BASE_URL = "http://j1.44hdb1.com:22345";
     public static final String REASON_NO_INTERNET_CONNECT = "无可用网络。\t(向右滑动清除)",
             REASON_SERVER_404 = "无法找到资源。(服务器404)\t(向右滑动清除)",
             REASON_CONNECT_SERVER_FAILURE = "连接服务器失败，请检查网络后重试。\t(向右滑动清除)",
@@ -52,134 +52,19 @@ public class HttpUtil {
         mHttpClient = Application.getOkHttpClient();
     }
 
-    public static void getVideoListAsync(final String url, final HttpRequestCallbackListener listener) {
+    public static void getDataListAsync(final String url, final String page, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
+                String json = mHttpClient.newCall(
+                        new Request.Builder().url(BASE_URL + String.format(url, page)).build()).execute().body().string();
+                Gson gson = new Gson();
                 List<Data> result = new ArrayList<>();
-                String baseUrl = url.contains(".com") ? "" : getWebBaseUri();
-                String nextPageUrl = "";
-                int currentPage, totalPages;
-                Document document = getDocument(baseUrl + url);
-                //<ul onmouseover="this.className='row1'" onmouseout="this.className='row'"
-                Elements ul = document.select("ul[onmouseover=this.className='row1']");
-                for (Element tmp : ul) {
-                    Element a = tmp.select("a[title]").get(0);
-                    String[] imgAndUrl = getVideoUrlAndVideoImg(a.attr("abs:href"));
-                    result.add(new Data(imgAndUrl[0], handleSpacesUrl(imgAndUrl[1]), a.attr("title"), tmp.child(0).lastElementSibling().text()));
-                }
-                Element page = document.select("div[class=pages]").get(0).child(0);
-                Elements pages = page.children();
-                totalPages = toInt(page.ownText().split("/")[1].replaceAll("页", ""));
-                currentPage = Integer.parseInt(pages.select("span").get(0).text());
-                for (Element tmp : pages) {
-                    if (tmp.nodeName().equals("a") && tmp.text().equals("下一页")) {
-                        nextPageUrl = baseUrl + tmp.attr("href");
-                        break;
-                    }
-                }
-                if (currentPage == totalPages)
-                    nextPageUrl = "";
-                result.get(0).setCurrentPage(currentPage);
-                result.get(0).setTotalPages(totalPages);
-                listener.onSuccess(result, nextPageUrl);
+                result.add((Data) gson.fromJson(json, new TypeToken<Data>() {
+                }.getType()));
+                listener.onSuccess(result, String.valueOf(Integer.parseInt(page) + 1));
             }
         });
-    }
-
-    public static void getPicturesListAsync(final String url, final HttpRequestCallbackListener listener) {
-        runOnBackground(listener, new BackgroundLogic() {
-            @Override
-            public void run() throws Exception {
-                List<Data> result = new ArrayList<>();
-                String baseUrl = url.contains(".com") ? "" : getWebBaseUri();
-                String nextPageUrl = "";
-                int currentPage, totalPages;
-                Document document = getDocument(baseUrl + url);
-                Elements ul = document.select("ul[onmouseover=this.className='row1']");
-                for (Element tmp : ul) {
-                    Element a = tmp.select("a[title]").get(0);
-                    String url = a.attr("abs:href");
-                    result.add(new Data(url, handleSpacesUrl(getFirstPic(url)), a.attr("title"), tmp.child(0).lastElementSibling().text()));
-                }
-                Element page = document.select("div[class=pages]").get(0).child(0);
-                Elements pages = page.children();
-                totalPages = toInt(page.ownText().split("/")[1].replaceAll("页", ""));
-                currentPage = Integer.parseInt(pages.select("span").get(0).text());
-                for (Element tmp : pages) {
-                    if (tmp.nodeName().equals("a") && tmp.text().equals("下一页")) {
-                        nextPageUrl = baseUrl + tmp.attr("href");
-                        break;
-                    }
-                }
-                if (currentPage == totalPages)
-                    nextPageUrl = "";
-                result.get(0).setCurrentPage(currentPage);
-                result.get(0).setTotalPages(totalPages);
-                listener.onSuccess(result, nextPageUrl);
-            }
-        });
-    }
-
-    public static void getNovelListAsync(final String url, final HttpRequestCallbackListener listener) {
-        runOnBackground(listener, new BackgroundLogic() {
-            @Override
-            public void run() throws Exception {
-                List<Data> result = new ArrayList<>();
-                String baseUrl = url.contains(".com") ? "" : getWebBaseUri();
-                String nextPageUrl = "";
-                int currentPage, totalPages;
-                Document document = getDocument(baseUrl + url);
-                //<ul onmouseover="this.className='row1'" onmouseout="this.className='row'"
-                Elements ul = document.select("ul[onmouseover=this.className='row1']");
-                for (Element tmp : ul) {
-                    Element a = tmp.select("a[title]").get(0);
-                    result.add(new Data(a.attr("abs:href"), a.attr("title"), tmp.child(0).lastElementSibling().text()));
-                }
-                Element page = document.select("div[class=pages]").get(0).child(0);
-                Elements pages = page.children();
-                totalPages = toInt(page.ownText().split("/")[1].replaceAll("页", ""));
-                currentPage = Integer.parseInt(pages.select("span").get(0).text());
-                for (Element tmp : pages) {
-                    if (tmp.nodeName().equals("a") && tmp.text().equals("下一页")) {
-                        nextPageUrl = baseUrl + tmp.attr("href");
-                        break;
-                    }
-                }
-                if (currentPage == totalPages)
-                    nextPageUrl = "";
-                result.get(0).setCurrentPage(currentPage);
-                result.get(0).setTotalPages(totalPages);
-                listener.onSuccess(result, nextPageUrl);
-            }
-        });
-    }
-
-    private static String getWebBaseUri() {
-        int count = 0, count2 = 0;
-        while (true) {
-            try {
-                return getDocument("http://52avzy.com").select("a").get(0).attr("abs:href");
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (e instanceof ConnectException) {
-                    count2++;
-                    if (count2 > 4)
-                        break;
-                    continue;
-                }
-                if (e instanceof SocketException ||
-                        e instanceof UnknownHostException ||
-                        e instanceof SocketTimeoutException) {
-                    count++;
-                    if (count > 4)
-                        break;
-                    continue;
-                }
-                break;
-            }
-        }
-        return "";
     }
 
     public static void getComicsListAsync(final String url, final HttpRequestCallbackListener listener) {
@@ -337,7 +222,7 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                listener.onSuccess(ImageLoader.getInstance().loadImageSync(getDocument(url).select("img[alt]").get(0).attr("abs:src"), new DisplayImageOptions.Builder().imageScaleType(ImageScaleType.NONE).build()));
+                // listener.onSuccess(ImageLoader.getInstance().loadImageSync(getDocument(url).select("img[alt]").get(0).attr("abs:src"), new DisplayImageOptions.Builder().imageScaleType(ImageScaleType.NONE).build()));
             }
         });
     }

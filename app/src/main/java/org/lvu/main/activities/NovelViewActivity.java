@@ -19,9 +19,6 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import org.lvu.R;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
@@ -49,8 +46,7 @@ public class NovelViewActivity extends BaseActivity {
     protected CircleProgressBar mLoadMoreBar;
     private TextView mContent;
     protected Handler mHandler;
-    private HashCodeFileNameGenerator mNameGenerator;
-    private File dir = ImageLoader.getInstance().getDiskCache().getDirectory();
+    private File dir = getExternalCacheDir();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,9 +88,8 @@ public class NovelViewActivity extends BaseActivity {
     }
 
     protected void startSyncData() {
-        mNameGenerator = new HashCodeFileNameGenerator();
         final String url = getIntent().getStringExtra(PicturesViewActivity.URL);
-        File bitmapFile = new File(dir, mNameGenerator.generate(url));
+        File bitmapFile = new File(dir, String.valueOf(url.hashCode()));
         if (bitmapFile.exists()) {
             BufferedReader br = null;
             try {
@@ -121,7 +116,7 @@ public class NovelViewActivity extends BaseActivity {
             HttpUtil.getNovelContentAsync(url, new HttpUtil.HttpRequestCallbackListener() {
                 @Override
                 public void onSuccess(List<Data> tmp, String textContent) {
-                    new WriteDataThread(textContent, mNameGenerator.generate(url)).start();
+                    new WriteDataThread(textContent, String.valueOf(url.hashCode())).start();
                     Message message = new Message();
                     message.obj = textContent;
                     mHandler.sendMessage(message);
@@ -290,7 +285,7 @@ public class NovelViewActivity extends BaseActivity {
         }
     }
 
-    public class WriteDataThread extends Thread {
+    private class WriteDataThread extends Thread {
 
         private String data, name;
 

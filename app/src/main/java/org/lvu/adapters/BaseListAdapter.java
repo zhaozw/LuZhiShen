@@ -19,7 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.lvu.R;
-import org.lvu.adapters.newAdapters.video.Video1Adapter;
+import org.lvu.customize.WrapContentDraweeView;
 import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
@@ -49,8 +49,8 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
     protected LayoutInflater mLayoutInflater;
     protected int mLayoutId;
     protected List<Data> mData;
-    private OnItemClickListener mOnItemClickListener, mOnFavoritesOnClickListener;
-    private OnItemLongClickListener mOnItemLongClickListener;
+    protected OnItemClickListener mOnItemClickListener, mOnFavoritesOnClickListener;
+    protected OnItemLongClickListener mOnItemLongClickListener;
     protected OnFinishListener mOnLoadNextFinishListener, mOnSyncDataFinishListener,
             mOnLoadPreviousFinishListener, mOnJumpPageFinishListener;
     protected String mNextPageUrl;
@@ -152,7 +152,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         initDefaultItemData(holder, position);
     }
 
-    void initDefaultItemData(final ViewHolder holder, int position) {
+    protected void initDefaultItemData(final ViewHolder holder, int position) {
         if (!handleFooterHolder(holder)) {
             if (mData.isEmpty())
                 return;
@@ -170,7 +170,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         }
     }
 
-    private void initItemOnClickListener(final ViewHolder holder) {
+    protected void initItemOnClickListener(final ViewHolder holder) {
         if (mOnItemClickListener != null)
             holder.root.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -195,7 +195,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             });*/
     }
 
-    void initItemLongClickListener(final ViewHolder holder) {
+    protected void initItemLongClickListener(final ViewHolder holder) {
         if (mOnItemLongClickListener != null)
             holder.root.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -212,7 +212,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             });
     }
 
-    boolean handleFooterHolder(ViewHolder holder) {
+    protected boolean handleFooterHolder(ViewHolder holder) {
         if (holder instanceof FooterHolder) {
             FooterHolder footerHolder = (FooterHolder) holder;
             LinearLayout.LayoutParams bottomLP = new LinearLayout.LayoutParams(
@@ -497,7 +497,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
         public CardView root;
         public TextView text, date;
-        public ImageView image;
+        public WrapContentDraweeView image;
         public ImageView favorites;
         public VideoPlayer player;
         public View progress;
@@ -512,7 +512,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         }
     }
 
-    public static class FooterHolder extends Video1Adapter.ViewHolder {
+    public static class FooterHolder extends GifPictureAdapter.ViewHolder {
 
         View bottomView;
 

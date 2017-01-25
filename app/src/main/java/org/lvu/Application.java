@@ -2,12 +2,9 @@ package org.lvu;
 
 import android.content.Context;
 
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.tencent.bugly.Bugly;
 
-import org.lvu.customize.AuthImageDownloader;
 import org.lvu.main.activities.ErrorActivity;
 import org.lvu.main.activities.MainActivity;
 
@@ -33,9 +30,10 @@ public class Application extends android.app.Application {
         //i.e., ACRA.init(this);
         //or Fabric.with(this, new Crashlytics())
         Bugly.init(getApplicationContext(), "900037586", false);
-        ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(this)
+        /*ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(this)
                 .memoryCache(new WeakMemoryCache())
-                .imageDownloader(new AuthImageDownloader(this)).threadPoolSize(7).build());
+                .imageDownloader(new AuthImageDownloader(this)).threadPoolSize(7).build());*/
+        Fresco.initialize(this);
     }
 
     public static Context getContext(){

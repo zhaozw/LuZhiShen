@@ -1,5 +1,7 @@
 package org.lvu.models;
 
+import java.util.List;
+
 /**
  * Created by wuyr on 5/4/16 2:46 PM.
  */
@@ -74,5 +76,42 @@ public class Data {
 
     public void setFavorites(boolean favorites) {
         isFavorites = favorites;
+    }
+
+    private String name;
+    private String maxIndex;
+    private List<Row> rows;
+
+    public List<Row> getRows() {
+        return rows;
+    }
+
+    public void setRows(List<Row> rows) {
+        this.rows = rows;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getMaxIndex() {
+        return maxIndex;
+    }
+
+    public void setMaxIndex(String maxIndex) {
+        this.maxIndex = maxIndex;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append("name = ").append(name).append("\n").append("maxIndex = ").append(maxIndex).append("\n");
+        for (Row tmp : rows)
+            result.append("-\n").append(tmp.toString()).append("\n");
+        return result.toString();
     }
 }

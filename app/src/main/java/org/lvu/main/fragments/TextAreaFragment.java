@@ -3,15 +3,15 @@ package org.lvu.main.fragments;
 import org.lvu.R;
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
 import org.lvu.main.fragments.view_pager_content.FunnyJokeFragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.text.Text1Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.text.Text2Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.text.Text3Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.text.Text4Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.text.Text5Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.text.Text6Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.text.Text7Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.text.Text8Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.text.Text9Fragment;
+import org.lvu.main.fragments.view_pager_content.text.Text1Fragment;
+import org.lvu.main.fragments.view_pager_content.text.Text2Fragment;
+import org.lvu.main.fragments.view_pager_content.text.Text3Fragment;
+import org.lvu.main.fragments.view_pager_content.text.Text4Fragment;
+import org.lvu.main.fragments.view_pager_content.text.Text5Fragment;
+import org.lvu.main.fragments.view_pager_content.text.Text6Fragment;
+import org.lvu.main.fragments.view_pager_content.text.Text7Fragment;
+import org.lvu.main.fragments.view_pager_content.text.Text8Fragment;
+import org.lvu.main.fragments.view_pager_content.text.Text9Fragment;
 
 /**
  * Created by wuyr on 1/5/17 1:21 PM.

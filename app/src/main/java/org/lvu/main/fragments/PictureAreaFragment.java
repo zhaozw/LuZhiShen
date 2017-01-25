@@ -4,15 +4,15 @@ import org.lvu.R;
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
 import org.lvu.main.fragments.view_pager_content.EvilComicsFragment;
 import org.lvu.main.fragments.view_pager_content.GifPictureFragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.picture.Picture1Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.picture.Picture2Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.picture.Picture3Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.picture.Picture4Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.picture.Picture5Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.picture.Picture6Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.picture.Picture7Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.picture.Picture8Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.picture.Picture9Fragment;
+import org.lvu.main.fragments.view_pager_content.picture.Picture1Fragment;
+import org.lvu.main.fragments.view_pager_content.picture.Picture2Fragment;
+import org.lvu.main.fragments.view_pager_content.picture.Picture3Fragment;
+import org.lvu.main.fragments.view_pager_content.picture.Picture4Fragment;
+import org.lvu.main.fragments.view_pager_content.picture.Picture5Fragment;
+import org.lvu.main.fragments.view_pager_content.picture.Picture6Fragment;
+import org.lvu.main.fragments.view_pager_content.picture.Picture7Fragment;
+import org.lvu.main.fragments.view_pager_content.picture.Picture8Fragment;
+import org.lvu.main.fragments.view_pager_content.picture.Picture9Fragment;
 
 /**
  * Created by wuyr on 1/5/17 1:20 PM.

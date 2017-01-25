@@ -1,18 +1,12 @@
 package org.lvu.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.lvu.R;
+import org.lvu.customize.WrapContentDraweeView;
 import org.lvu.models.Data;
 import org.lvu.utils.ImmerseUtil;
 
@@ -23,11 +17,8 @@ import java.util.List;
  */
 public abstract class BasePictureListAdapter extends BaseListAdapter {
 
-    protected ImageLoader mImageLoader;
-
-    BasePictureListAdapter(Context context, int layoutId, List<Data> data) {
+    protected BasePictureListAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
-        mImageLoader = ImageLoader.getInstance();
     }
 
     @Override
@@ -49,33 +40,7 @@ public abstract class BasePictureListAdapter extends BaseListAdapter {
         if (mData.isEmpty())
             return;
         try {
-            holder.image.setImageResource(R.drawable.ic_pic_loading);
-            mImageLoader.loadImage(mData.get(position != 0 && position >= mData.size() ?
-                            mData.size() - 1 : position).getSrc(),
-                    new DisplayImageOptions.Builder()
-                            .bitmapConfig(Bitmap.Config.RGB_565)
-                            .imageScaleType(ImageScaleType.EXACTLY)
-                            .cacheInMemory(true).cacheOnDisk(true).build(),
-                    new ImageLoadingListener() {
-                        @Override
-                        public void onLoadingStarted(String imageUri, View view) {
-
-                        }
-
-                        @Override
-                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                            holder.image.setImageResource(R.drawable.ic_pic_bad);
-                        }
-
-                        @Override
-                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                            holder.image.setImageBitmap(loadedImage);
-                        }
-
-                        @Override
-                        public void onLoadingCancelled(String imageUri, View view) {
-                        }
-                    });
+            holder.image.setImageURI(Uri.parse(mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position).getSrc()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -85,7 +50,7 @@ public abstract class BasePictureListAdapter extends BaseListAdapter {
 
         public ViewHolder(View itemView) {
             super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.image);
+            image = (WrapContentDraweeView) itemView.findViewById(R.id.image);
         }
     }
 }

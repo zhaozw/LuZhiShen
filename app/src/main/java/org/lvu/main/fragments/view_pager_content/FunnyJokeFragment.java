@@ -10,10 +10,10 @@ import android.text.TextUtils;
 
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
-import org.lvu.adapters.BaseListAdapterSubs.FunnyJokeAdapter;
+import org.lvu.adapters.SubAdapters.text.FunnyJokeAdapter;
 import org.lvu.customize.MySnackBar;
 import org.lvu.main.activities.MoreJokeActivity;
-import org.lvu.main.activities.NewMainActivity;
+import org.lvu.main.activities.MainActivity;
 import org.lvu.main.activities.PicturesViewActivity;
 import org.lvu.models.Data;
 
@@ -65,8 +65,8 @@ public class FunnyJokeFragment extends BaseListFragment {
         ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(getString(cat.ereza.customactivityoncrash.R.string.customactivityoncrash_error_activity_error_details_clipboard_label), data.getText());
         clipboard.setPrimaryClip(clip);
-        if (getActivity() != null && ((NewMainActivity) getActivity()).getRootView() != null)
-            MySnackBar.show(((NewMainActivity) getActivity()).getRootView(), getString(R.string.copied), Snackbar.LENGTH_SHORT);
+        if (getActivity() != null && ((MainActivity) getActivity()).getRootView() != null)
+            MySnackBar.show(((MainActivity) getActivity()).getRootView(), getString(R.string.copied), Snackbar.LENGTH_SHORT);
     }
 
     @Override

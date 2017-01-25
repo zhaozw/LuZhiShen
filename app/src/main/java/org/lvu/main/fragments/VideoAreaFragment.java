@@ -2,15 +2,15 @@ package org.lvu.main.fragments;
 
 import org.lvu.R;
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.video.Video1Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.video.Video2Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.video.Video3Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.video.Video4Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.video.Video5Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.video.Video6Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.video.Video7Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.video.Video8Fragment;
-import org.lvu.main.fragments.view_pager_content.new_content_fragments.video.Video9Fragment;
+import org.lvu.main.fragments.view_pager_content.video.Video1Fragment;
+import org.lvu.main.fragments.view_pager_content.video.Video2Fragment;
+import org.lvu.main.fragments.view_pager_content.video.Video3Fragment;
+import org.lvu.main.fragments.view_pager_content.video.Video4Fragment;
+import org.lvu.main.fragments.view_pager_content.video.Video5Fragment;
+import org.lvu.main.fragments.view_pager_content.video.Video6Fragment;
+import org.lvu.main.fragments.view_pager_content.video.Video7Fragment;
+import org.lvu.main.fragments.view_pager_content.video.Video8Fragment;
+import org.lvu.main.fragments.view_pager_content.video.Video9Fragment;
 
 /**
  * Created by wuyr on 1/5/17 1:20 PM.

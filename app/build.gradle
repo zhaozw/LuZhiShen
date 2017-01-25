@@ -30,11 +30,11 @@ android {
 }
 
 def supportVersion = "25.1.0"
+def frescoVersion = "1.0.1"
 //def torrentStreamVersion = "2.1.0"
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    //compile 'me.imid.swipebacklayout.lib:library:1.0.0'
     compile project(':video_player')
     compile "com.android.support:support-v4:${supportVersion}"
     compile "com.android.support:support-vector-drawable:${supportVersion}"
@@ -44,13 +44,16 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${supportVersion}"
     //noinspection GradleDependency
     //compile "com.android.support:palette-v7:${supportVersion}"//25.1.0 no works
+    //compile 'me.imid.swipebacklayout.lib:library:1.0.0'
     compile 'org.jsoup:jsoup:1.10.2'
     compile 'com.google.code.gson:gson:2.7'
     compile 'cat.ereza:customactivityoncrash:1.5.0'
     compile 'com.tencent.bugly:crashreport_upgrade:latest.release'
     compile 'com.balysv:material-ripple:1.0.2'
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.17'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    //compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.17'
+    //compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile "com.facebook.fresco:fresco:${frescoVersion}"
+    compile "com.facebook.fresco:animated-gif:${frescoVersion}"
     compile 'jp.wasabeef:recyclerview-animators:2.2.5'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     //compile "com.github.se-bastiaan:TorrentStream-Android:${torrentStreamVersion}"

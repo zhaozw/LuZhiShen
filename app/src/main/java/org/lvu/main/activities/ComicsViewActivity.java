@@ -1,44 +1,23 @@
 package org.lvu.main.activities;
 
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import org.lvu.R;
-import org.lvu.customize.CircleProgressBar;
-import org.lvu.customize.MySnackBar;
-import org.lvu.utils.HttpUtil;
+import org.lvu.customize.WrapContentDraweeView;
 import org.lvu.utils.ImmerseUtil;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by wuyr on 6/23/16 11:35 PM.
@@ -48,17 +27,12 @@ public class ComicsViewActivity extends BaseActivity {
 
     private View mBottomView;
     private Toolbar mToolbar;
-    private CircleProgressBar mLoadMoreBar;
-    private ImageView mContent;
-    private Handler mHandler;
-    private HashCodeFileNameGenerator mNameGenerator;
-    private File dir = ImageLoader.getInstance().getDiskCache().getDirectory();
+    private WrapContentDraweeView mContent;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comics_view);
-        mHandler = new MyHandler(this);
         initViews();
         initImmerse();
     }
@@ -69,72 +43,8 @@ public class ComicsViewActivity extends BaseActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mContent = (ImageView) findViewById(R.id.image_view);
-        mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
-        if (ImmerseUtil.isHasNavigationBar(this)) {
-            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
-            lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(this);
-            mLoadMoreBar.setLayoutParams(lp);
-        }
-        mLoadMoreBar.setColorSchemeResources(R.color.menu_text_color);
-        List<Integer> data = new ArrayList<>();
-        int[] array = R.styleable.AppCompatTheme;
-        for (int tmp : array)
-            data.add(tmp);
-        TypedArray a = obtainStyledAttributes(R.styleable.AppCompatTheme);
-        int color = a.getColor(data.indexOf(R.attr.colorPrimary),
-                getResources().getColor(R.color.bluePrimary));
-        mLoadMoreBar.setBackgroundColor(color);
-        a.recycle();
-
-        final String url = getIntent().getStringExtra(PicturesViewActivity.URL);
-        mNameGenerator = new HashCodeFileNameGenerator();
-        File bitmapFile = new File(dir, mNameGenerator.generate(url));
-        if (bitmapFile.exists()) {
-            try {
-                mContent.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(bitmapFile)));
-            } catch (Exception e) {
-                e.printStackTrace();
-                MySnackBar.show(findViewById(R.id.root_view), getString(R.string.load_pic_fail), Snackbar.LENGTH_SHORT);
-            } finally {
-                mLoadMoreBar.setVisibility(View.GONE);
-            }
-        } else {
-            HttpUtil.getComicsContentAsync(url, new HttpUtil.HttpRequestCallbackListener() {
-
-                @Override
-                public void onSuccess(Bitmap bitmap) {
-                    new WriteDataThread(mNameGenerator.generate(url), bitmap).start();
-                    Message message = Message.obtain();
-                    message.obj = bitmap;
-                    mHandler.sendMessage(message);
-                }
-
-                @Override
-                public void onFailure(Exception e, String reason) {
-                    if (reason.equals("无可用网络。\t(向右滑动清除)")) {
-                        try {
-                            mLoadMoreBar.setVisibility(View.GONE);
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                    } else
-                        mLoadMoreBar.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                hideLoadMoreBar();
-                            }
-                        });
-                    MySnackBar.show(findViewById(R.id.root_view), reason, Snackbar.LENGTH_INDEFINITE,
-                            getString(R.string.back), new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    onBackPressed();
-                                }
-                            });
-                }
-            });
-        }
+        mContent = (WrapContentDraweeView) findViewById(R.id.image_view);
+        mContent.setImageURI(Uri.parse(getIntent().getStringExtra(PicturesViewActivity.URL)));
     }
 
     private void initImmerse() {
@@ -162,42 +72,6 @@ public class ComicsViewActivity extends BaseActivity {
                 changeToLandscape();
             else changeToPortrait();
         }
-    }
-
-    private Animation hideAnimation;
-
-    private void hideLoadMoreBar() {
-        if (hideAnimation == null)
-            initHideAnimation();
-        try {
-            mLoadMoreBar.startAnimation(hideAnimation);
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (mLoadMoreBar != null || mLoadMoreBar.getVisibility() == View.GONE)
-                mLoadMoreBar.setVisibility(View.GONE);
-        }
-    }
-
-    private void initHideAnimation() {
-        hideAnimation = new ScaleAnimation(
-                1, 0, 1, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        hideAnimation.setDuration(250);
-        hideAnimation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mLoadMoreBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
     }
 
     private void changeToLandscape() {
@@ -267,64 +141,6 @@ public class ComicsViewActivity extends BaseActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private static class MyHandler extends Handler {
-
-        private WeakReference<ComicsViewActivity> mClass;
-
-        MyHandler(ComicsViewActivity clazz) {
-            mClass = new WeakReference<>(clazz);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            if (mClass.get().mContent != null) {
-                mClass.get().mContent.setImageBitmap((Bitmap) msg.obj);
-                mClass.get().hideLoadMoreBar();
-            } else {
-                msg.obj = null;
-                System.gc();
-            }
-        }
-    }
-
-    public class WriteDataThread extends Thread {
-
-        private String name;
-        private Bitmap bitmap;
-
-        WriteDataThread(String name, Bitmap bitmap) {
-            this.bitmap = bitmap;
-            this.name = name;
-        }
-
-        @Override
-        public void run() {
-            FileOutputStream fos = null;
-            try {
-                if (name == null || name.isEmpty())
-                    throw new IOException("name is empty");
-                if (bitmap == null)
-                    throw new IOException("bitmap is empty");
-
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                fos = new FileOutputStream(new File(dir, name));
-                fos.write(baos.toByteArray());
-                fos.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (fos != null) {
-                    try {
-                        fos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
         }
     }
 }
