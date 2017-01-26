@@ -5,7 +5,6 @@ import android.os.Environment;
 import org.lvu.Application;
 import org.lvu.models.DownloadInfo;
 import org.lvu.utils.M3U8Parser;
-import org.video_player.PlayManager;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -49,7 +48,7 @@ public class DownloadManager {
 
     public static DownloadManager getInstance() {
         if (mInstance == null)
-            synchronized (PlayManager.class) {
+            synchronized (DownloadManager.class) {
                 if (mInstance == null)
                     mInstance = new DownloadManager();
             }

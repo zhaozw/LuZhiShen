@@ -2,12 +2,14 @@ package org.video_player;
 
 import android.util.Log;
 
+import java.util.Arrays;
+
 /**
  * Created by wuyr on 6/8/16 6:54 PM.
  */
 class LogUtil {
 
-    private static boolean isDebugOn = false;
+    private static boolean isDebugOn = true;
 
     static void print(Object s) {
         if (isDebugOn)
@@ -21,7 +23,7 @@ class LogUtil {
         if (isDebugOn)
             if (format != null && args != null) {
                 StackTraceElement element = Thread.currentThread().getStackTrace()[3];
-                Log.i(String.format("%s-->%s", element.getClassName(), element.getMethodName()), String.format(format, args));
+                Log.i(String.format("%s-->%s", element.getClassName(), element.getMethodName()), String.format(format, Arrays.toString(args)));
             }
     }
 }

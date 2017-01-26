@@ -1,4 +1,4 @@
-package org.lvu.main.fragments.view_pager_content;
+package org.lvu.main.fragments.view_pager_content.text;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -15,6 +15,7 @@ import org.lvu.customize.MySnackBar;
 import org.lvu.main.activities.MoreJokeActivity;
 import org.lvu.main.activities.MainActivity;
 import org.lvu.main.activities.PicturesViewActivity;
+import org.lvu.main.fragments.view_pager_content.BaseListFragment;
 import org.lvu.models.Data;
 
 import java.util.ArrayList;

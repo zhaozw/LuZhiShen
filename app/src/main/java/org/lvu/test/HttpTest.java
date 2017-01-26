@@ -1,8 +1,6 @@
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -15,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 /**
  * Created by wuyr on 6/16/16 7:40 PM.
@@ -33,7 +32,20 @@ public class HttpTest {
         else
             url = "http://www.55caiji.com/vodlist/5.html";
 
-        runOnBackground(listener, new BackgroundLogic() {
+        Document document = getDocument("http://www.55caiji.com/vod/1904.html");
+        //div class="vod ok"<div class="gqlist"
+        String list = Jsoup.parse(document.select("td").last().text()).select("div[class=gqlist]").get(0).text();
+        println(list);
+        List<String> links = new ArrayList<>();
+        int count = 2;
+        for (int i = 1; i <= count; i++) {
+            links.add(list.substring(list.indexOf("http"), list.indexOf(".m3u8") + 5));
+            list = list.substring(list.indexOf("集") + 1);
+        }
+        println("\n");
+        for (String tmp : links)
+            println(tmp);
+        /*runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 List<Data> result = new ArrayList<>();
@@ -64,7 +76,7 @@ public class HttpTest {
                 result.get(0).setTotalPages(totalPages);
                 listener.onSuccess(result, nextPageUrl);
             }
-        });
+        });*/
     }
 
     private static String handleSpacesUrl(String src) {

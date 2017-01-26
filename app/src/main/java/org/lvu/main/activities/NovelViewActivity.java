@@ -46,13 +46,14 @@ public class NovelViewActivity extends BaseActivity {
     protected CircleProgressBar mLoadMoreBar;
     private TextView mContent;
     protected Handler mHandler;
-    private File dir = getExternalCacheDir();
+    private File dir;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_novel_view);
         mHandler = new MyHandler(this);
+        dir = getExternalCacheDir();
         initViews();
         initImmerse();
     }

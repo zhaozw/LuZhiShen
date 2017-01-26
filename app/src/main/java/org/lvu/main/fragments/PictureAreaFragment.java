@@ -2,8 +2,8 @@ package org.lvu.main.fragments;
 
 import org.lvu.R;
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
-import org.lvu.main.fragments.view_pager_content.EvilComicsFragment;
-import org.lvu.main.fragments.view_pager_content.GifPictureFragment;
+import org.lvu.main.fragments.view_pager_content.picture.EvilComicsFragment;
+import org.lvu.main.fragments.view_pager_content.picture.GifPictureFragment;
 import org.lvu.main.fragments.view_pager_content.picture.Picture1Fragment;
 import org.lvu.main.fragments.view_pager_content.picture.Picture2Fragment;
 import org.lvu.main.fragments.view_pager_content.picture.Picture3Fragment;

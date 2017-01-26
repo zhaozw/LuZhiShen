@@ -45,13 +45,12 @@ public class VideoPlayer extends RelativeLayout {
     protected SurfaceView mSurfaceView;
     protected PlayManager mManager;
     protected PlayManager.PlayListener mPlayListener;
-    protected static Timer mDismissControlViewTimer, mUpdateProgressTimer;
+    protected Timer mDismissControlViewTimer, mUpdateProgressTimer;
     protected boolean isOriginallyPlaying, isShowTitleView = true, isTouching;
     protected float mStartX;
     protected int mMoveDistance, mResult, mTotalWidth = -1;
     protected static boolean isFullScreenNow;
     protected String mCurrentVideoUrl;
-    protected OnClickListener mOnClickListener;
 
     public VideoPlayer(Context context) {
         this(context, null);
@@ -147,7 +146,7 @@ public class VideoPlayer extends RelativeLayout {
                     mManager.setCurrentListener(mPlayListener);
                 }
                 LogUtil.printf("rootView clicked player status: %s", mManager.getPlayStatus());
-                if (mManager.getPlayStatus() == ERROR && mManager.getPlayStatus() == NORMAL)
+                if (mManager.getPlayStatus() == ERROR || mManager.getPlayStatus() == NORMAL)
                     prepareAsync();
                 else
                     setControlViewsVisibility(mControlView.getVisibility() == VISIBLE ? INVISIBLE : VISIBLE);
@@ -164,8 +163,8 @@ public class VideoPlayer extends RelativeLayout {
                         mStartX = event.getX();
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        float endX = event.getX();
-                        mMoveDistance = (int) (endX - mStartX);
+                        float endY = event.getX();
+                        mMoveDistance = (int) (endY - mStartX);
                         if (mControlView.getVisibility() != VISIBLE) {
                             if (mManager.getDuration() <= 0 || mTotalWidth <= 0) {
                                 break;
@@ -217,7 +216,7 @@ public class VideoPlayer extends RelativeLayout {
                         break;
                     default:
                 }
-                return mSeekView.getVisibility() == VISIBLE;
+                return false;
             }
         });
         mProgressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -261,7 +260,7 @@ public class VideoPlayer extends RelativeLayout {
             @Override
             public void onPrepared() {
                 LogUtil.print("onPrepared");
-                if (isPortraitVideo() || mSurfaceView == null)
+                if (isPortraitVideo())
                     initSurfaceView(true);
                 mTotalWidth = mManager.getVideoWidth();
                 mRootView.setFocusable(true);
@@ -280,8 +279,13 @@ public class VideoPlayer extends RelativeLayout {
             @Override
             public void onCompletion() {
                 LogUtil.print("onCompletion");
-                mPlayStatusButton.setImageResource(R.drawable.ic_play);
-                setControlViewsVisibility(VISIBLE);
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPlayStatusButton.setImageResource(R.drawable.ic_play);
+                        setControlViewsVisibility(VISIBLE);
+                    }
+                });
             }
 
             @Override
@@ -314,12 +318,6 @@ public class VideoPlayer extends RelativeLayout {
             public void onResetStatus() {
                 resetPlayerData();
             }
-
-            @Override
-            public void onExit() {
-                if (getContext() instanceof FullScreenActivityLandscape)
-                    ((FullScreenActivityLandscape) getContext()).finishSpecial();
-            }
         };
     }
 
@@ -331,7 +329,7 @@ public class VideoPlayer extends RelativeLayout {
         return mMoveDistance < -30;
     }
 
-    protected void resetPlayerData() {
+    public void resetPlayerData() {
         LogUtil.print("reset player data");
         cancelDismissControlViewTimer();
         cancelProgressTimer();
@@ -373,7 +371,7 @@ public class VideoPlayer extends RelativeLayout {
 
             }
         });
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         layoutParams.addRule(CENTER_IN_PARENT);
         mSurfaceViewContainer.addView(mSurfaceView, 0, layoutParams);
     }
@@ -395,7 +393,6 @@ public class VideoPlayer extends RelativeLayout {
     }
 
     protected void resetPlayerViews() {
-        LogUtil.print("resetPlayerViews");
         setTitleViewVisibility(VISIBLE);
         mPlayStatusButton.setVisibility(VISIBLE);
         mControlView.setVisibility(INVISIBLE);
@@ -407,14 +404,9 @@ public class VideoPlayer extends RelativeLayout {
         mLoadingBar.setVisibility(VISIBLE);
     }
 
-    public void hideLoadingBar() {
+    protected void hideLoadingBar() {
         LogUtil.print("hide loading bar");
         mLoadingBar.setVisibility(INVISIBLE);
-    }
-
-    public void reset() {
-        mSurfaceView = null;
-        resetPlayerData();
     }
 
     protected void exitFullScreen() {
@@ -601,8 +593,6 @@ public class VideoPlayer extends RelativeLayout {
         mManager.play();
         mPlayStatusButton.setImageResource(R.drawable.ic_pause);
         startProgressTimer();
-        if (mSurfaceView == null)
-            initSurfaceView(true);
     }
 
     public void pause() {
@@ -617,8 +607,7 @@ public class VideoPlayer extends RelativeLayout {
 
     public void release() {
         mManager.release();
-        reset();
-        mSurfaceViewContainer.removeAllViews();
+        mPlayStatusButton.setImageResource(R.drawable.ic_play);
     }
 
     public void setTitle(String title) {
@@ -636,10 +625,6 @@ public class VideoPlayer extends RelativeLayout {
     public void hideTitleView() {
         isShowTitleView = false;
         mTitleView.setVisibility(INVISIBLE);
-    }
-
-    public void setOnPlayerClickListener(OnClickListener listener) {
-        mOnClickListener = listener;
     }
 
     protected String formatTime(int time) {
@@ -694,16 +679,6 @@ public class VideoPlayer extends RelativeLayout {
             mSurfaceView.setLayoutParams(lp);
             mSurfaceView.getHolder().setFixedSize(lp.width, lp.height);
         }
-    }
-
-    private OnReleaseListener mOnReleaseListener;
-
-    public void setOnReleaseListener(OnReleaseListener listener) {
-        mOnReleaseListener = listener;
-    }
-
-    public interface OnReleaseListener {
-        void onRelease();
     }
 
     static class Status {

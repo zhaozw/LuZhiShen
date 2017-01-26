@@ -1,7 +1,5 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -15,7 +13,7 @@ import java.util.List;
 public class HttpTest2 {
     public static void main(String[] args) throws Exception {
         println("start request...");
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://j1.44hdb1.com:22345/vodlist/jingdiansanji/2.json").openConnection();
+        HttpURLConnection connection = (HttpURLConnection) new URL("http://j1.44hdb1.com:22345/vodlist/rihannvyou/1.json").openConnection();
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String tmp;
         StringBuilder builder = new StringBuilder();
@@ -33,13 +31,26 @@ public class HttpTest2 {
         println(newData.toString());
     }
 
+    private static String toHexString(String s) {
+        String str = "";
+        for (int i = 0; i < s.length(); i++) {
+            int ch = (int) s.charAt(i);
+            String s4 = Integer.toHexString(ch);
+            str = str + s4;
+        }
+        return str.toUpperCase();
+    }
+
     private static void println(String s) {
         System.out.println(s);
     }
 
     private static class NewData {
 
-        private String url, src, text, date, nextPageUrl;
+        private String url, src, text, nextPageUrl;
+        String date;
+
+        private String html;
         private int currentPage, totalPages;
         private boolean isFavorites;
 
@@ -56,6 +67,17 @@ public class HttpTest2 {
 
         public NewData(String src) {
             this("", src, "", "");
+        }
+
+        public NewData() {
+        }
+
+        public String getHtml() {
+            return html;
+        }
+
+        public void setHtml(String html) {
+            this.html = html;
         }
 
         public String getUrl() {
@@ -144,7 +166,37 @@ public class HttpTest2 {
             result.append("name = ").append(name).append("\n").append("maxIndex = ").append(maxIndex).append("\n");
             for (Row tmp : rows)
                 result.append("-\n").append(tmp.toString()).append("\n");
+            for (Vod tmp : rows_m3u8)
+                result.append("-\n").append(tmp.toString()).append("\n");
             return result.toString();
+        }
+
+        private List<Vod> rows_m3u8;
+
+        public List<Vod> getRows_m3u8() {
+            return rows_m3u8;
+        }
+
+        public void setRows_m3u8(List<Vod> rows_m3u8) {
+            this.rows_m3u8 = rows_m3u8;
+        }
+
+        private static class Vod extends NewData {
+
+            private String vod;
+
+            public String getVod() {
+                return vod;
+            }
+
+            public void setVod(String vod) {
+                this.vod = vod;
+            }
+
+            @Override
+            public String toString() {
+                return "vod: " + vod;
+            }
         }
     }
 

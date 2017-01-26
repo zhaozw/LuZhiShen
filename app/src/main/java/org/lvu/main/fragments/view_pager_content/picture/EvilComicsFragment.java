@@ -1,4 +1,4 @@
-package org.lvu.main.fragments.view_pager_content;
+package org.lvu.main.fragments.view_pager_content.picture;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -6,10 +6,11 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
-import org.lvu.adapters.EvilComicsAdapter;
+import org.lvu.adapters.SubAdapters.picture.EvilComicsAdapter;
 import org.lvu.customize.MyStaggeredGridLayoutManager;
 import org.lvu.main.activities.ComicsViewActivity;
 import org.lvu.main.activities.PicturesViewActivity;
+import org.lvu.main.fragments.view_pager_content.BaseListFragment;
 import org.lvu.models.Data;
 
 import java.util.ArrayList;

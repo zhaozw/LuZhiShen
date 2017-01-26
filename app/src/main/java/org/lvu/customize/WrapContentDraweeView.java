@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.image.ImageInfo;
@@ -35,31 +36,52 @@ public class WrapContentDraweeView extends SimpleDraweeView {
     }
 
     @Override
-    public void setImageURI(Uri uri, Object callerContext) {
-        DraweeController controller = ((PipelineDraweeControllerBuilder) getControllerBuilder())
-                // we set a listener and update the view's aspect ratio depending on the loaded image
-                .setControllerListener(new BaseControllerListener<ImageInfo>() {
-                    @Override
-                    public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
-                        updateViewSize(imageInfo);
-                    }
-
-                    @Override
-                    public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable animatable) {
-                        updateViewSize(imageInfo);
-                    }
-                })
-                .setAutoPlayAnimations(true)
-                .setCallerContext(callerContext)
-                .setUri(uri)
-                .setOldController(getController())
-                .build();
-        setController(controller);
-    }
-
-    @Override
     public void setImageURI(Uri uri) {
         setImageURI(uri, null);
+    }
+
+    public void setImageURI(Uri uri, ControllerListener listener) {
+        DraweeController controller;
+        if (listener != null) {
+            controller = ((PipelineDraweeControllerBuilder) getControllerBuilder())
+                    // we set a listener and update the view's aspect ratio depending on the loaded image
+                    .setControllerListener(new BaseControllerListener<ImageInfo>() {
+                        @Override
+                        public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
+                            updateViewSize(imageInfo);
+                        }
+
+                        @Override
+                        public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable animatable) {
+                            updateViewSize(imageInfo);
+                        }
+                    })
+                    .setAutoPlayAnimations(true)
+                    .setUri(uri)
+                    .setOldController(getController())
+                    .setControllerListener(listener)
+                    .build();
+        } else {
+            controller = ((PipelineDraweeControllerBuilder) getControllerBuilder())
+                    // we set a listener and update the view's aspect ratio depending on the loaded image
+                    .setControllerListener(new BaseControllerListener<ImageInfo>() {
+                        @Override
+                        public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
+                            updateViewSize(imageInfo);
+                        }
+
+                        @Override
+                        public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable animatable) {
+                            updateViewSize(imageInfo);
+                        }
+                    })
+                    .setAutoPlayAnimations(true)
+                    .setUri(uri)
+                    .setOldController(getController())
+                    .build();
+        }
+
+        setController(controller);
     }
 
     void updateViewSize(@Nullable ImageInfo imageInfo) {

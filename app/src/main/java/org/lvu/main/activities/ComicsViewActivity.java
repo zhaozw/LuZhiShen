@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,8 +17,13 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import org.lvu.R;
+import org.lvu.customize.MySnackBar;
 import org.lvu.customize.WrapContentDraweeView;
+import org.lvu.models.Data;
+import org.lvu.utils.HttpUtil;
 import org.lvu.utils.ImmerseUtil;
+
+import java.util.List;
 
 /**
  * Created by wuyr on 6/23/16 11:35 PM.
@@ -44,7 +50,34 @@ public class ComicsViewActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mContent = (WrapContentDraweeView) findViewById(R.id.image_view);
-        mContent.setImageURI(Uri.parse(getIntent().getStringExtra(PicturesViewActivity.URL)));
+        HttpUtil.getComicsContentAsync(getIntent().getStringExtra(PicturesViewActivity.URL),
+                new HttpUtil.HttpRequestCallbackListener() {
+                    @Override
+                    public void onSuccess(List<Data> data, final String args) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mContent.setImageURI(Uri.parse(args));
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(Exception e, String reason) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                MySnackBar.show(findViewById(R.id.root_view), getString(R.string.load_comics_fail), Snackbar.LENGTH_INDEFINITE,
+                                        getString(R.string.back), new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                onBackPressed();
+                                            }
+                                        });
+                            }
+                        });
+                    }
+                });
     }
 
     private void initImmerse() {

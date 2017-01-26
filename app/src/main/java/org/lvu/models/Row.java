@@ -4,11 +4,11 @@ package org.lvu.models;
  * Created by wuyr on 1/25/17 8:09 PM.
  */
 
-public class Row {
+public class Row extends Data {
     private String title;
-    private String date;
     private String jsonUrl;
     private String img;
+    private String imgs;
 
     public String getTitle() {
         return title;
@@ -18,12 +18,12 @@ public class Row {
         this.title = title;
     }
 
-    public String getDate() {
-        return date;
+    public String getImgs() {
+        return imgs;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setImgs(String imgs) {
+        this.imgs = imgs;
     }
 
     public String getJsonUrl() {

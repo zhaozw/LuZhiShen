@@ -7,7 +7,10 @@ import java.util.List;
  */
 public class Data {
 
-    private String url, src, text, date, nextPageUrl;
+    private String url, src, text, nextPageUrl;
+    String date;
+
+    private String html;
     private int currentPage, totalPages;
     private boolean isFavorites;
 
@@ -24,6 +27,17 @@ public class Data {
 
     public Data(String src) {
         this("", src, "", "");
+    }
+
+    public Data() {
+    }
+
+    public String getHtml() {
+        return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
     }
 
     public String getUrl() {
@@ -113,5 +127,28 @@ public class Data {
         for (Row tmp : rows)
             result.append("-\n").append(tmp.toString()).append("\n");
         return result.toString();
+    }
+
+    private List<Vod> rows_m3u8;
+
+    public List<Vod> getRows_m3u8() {
+        return rows_m3u8;
+    }
+
+    public void setRows_m3u8(List<Vod> rows_m3u8) {
+        this.rows_m3u8 = rows_m3u8;
+    }
+
+    public static class Vod extends Data {
+
+        private String vod;
+
+        public String getVod() {
+            return vod;
+        }
+
+        public void setVod(String vod) {
+            this.vod = vod;
+        }
     }
 }

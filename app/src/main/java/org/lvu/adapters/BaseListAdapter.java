@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.lvu.R;
+import org.lvu.adapters.SubAdapters.video.VideoViewAdapter;
 import org.lvu.customize.WrapContentDraweeView;
 import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
@@ -58,7 +59,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             mLoadNextCallbackListener, mLoadPreviousCallbackListener, mOnJumpPageCallbackListener;
     private Handler mHandler;
     private boolean isOwnerDestroyed;
-    private int mCurrentPage = -1, mCurrentPageTmp = -1, mTotalPages = -1;
+    protected int mCurrentPage = -1, mCurrentPageTmp = -1, mTotalPages = -1;
 
     public BaseListAdapter(Context context, int layoutId, List<Data> data) {
         mContext = context;
@@ -157,6 +158,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
             if (mData.isEmpty())
                 return;
             try {
+                //because has footer view
                 Data item = mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position);
                 holder.text.setText(item.getText());
                 if (!item.getDate().isEmpty())
@@ -396,12 +398,8 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
 
     protected abstract Handler getHandler();
 
-    int getDataSize() {
+    protected int getDataSize() {
         return mData.size();
-    }
-
-    public Data getItem(int pos) {
-        return mData.get(pos);
     }
 
     public void clearData() {
@@ -500,7 +498,6 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         public WrapContentDraweeView image;
         public ImageView favorites;
         public VideoPlayer player;
-        public View progress;
         public boolean isBgColorChanged;
 
         ViewHolder(View itemView) {
@@ -512,7 +509,7 @@ public abstract class BaseListAdapter extends RecyclerView.Adapter<BaseListAdapt
         }
     }
 
-    public static class FooterHolder extends GifPictureAdapter.ViewHolder {
+    protected static class FooterHolder extends VideoViewAdapter.ViewHolder {
 
         View bottomView;
 

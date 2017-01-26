@@ -7,6 +7,8 @@ import android.text.TextUtils;
 import android.view.SurfaceHolder;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -25,6 +27,9 @@ public class PlayManager {
     private VideoPlayer.Status mPlayerData;
     private VideoPlayer mVideoPlayer;
 
+    private ExecutorService mThreadPool = Executors.newCachedThreadPool();
+
+
     private PlayManager() {
         mPlayer = new IjkMediaPlayer();
     }
@@ -39,99 +44,97 @@ public class PlayManager {
         return mInstance;
     }
 
-    synchronized void prepareAsync(Context context, String url) {
+    void prepareAsync(final Context context, final String url) {
         LogUtil.print("prepareAsync");
         if (TextUtils.isEmpty(url)) {
-            try {
-                if (VideoPlayer.isFullScreenNow()) {
-                    if (mFullScreenListener != null)
-                        mFullScreenListener.onError(0, 0);
-                } else if (mListener != null)
-                    mListener.onError(0, 0);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            if (VideoPlayer.isFullScreenNow()) {
+                if (mFullScreenListener != null)
+                    mFullScreenListener.onError(0, 0);
+            } else if (mListener != null)
+                mListener.onError(0, 0);
             return;
         }
-        try {
-            if (mPlayer != null)
-                mPlayer.release();
-            mPlayer = new IjkMediaPlayer();
-            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setDataSource(context, Uri.parse(url));
-            mPlayer.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
+        mThreadPool.execute(new Runnable() {
                 @Override
-                public void onPrepared(IMediaPlayer iMediaPlayer) {
-                    if (VideoPlayer.isFullScreenNow()) {
-                        if (mFullScreenListener != null)
-                            mFullScreenListener.onPrepared();
-                    } else if (mListener != null)
-                        mListener.onPrepared();
+                public void run() {
+                    mPlayer.release();
+                    mPlayer = new IjkMediaPlayer();
+                    mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    try {
+                        mPlayer.setDataSource(context, Uri.parse(url));
+                        mPlayer.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(IMediaPlayer iMediaPlayer) {
+                                if (VideoPlayer.isFullScreenNow()) {
+                                    if (mFullScreenListener != null)
+                                        mFullScreenListener.onPrepared();
+                                } else if (mListener != null)
+                                    mListener.onPrepared();
+                            }
+                        });
+                        mPlayer.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(IMediaPlayer iMediaPlayer) {
+                                if (VideoPlayer.isFullScreenNow()) {
+                                    if (mFullScreenListener != null)
+                                        mFullScreenListener.onCompletion();
+                                } else if (mListener != null)
+                                    mListener.onCompletion();
+                            }
+                        });
+                        mPlayer.setOnBufferingUpdateListener(new IMediaPlayer.OnBufferingUpdateListener() {
+                            @Override
+                            public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int i) {
+                                if (VideoPlayer.isFullScreenNow()) {
+                                    if (mFullScreenListener != null)
+                                        mFullScreenListener.onBufferingUpdate(i);
+                                } else if (mListener != null)
+                                    mListener.onBufferingUpdate(i);
+                            }
+                        });
+                        mPlayer.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
+                            @Override
+                            public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
+                                if (VideoPlayer.isFullScreenNow()) {
+                                    if (mFullScreenListener != null)
+                                        mFullScreenListener.onError(i, i1);
+                                } else if (mListener != null)
+                                    mListener.onError(i, i1);
+                                return true;
+                            }
+                        });
+                        mPlayer.prepareAsync();
+                        setPlayerStatus(PlayStatus.PREPARING);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
-            mPlayer.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(IMediaPlayer iMediaPlayer) {
-                    if (VideoPlayer.isFullScreenNow()) {
-                        if (mFullScreenListener != null)
-                            mFullScreenListener.onCompletion();
-                    } else if (mListener != null)
-                        mListener.onCompletion();
-                }
-            });
-            mPlayer.setOnBufferingUpdateListener(new IMediaPlayer.OnBufferingUpdateListener() {
-                @Override
-                public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int i) {
-                    if (VideoPlayer.isFullScreenNow()) {
-                        if (mFullScreenListener != null)
-                            mFullScreenListener.onBufferingUpdate(i);
-                    } else if (mListener != null)
-                        mListener.onBufferingUpdate(i);
-                }
-            });
-            mPlayer.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
-                    if (VideoPlayer.isFullScreenNow()) {
-                        if (mFullScreenListener != null)
-                            mFullScreenListener.onError(i, i1);
-                    } else if (mListener != null)
-                        mListener.onError(i, i1);
-                    return true;
-                }
-            });
-            mPlayer.prepareAsync();
-            setPlayerStatus(PlayStatus.PREPARING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     int getVideoWidth() {
-        if (mPlayer == null) return 0;
         return mPlayer.getVideoWidth();
     }
 
     int getVideoHeight() {
-        if (mPlayer == null) return 0;
         return mPlayer.getVideoHeight();
     }
 
-    synchronized void play() {
+    void play() {
         if (mPlayer == null) return;
         if (!mPlayer.isPlaying())
             mPlayer.start();
         mStatus = PlayStatus.PLAYING;
     }
 
-    synchronized void pause() {
+    void pause() {
         if (mPlayer == null) return;
         if (mPlayer.isPlaying())
             mPlayer.pause();
         mStatus = PlayStatus.PAUSE;
     }
 
-    synchronized void stop() {
+    void stop() {
         if (mPlayer == null) return;
         if (mPlayer.isPlaying())
             mPlayer.stop();
@@ -143,19 +146,15 @@ public class PlayManager {
             mListener.onCompletion();
     }
 
-    synchronized void release() {
+    public void release() {
         if (mPlayer == null) return;
-        stop();
-        mPlayer.release();
-    }
-
-    public synchronized void onlyRelease() {
-        if (mPlayer == null) return;
-        if (mPlayer.isPlaying())
-            mPlayer.stop();
-        mPlayer.release();
-        if (VideoPlayer.isFullScreenNow() && mFullScreenListener != null)
-            mFullScreenListener.onExit();
+        mThreadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                stop();
+                mPlayer.release();
+            }
+        });
     }
 
     boolean isPlaying() {
@@ -179,12 +178,12 @@ public class PlayManager {
         return mPlayer.getCurrentPosition();
     }
 
-    synchronized void seekTo(long position) {
+    void seekTo(long position) {
         if (mPlayer == null) return;
         mPlayer.seekTo(position);
     }
 
-    public void setCurrentListener(PlayListener listener) {
+    void setCurrentListener(PlayListener listener) {
         if (listener == null) return;
         if (mListener != listener) {
             setPlayerStatus(PlayStatus.NORMAL);
@@ -207,16 +206,16 @@ public class PlayManager {
     }
 
 
-    public void setCurrentPlayer(VideoPlayer videoPlayer) {
+    void setCurrentPlayer(VideoPlayer videoPlayer) {
         if (mVideoPlayer != videoPlayer)
             mVideoPlayer = videoPlayer;
     }
 
-    public VideoPlayer getLastPlayer() {
+    VideoPlayer getLastPlayer() {
         return mVideoPlayer;
     }
 
-    public interface PlayListener {
+    interface PlayListener {
         void onPrepared();
 
         void onCompletion();
@@ -228,19 +227,17 @@ public class PlayManager {
         void onDisplayChanged(boolean isExitFullScreen);
 
         void onResetStatus();
-
-        void onExit();
     }
 
-    public void setPlayerStatus(PlayStatus status) {
+    void setPlayerStatus(PlayStatus status) {
         mStatus = status;
     }
 
-    public PlayStatus getPlayStatus() {
+    PlayStatus getPlayStatus() {
         return mStatus;
     }
 
-    public enum PlayStatus {
+    enum PlayStatus {
         PREPARING, PAUSE, PLAYING, NORMAL, ERROR
     }
 }

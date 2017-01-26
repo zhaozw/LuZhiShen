@@ -179,4 +179,5 @@
     <string name="text7">性爱技巧</string>
     <string name="text8">情色笑话</string>
     <string name="text9">其它小说</string>
+    <string name="load_comics_fail">加载漫画失败</string>
 </resources>

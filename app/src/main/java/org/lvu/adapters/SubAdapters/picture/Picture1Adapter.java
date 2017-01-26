@@ -6,6 +6,8 @@ import android.net.Uri;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.SubAdapters.SubBaseAdapter;
 import org.lvu.models.Data;
+import org.lvu.models.Row;
+import org.lvu.utils.HttpUtil;
 
 import java.util.List;
 
@@ -29,7 +31,9 @@ public class Picture1Adapter extends SubBaseAdapter {
         if (mData.isEmpty())
             return;
         try {
-            holder.image.setImageURI(Uri.parse(mData.get(0).getRows().get(position).getImg()));
+            holder.image.setImageURI(Uri.parse(HttpUtil.handleSpacesUrl(((Row)
+                    mData.get(position != 0 && position >= mData.size()
+                            ? mData.size() - 1 : position)).getImgs())));
         } catch (Exception e) {
             e.printStackTrace();
         }

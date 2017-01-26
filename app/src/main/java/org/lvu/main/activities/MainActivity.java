@@ -51,7 +51,6 @@ import org.lvu.main.fragments.PictureAreaFragment;
 import org.lvu.main.fragments.TextAreaFragment;
 import org.lvu.main.fragments.VideoAreaFragment;
 import org.lvu.utils.ImmerseUtil;
-import org.video_player.PlayManager;
 
 /**
  * Created by wuyr on 12/27/16 8:07 PM.
@@ -264,7 +263,6 @@ public class MainActivity extends BaseActivity {
         mCurrentPage.clearFocus();
         mTotalPages.setText("");
         hidePagesView();*/
-        PlayManager.getInstance().onlyRelease();
         return true;
     }
 

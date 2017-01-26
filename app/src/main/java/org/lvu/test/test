@@ -1,78 +1,83 @@
-{
-"name": "欧美激情列表",
-"maxIndex": "44",
-"rows": [
-{
-"title": "Loving Lux",
-"date": "2017-01-25",
-"jsonUrl": "/vod/2968.json",
-"img": "http://sjtp.55avtp.com/Loving Lux.jpg"
-},
-{
-"title": "Cheating step mom",
-"date": "2017-01-25",
-"jsonUrl": "/vod/2967.json",
-"img": "http://sjtp.55avtp.com/Cheating step mom.jpg"
-},
-{
-"title": "Hungry For Your Love",
-"date": "2017-01-25",
-"jsonUrl": "/vod/2966.json",
-"img": "http://sjtp.55avtp.com/Hungry For Your Love.jpg"
-},
-{
-"title": "A Real Bang For Your Buck",
-"date": "2017-01-24",
-"jsonUrl": "/vod/2960.json",
-"img": "http://sjtp.55avtp.com/A Real Bang For Your Buck.jpg"
-},
-{
-"title": "Kinky Kirby",
-"date": "2017-01-24",
-"jsonUrl": "/vod/2959.json",
-"img": "http://sjtp.55avtp.com/Kinky Kirby.jpg"
-},
-{
-"title": "Joymii - Paula - So Deep Inside",
-"date": "2017-01-24",
-"jsonUrl": "/vod/2958.json",
-"img": "http://sjtp.55avtp.com/Joymii - Paula - So Deep Inside.jpg"
-},
-{
-"title": "Defloration - Matilda Oj Hardcore",
-"date": "2017-01-23",
-"jsonUrl": "/vod/2950.json",
-"img": "http://sjtp.55avtp.com/Defloration - Matilda Oj Hardcore.jpg"
-},
-{
-"title": "The Needy Babysitter",
-"date": "2017-01-23",
-"jsonUrl": "/vod/2949.json",
-"img": "http://sjtp.55avtp.com/The Needy Babysitter.jpg"
-},
-{
-"title": "Bang! Original Anya Olsen",
-"date": "2017-01-23",
-"jsonUrl": "/vod/2948.json",
-"img": "http://sjtp.55avtp.com/Bang! Original Anya Olsen.jpg"
-},
-{
-"title": "Juicy Sweet",
-"date": "2017-01-22",
-"jsonUrl": "/vod/2942.json",
-"img": "http://sjtp.55avtp.com/Juicy Sweet.jpg"
-},
-{
-"title": "Biking Pickup Services",
-"date": "2017-01-22",
-"jsonUrl": "/vod/2941.json",
-"img": "http://sjtp.55avtp.com/Biking Pickup Services.jpg"
-},
-{
-"title": "Kylie Page",
-"date": "2017-01-22",
-"jsonUrl": "/vod/2940.json",
-"img": "http://sjtp.55avtp.com/Kylie Page.jpg"
-}
-]
-}
+影片地区：日<!--影片地区结束代码--></td> </tr>
+<tr>
+    <td width="50%"><strong>更新时间：</strong><!--影片更新时间开始代码-->2017-01-27 00:23:16<!--影片更新时间结束代码--></td>
+    <td><strong>影片状态：</strong><!--影片状态开始代码--> <!--影片状态结束代码--></td>
+</tr>
+<tr>
+    <td width="50%"><strong>影片语言：</strong><!--影片语言开始代码--><!--影片语言结束代码--></td>
+    <td><strong>上映日期：</strong><!--上映日期开始代码-->0<!--上映日期结束代码--></td>
+</tr>
+<tr>
+    <td colspan="2"><strong>图片地址：</strong><!--影片地址开始代码-->http://sjtp.55avtp.com/H0930 坂本桃花2-.jpg
+        <!--影片地址结束代码--></td>
+</tr>
+<tr>
+    <td valign="top" colspan="2">
+        <div class="nnr"><strong>影片介绍：</strong><!--影片介绍开始代码--><!--影片介绍结束代码--></div>
+    </td>
+</tr> </table> </ul> </div>
+<div style="clear:both"></div>
+<div class="vod ok"> <!-----m3u8资源列表开始------>
+    <div class="m3u8list">
+        <ul class="title">在线资源列表</ul>
+        <li>&nbsp;&nbsp;<input type="checkbox" name="m3u8url"
+                               value="http://sd.52avhd.com:9888/rh/6BEE25A4/SD/playlist.m3u8"
+                               checked="checked" class="m3u8"/><!-----m3u8资源地址开始------>
+            http://sd.52avhd.com:9888/rh/6BEE25A4/SD/playlist.m3u8<!-----m3u8资源地址结束------>&nbsp;<a
+                    href="/vodata/2440/play.html?2440-0-1" target="_blank"
+                    style="color:red">播放第1集</a></li>
+        <li>&nbsp;&nbsp;<input type="checkbox" name="m3u8url"
+                               value="http://sd.52avhd.com:9888/rh/6CEE25A4/SD/playlist.m3u8"
+                               checked="checked" class="m3u8"/><!-----m3u8资源地址开始------>
+            http://sd.52avhd.com:9888/rh/6CEE25A4/SD/playlist.m3u8<!-----m3u8资源地址结束------>&nbsp;<a
+                    href="/vodata/2440/play.html?2440-0-2" target="_blank"
+                    style="color:red">播放第2集</a></li>
+        <li>&nbsp;<input type="checkbox" name="m3u8selall" id="m3u8selall" checked="checked"
+                         onclick="checkall('m3u8')"/>全选/反选&nbsp;<input type="button" value="复制选中地址"
+                                                                       onclick="copyall('m3u8')"/>
+        </li>
+    </div> <!-----m3u8资源列表结束------> <!-----高清资源列表开始------>
+    <div class="gqlist">
+        <ul class="title">高清资源列表</ul>
+        <li>&nbsp;&nbsp;<input type="checkbox" name="gqurl"
+                               value="http://hd.52avhd.com:9889/rh/6BEE25A4/SD/playlist.m3u8"
+                               checked="checked" class="gq"/><!-----高清资源地址开始------>
+            http://hd.52avhd.com:9889/rh/6BEE25A4/SD/playlist.m3u8<!-----高清资源地址结束------>&nbsp;<a
+                    href="/vodata/2440/play.html?2440-0-1" target="_blank"
+                    style="color:red">播放第1集</a></li>
+        <li>&nbsp;&nbsp;<input type="checkbox" name="gqurl"
+                               value="http://hd.52avhd.com:9889/rh/6CEE25A4/SD/playlist.m3u8"
+                               checked="checked" class="gq"/><!-----高清资源地址开始------>
+            http://hd.52avhd.com:9889/rh/6CEE25A4/SD/playlist.m3u8<!-----高清资源地址结束------>&nbsp;<a
+                    href="/vodata/2440/play.html?2440-0-2" target="_blank"
+                    style="color:red">播放第2集</a></li>
+        <li>&nbsp;<input type="checkbox" name="gqselall" id="gqselall" checked="checked"
+                         onclick="checkall('gq')"/>全选/反选&nbsp;<input type="button" value="复制选中地址"
+                                                                     onclick="copyall('gq')"/></li>
+    </div> <!-----高清资源列表结束------>
+    <script src="http://pstatic.xunlei.com/js/webThunderDetect.js"></script>
+    <script src="http://pstatic.xunlei.com/js/thunderForum.js"></script><!-----高速下载资源列表开始------>
+    <div class="xunleilist">
+        <ul class="title">高速下载资源列表</ul>
+        <li>&nbsp;<input type="checkbox" name="xunleiurl"
+                         value="thunder://QUFodHRwOi8vY3EuOTlhdmNkbi5jb20vcmgvNkJFRTI1QTQubXA0Wlo="
+                         checked="checked" class="xunlei"/><!-----高速下载地址开始------>
+            thunder://QUFodHRwOi8vY3EuOTlhdmNkbi5jb20vcmgvNkJFRTI1QTQubXA0Wlo=<!-----高速下载地址结束------>
+            &nbsp;</li>
+        <li>&nbsp;<input type="checkbox" name="xunleiurl"
+                         value="thunder://QUFodHRwOi8vY3EuOTlhdmNkbi5jb20vcmgvNkNFRTI1QTQubXA0Wlo="
+                         checked="checked" class="xunlei"/><!-----高速下载地址开始------>
+            thunder://QUFodHRwOi8vY3EuOTlhdmNkbi5jb20vcmgvNkNFRTI1QTQubXA0Wlo=<!-----高速下载地址结束------>
+            &nbsp;</li>
+        <li>&nbsp;<input type="checkbox" name="xunleiselall" id="xunleiselall" checked="checked"
+                         onclick="checkall('xunlei')"/>全选/反选&nbsp;<input type="button"
+                                                                         value="复制选中地址"
+                                                                         onclick="copyall('xunlei')"/>
+        </li>
+    </div><!-----高速下载地址结束------></div>
+<div id="foot"><a href="#">关于我们</a> | <a href="/ganmao.php?s=gb-show.html">建议留言</a> | <a>友情连接</a> |
+    <a>招贤纳士</a> | <a href="#">TOP</a><br><span style="font-size:12px;"><font color=red>注:</font>本站仅提供低品质影视欣赏方面的信息和链接,电影版权归相关电影公司所有!如有侵权,本站将会以最快的速度将其删除!</span>
+</div>
+<div style="display:none">
+    <script type="text/javascript" src="/myjs/tongji.js" charset="utf-8"></script>
+</div> </body> </html>

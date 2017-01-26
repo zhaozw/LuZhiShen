@@ -1,11 +1,15 @@
-package org.lvu.adapters;
+package org.lvu.adapters.SubAdapters.picture;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 
+import org.lvu.adapters.BaseListAdapter;
+import org.lvu.adapters.SubAdapters.SubBaseAdapter;
 import org.lvu.models.Data;
+import org.lvu.models.Row;
 import org.lvu.utils.HttpUtil;
 
 import java.lang.ref.WeakReference;
@@ -14,7 +18,7 @@ import java.util.List;
 /**
  * Created by wuyr on 6/24/16 12:08 AM.
  */
-public class PicturesViewAdapter extends BasePictureListAdapter {
+public class PicturesViewAdapter extends SubBaseAdapter {
 
     public PicturesViewAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
@@ -27,6 +31,19 @@ public class PicturesViewAdapter extends BasePictureListAdapter {
                 return;
             initItemImage(holder, position);
             initItemLongClickListener(holder);
+        }
+    }
+
+    @Override
+    protected void initItemImage(BaseListAdapter.ViewHolder holder, int position) {
+        if (mData.isEmpty())
+            return;
+        try {
+            holder.image.setImageURI(Uri.parse(HttpUtil.handleSpacesUrl(((Row)
+                    mData.get(position != 0 && position >= mData.size()
+                            ? mData.size() - 1 : position)).getImg())));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

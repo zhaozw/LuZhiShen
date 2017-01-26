@@ -15,7 +15,7 @@ public class Video4Fragment extends Video1Fragment {
 
     @Override
     protected BaseListAdapter getAdapter() {
-        return new Video4Adapter(getActivity(), R.layout.adapter_video_item, new ArrayList<Data>());
+        return new Video4Adapter(getActivity(), R.layout.adapter_picture_list_item, new ArrayList<Data>());
     }
 
     @Override

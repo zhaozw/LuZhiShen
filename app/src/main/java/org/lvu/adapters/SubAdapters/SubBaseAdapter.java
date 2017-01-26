@@ -5,6 +5,9 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.view.View;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.BasePictureListAdapter;
@@ -12,6 +15,10 @@ import org.lvu.models.Data;
 import org.lvu.models.Row;
 import org.lvu.utils.HttpUtil;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,11 +42,10 @@ public abstract class SubBaseAdapter extends BasePictureListAdapter {
             if (mData.isEmpty())
                 return;
             try {
-                Data item = mData.get(0);
-                Row row = item.getRows().get(position);
+                Row row = (Row) mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position);
                 holder.text.setText(row.getTitle());
                 holder.date.setText(row.getDate());
-                holder.favorites.setImageResource(item.isFavorites() ? R.drawable.ic_favorite_selected : R.drawable.ic_favorite);
+                holder.favorites.setImageResource(row.isFavorites() ? R.drawable.ic_favorite_selected : R.drawable.ic_favorite);
                 initItemOnClickListener(holder);
                 initItemLongClickListener(holder);
             } catch (Exception e) {
@@ -55,15 +61,89 @@ public abstract class SubBaseAdapter extends BasePictureListAdapter {
                 @Override
                 public void onClick(View v) {
                     try {
-                        int pos = holder.getAdapterPosition();
-                        Data data = mData.get(0);
-                        Row row = data.getRows().get(pos);
-                        mOnItemClickListener.onClick(HttpUtil.BASE_URL + data.getRows().get(pos).getJsonUrl(), row.getTitle(), pos);
+                        int position = holder.getAdapterPosition();
+                        Row row = (Row) mData.get(position != 0 && position >= mData.size() ? mData.size() - 1 : position);
+                        mOnItemClickListener.onClick(HttpUtil.BASE_URL + row.getJsonUrl(), row.getTitle(), position);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
+    }
+
+    @Override
+    public void saveDataToStorage(BufferedWriter writer) {
+        if (writer == null) return;
+        if (mData == null || mData.isEmpty()) {
+            try {
+                writer.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+        List<Data> datas = new ArrayList<>();
+        Data data = new Data();
+        data.setNextPageUrl(mNextPageUrl);
+        data.setCurrentPage(mCurrentPage);
+        data.setTotalPages(mTotalPages);
+        List<Row> rows = new ArrayList<>();
+        for (Data tmp : mData)
+            rows.add((Row) tmp);
+        data.setRows(rows);
+        datas.add(data);
+        Gson gson = new Gson();
+        String json = gson.toJson(datas);
+        try {
+            writer.write(json);
+            writer.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                writer.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void restoreDataFromStorage(final BufferedReader reader, final HttpUtil.HttpRequestCallbackListener listener) {
+        if (reader == null) return;
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    List<Data> result = new ArrayList<>();
+                    String json;
+                    Gson gson = new Gson();
+                    String tmp;
+                    StringBuilder sb = new StringBuilder();
+                    while ((tmp = reader.readLine()) != null)
+                        sb.append(tmp);
+                    json = sb.toString();
+                    List<Data> datas = gson.fromJson(json, new TypeToken<ArrayList<Data>>() {
+                    }.getType());
+                    Data data = datas.get(0);
+                    List<Row> rows = data.getRows();
+                    for (Row row : rows)
+                        result.add(row);
+                    mCurrentPage = data.getCurrentPage();
+                    mTotalPages = data.getTotalPages();
+                    listener.onSuccess(result, data.getNextPageUrl());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    listener.onFailure(e, "");
+                } finally {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
     }
 
     @Override

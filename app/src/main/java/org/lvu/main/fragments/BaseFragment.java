@@ -13,7 +13,6 @@ import org.lvu.R;
 import org.lvu.adapters.AreaFragmentAdapter;
 import org.lvu.main.activities.MainActivity;
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
-import org.video_player.PlayManager;
 
 /**
  * Created by wuyr on 1/5/17 1:24 PM.
@@ -55,7 +54,6 @@ public abstract class BaseFragment extends Fragment {
                         mAdapter.getCurrentFragment().resetViewsColor(backgroundColor, themeColor);
 
                 }
-                PlayManager.getInstance().onlyRelease();
             }
         });
         mTabLayout.setupWithViewPager(mViewPager);

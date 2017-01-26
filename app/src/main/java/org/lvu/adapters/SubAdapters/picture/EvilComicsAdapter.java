@@ -1,9 +1,10 @@
-package org.lvu.adapters;
+package org.lvu.adapters.SubAdapters.picture;
 
 import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 
+import org.lvu.adapters.BasePictureListAdapter;
 import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
 

@@ -1,12 +1,15 @@
-package org.lvu.adapters;
+package org.lvu.adapters.SubAdapters.picture;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.lvu.R;
+import org.lvu.adapters.BasePictureListAdapter;
 import org.lvu.models.Data;
 import org.lvu.utils.HttpUtil;
+import org.lvu.utils.ImmerseUtil;
 
 import java.util.List;
 
@@ -17,6 +20,15 @@ public class GifPictureAdapter extends EvilComicsAdapter {
 
     public GifPictureAdapter(Context context, int layoutId, List<Data> data) {
         super(context, layoutId, data);
+    }
+
+    @Override
+    public BasePictureListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == ITEM_TYPE_BOTTOM && ImmerseUtil.isAboveKITKAT()
+                && ImmerseUtil.isHasNavigationBar(mContext))
+            return new FooterHolder(mLayoutInflater.inflate(
+                    R.layout.recycler_view_item_footer, parent, false));
+        return new ViewHolder(mLayoutInflater.inflate(mLayoutId, parent, false));
     }
 
     @Override
@@ -67,9 +79,19 @@ public class GifPictureAdapter extends EvilComicsAdapter {
 
     public static class ViewHolder extends BasePictureListAdapter.ViewHolder {
 
+        private boolean isGifPlaying;
+
         public ViewHolder(View itemView) {
             super(itemView);
-            progress = itemView.findViewById(R.id.progress_bar);
         }
+
+        public boolean isGifPlaying() {
+            return isGifPlaying;
+        }
+
+        public void setGifPlaying(boolean gifPlaying) {
+            isGifPlaying = gifPlaying;
+        }
+
     }
 }

@@ -63,11 +63,6 @@ public class FullScreenActivityLandscape extends AppCompatActivity {
             PlayManager.getInstance().getLastPlayer().onFullScreenActivityExited(mPlayer.initPlayerStatus());
     }
 
-    public void finishSpecial(){
-        VideoPlayer.isFullScreenNow = false;
-        super.finish();
-    }
-
     @Override
     public void onBackPressed() {
         finish();

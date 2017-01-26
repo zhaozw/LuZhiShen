@@ -36,17 +36,6 @@
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
                     app:placeholderImage="@drawable/ic_pic_loading" />
-
-                <org.lvu.customize.CircleProgressBar
-                    android:id="@+id/progress_bar"
-                    android:layout_width="@dimen/dp_42"
-                    android:layout_height="@dimen/dp_42"
-                    android:layout_gravity="center"
-                    android:visibility="gone"
-                    app:background_color="@color/videoViewBBG"
-                    app:enable_circle_background="false"
-                    app:inner_radius="16dp"
-                    app:progress_color="@android:color/white" />
             </FrameLayout>
 
             <org.video_player.ScrollingTextView

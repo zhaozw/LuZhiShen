@@ -1,11 +1,15 @@
 package org.lvu.main.fragments.view_pager_content.video;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
 import org.lvu.adapters.SubAdapters.video.Video1Adapter;
+import org.lvu.main.activities.PicturesViewActivity;
+import org.lvu.main.activities.VideoViewActivity;
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
 import org.lvu.models.Data;
 
@@ -19,12 +23,28 @@ public class Video1Fragment extends BaseListFragment {
 
     @Override
     protected BaseListAdapter.OnItemClickListener getOnItemClickListener() {
-        return null;
+        return new BaseListAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(String url, String text, int position) {
+                if (!TextUtils.isEmpty(url)) {
+                    Intent intent = new Intent(getActivity(), VideoViewActivity.class);
+                    intent.putExtra(PicturesViewActivity.URL, url);
+                    intent.putExtra(PicturesViewActivity.TITLE, text);
+                    startActivity(intent);
+                }
+            }
+        };
     }
 
     @Override
     protected BaseListAdapter.OnItemLongClickListener getOnItemLongClickListener() {
-        return null;
+        return new BaseListAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onLongClick(Data item) {
+                showDialog(item, getString(R.string.download_this_video));
+                return true;
+            }
+        };
     }
 
     @Override

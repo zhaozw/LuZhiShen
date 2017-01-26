@@ -1,7 +1,6 @@
 package org.lvu.utils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
@@ -15,6 +14,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.lvu.Application;
 import org.lvu.models.Data;
+import org.lvu.models.Row;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -28,8 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -40,10 +38,10 @@ import okhttp3.Request;
 public class HttpUtil {
 
     public static final String BASE_URL = "http://j1.44hdb1.com:22345";
-    public static final String REASON_NO_INTERNET_CONNECT = "无可用网络。\t(向右滑动清除)",
-            REASON_SERVER_404 = "无法找到资源。(服务器404)\t(向右滑动清除)",
-            REASON_CONNECT_SERVER_FAILURE = "连接服务器失败，请检查网络后重试。\t(向右滑动清除)",
-            REASON_INTERNET_NO_GOOD = "网络不给力，请重试。\t(向右滑动清除)";
+    private static final String REASON_NO_INTERNET_CONNECT = "无可用网络。",
+            REASON_SERVER_404 = "无法找到资源。(服务器404)",
+            REASON_CONNECT_SERVER_FAILURE = "连接服务器失败，请检查网络后重试。",
+            REASON_INTERNET_NO_GOOD = "网络不给力，请重试。";
     private static ExecutorService mThreadPool;
     private static OkHttpClient mHttpClient;
 
@@ -52,19 +50,60 @@ public class HttpUtil {
         mHttpClient = Application.getOkHttpClient();
     }
 
-    public static void getDataListAsync(final String url, final String page, final HttpRequestCallbackListener listener) {
+    public static void getDataListAsync(final String url, final String pageS, final HttpRequestCallbackListener listener) {
+        runOnBackground(listener, new BackgroundLogic() {
+            @Override
+            public void run() throws Exception {
+                int page = Integer.parseInt(pageS);
+                if (page < 1)
+                    page = 1;
+                String json = mHttpClient.newCall(
+                        new Request.Builder().url(BASE_URL + String.format(url, String.valueOf(page))).build()).execute().body().string();
+                Gson gson = new Gson();
+                List<Data> result = new ArrayList<>();
+                Data data = gson.fromJson(json, new TypeToken<Data>() {
+                }.getType());
+                List<Row> rows = data.getRows();
+                for (Row tmp : rows)
+                    result.add(tmp);
+                result.get(0).setCurrentPage(page);
+                result.get(0).setTotalPages(Integer.parseInt(data.getMaxIndex()));
+                listener.onSuccess(result, String.valueOf(page + 1));
+            }
+        });
+    }
+
+    public static void getVideoContent(final String url, final HttpRequestCallbackListener listener) {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
                 String json = mHttpClient.newCall(
-                        new Request.Builder().url(BASE_URL + String.format(url, page)).build()).execute().body().string();
+                        new Request.Builder().url(url).build()).execute().body().string();
                 Gson gson = new Gson();
                 List<Data> result = new ArrayList<>();
-                result.add((Data) gson.fromJson(json, new TypeToken<Data>() {
-                }.getType()));
-                listener.onSuccess(result, String.valueOf(Integer.parseInt(page) + 1));
+                Data data = gson.fromJson(json, new TypeToken<Data>() {
+                }.getType());
+                List<Data.Vod> vods = data.getRows_m3u8();
+                Document document = getDocument("http://www.55caiji.com/vod" + handleUrl(url) + ".html");
+                //<div class="gqlist">
+                String links = Jsoup.parse(document.select("td").last().text()).select("div[class=gqlist]").get(0).text();
+                int count = vods.size();
+                List<String> urls = new ArrayList<>();
+                for (int i = 1; i <= count; i++) {
+                    urls.add(links.substring(links.indexOf("http"), links.indexOf(".m3u8") + 5));
+                    links = links.substring(links.indexOf("集") + 1);
+                }
+                for (int i = 0; i < vods.size(); i++) {
+                    vods.get(i).setVod(urls.get(i));
+                    result.add(vods.get(i));
+                }
+                listener.onSuccess(result, "");
             }
         });
+    }
+
+    private static String handleUrl(String url) {
+        return url.substring(url.lastIndexOf("/"), url.indexOf(".json"));
     }
 
     public static void getComicsListAsync(final String url, final HttpRequestCallbackListener listener) {
@@ -189,17 +228,16 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
+                String json = mHttpClient.newCall(
+                        new Request.Builder().url(url).build()).execute().body().string();
+                Gson gson = new Gson();
                 List<Data> result = new ArrayList<>();
-                String nextPageUrl = "";
-                int currentPage = 0, totalPages = 0;
-                Document document = Jsoup.parse(getDocument(url).select("textarea[id=nr]").get(0).text());
-                Elements img = document.select("img[src]");
-                for (Element tmp : img)
-                    result.add(new Data(handleSpacesUrl(tmp.attr("src"))));
-
-                result.get(0).setCurrentPage(currentPage);
-                result.get(0).setTotalPages(totalPages);
-                listener.onSuccess(result, nextPageUrl);
+                Data data = gson.fromJson(json, new TypeToken<Data>() {
+                }.getType());
+                List<Row> rows = data.getRows();
+                for (Row tmp : rows)
+                    result.add(tmp);
+                listener.onSuccess(result, "");
             }
         });
     }
@@ -208,8 +246,11 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                Document document = getDocument(url);
-                String content = document.select("textarea[id=nr]").get(0).text();
+                String json = mHttpClient.newCall(
+                        new Request.Builder().url(url).build()).execute().body().string();
+                Data data = new Gson().fromJson(json, new TypeToken<Data>() {
+                }.getType());
+                String content = handleString2(data.getHtml());
                 if (content.isEmpty())
                     listener.onFailure(new Exception("novel content is empty!"), REASON_SERVER_404);
                 else
@@ -222,13 +263,9 @@ public class HttpUtil {
         runOnBackground(listener, new BackgroundLogic() {
             @Override
             public void run() throws Exception {
-                // listener.onSuccess(ImageLoader.getInstance().loadImageSync(getDocument(url).select("img[alt]").get(0).attr("abs:src"), new DisplayImageOptions.Builder().imageScaleType(ImageScaleType.NONE).build()));
+                listener.onSuccess(null, getDocument(url).select("img[alt]").get(0).attr("abs:src"));
             }
         });
-    }
-
-    public static byte[] getGifFile(String url) throws Exception {
-        return mHttpClient.newCall(new Request.Builder().url(url).build()).execute().body().bytes();
     }
 
     public static void readMoreJokeAsync(final String url, final HttpRequestCallbackListener listener) {
@@ -306,7 +343,7 @@ public class HttpUtil {
                 replaceAll("妹子有图有声", "").replaceAll("图片", "").replaceAll("图", "");
     }
 
-    private static String handleSpacesUrl(String src) {
+    public static String handleSpacesUrl(String src) {
         String url = null;
         try {
             url = URLEncoder.encode(src, "utf-8").replaceAll("\\+", "%20");
@@ -316,40 +353,6 @@ public class HttpUtil {
         if (url != null)
             url = url.replaceAll("%3A", ":").replaceAll("%2F", "/");
         return url == null ? src : url;
-    }
-
-    private static String getFirstPic(String url) {
-        String result = "";
-        try {
-            result = Jsoup.parse(getDocument(url).select("textarea[id=nr]").get(0).text()).select("img[src]").get(0).attr("abs:src");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    private static String[] getVideoUrlAndVideoImg(String url) {
-        String[] result = new String[2];
-        try {
-            Document document = getDocument(url);
-            String s = document.select("td").last().html();
-            result[0] = s.substring(s.lastIndexOf("&gt;http://") + 4, s.lastIndexOf(".m3u8&lt") + 5);
-            result[1] = document.select("ul[class=xqimg]").get(0).select("img").get(0).attr("src");
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return result;
-        }
-    }
-
-    private static int toInt(String src) {
-        Pattern p = Pattern.compile("[^0-9]");
-        Matcher m = p.matcher(src);
-        try {
-            return Integer.parseInt(m.replaceAll("").trim());
-        } catch (Exception e) {
-            return 0;
-        }
     }
 
     private static boolean isNetWorkAvailable() {
@@ -409,16 +412,11 @@ public class HttpUtil {
         });
     }
 
-    public abstract static class HttpRequestCallbackListener {
+    public interface HttpRequestCallbackListener {
 
-        public void onSuccess(List<Data> data, String args) {
-        }
+        void onSuccess(List<Data> data, String args);
 
-        public void onSuccess(Bitmap bitmap) {
-        }
-
-        public void onFailure(Exception e, String reason) {
-        }
+        void onFailure(Exception e, String reason);
     }
 
     private interface BackgroundLogic {

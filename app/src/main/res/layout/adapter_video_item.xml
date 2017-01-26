@@ -26,6 +26,7 @@
 
         <org.video_player.ScrollingTextView
             android:id="@+id/text"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -40,6 +41,7 @@
             tools:text="“蒜你狠”卷土重来 每斤价格直逼20元" />
 
         <RelativeLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dp_12"

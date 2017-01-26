@@ -18,7 +18,7 @@ import android.view.animation.ScaleAnimation;
 
 import org.lvu.R;
 import org.lvu.adapters.BaseListAdapter;
-import org.lvu.adapters.PicturesViewAdapter;
+import org.lvu.adapters.SubAdapters.picture.PicturesViewAdapter;
 import org.lvu.customize.CircleProgressBar;
 import org.lvu.customize.MySnackBar;
 import org.lvu.models.Data;
@@ -27,6 +27,8 @@ import org.lvu.utils.ImmerseUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
+
 /**
  * Created by wuyr on 6/23/16 11:23 PM.
  */
@@ -34,15 +36,21 @@ import java.util.List;
 public class PicturesViewActivity extends BaseActivity {
 
     public static final String URL = "url", TITLE = "title";
-    private Toolbar mToolbar;
-    private CircleProgressBar mLoadMoreBar;
-    private PicturesViewAdapter mAdapter;
+    Toolbar mToolbar;
+    CircleProgressBar mLoadMoreBar;
+    BaseListAdapter mAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pictures_view);
+        init();
+    }
+
+    private void init() {
         initViews();
+        initRecyclerView();
+        initAdapter();
         initImmerse();
     }
 
@@ -51,10 +59,25 @@ public class PicturesViewActivity extends BaseActivity {
         mToolbar.setTitle(getIntent().getStringExtra(TITLE));
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mAdapter = new PicturesViewAdapter(this, R.layout.activity_pictures_item, new ArrayList<Data>());
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(mAdapter);
+        mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
+        if (ImmerseUtil.isHasNavigationBar(this)) {
+            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
+            lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(this);
+            mLoadMoreBar.setLayoutParams(lp);
+        }
+        mLoadMoreBar.setColorSchemeResources(R.color.menu_text_color);
+        List<Integer> data = new ArrayList<>();
+        int[] array = R.styleable.AppCompatTheme;
+        for (int tmp : array)
+            data.add(tmp);
+        TypedArray a = obtainStyledAttributes(R.styleable.AppCompatTheme);
+        int color = a.getColor(data.indexOf(R.attr.colorPrimary),
+                getResources().getColor(R.color.bluePrimary));
+        mLoadMoreBar.setBackgroundColor(color);
+        a.recycle();
+    }
+
+    private void initAdapter() {
         mAdapter.syncData(getIntent().getStringExtra(URL));
         mAdapter.setOnSyncDataFinishListener(new BaseListAdapter.OnFinishListener() {
             @Override
@@ -86,22 +109,15 @@ public class PicturesViewActivity extends BaseActivity {
                         });
             }
         });
-        mLoadMoreBar = (CircleProgressBar) findViewById(R.id.progressbar);
-        if (ImmerseUtil.isHasNavigationBar(this)) {
-            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mLoadMoreBar.getLayoutParams();
-            lp.bottomMargin += ImmerseUtil.getNavigationBarHeight(this);
-            mLoadMoreBar.setLayoutParams(lp);
-        }
-        mLoadMoreBar.setColorSchemeResources(R.color.menu_text_color);
-        List<Integer> data = new ArrayList<>();
-        int[] array = R.styleable.AppCompatTheme;
-        for (int tmp : array)
-            data.add(tmp);
-        TypedArray a = obtainStyledAttributes(R.styleable.AppCompatTheme);
-        int color = a.getColor(data.indexOf(R.attr.colorPrimary),
-                getResources().getColor(R.color.bluePrimary));
-        mLoadMoreBar.setBackgroundColor(color);
-        a.recycle();
+    }
+
+    void initRecyclerView() {
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mAdapter = new PicturesViewAdapter(this, R.layout.activity_pictures_item, new ArrayList<Data>());
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        ScaleInAnimationAdapter animationAdapter = new ScaleInAnimationAdapter(mAdapter);
+        animationAdapter.setFirstOnly(false);
+        recyclerView.setAdapter(animationAdapter);
     }
 
     private void initImmerse() {
@@ -126,7 +142,7 @@ public class PicturesViewActivity extends BaseActivity {
 
     private Animation hideAnimation;
 
-    private void hideLoadMoreBar() {
+    void hideLoadMoreBar() {
         if (hideAnimation == null)
             initHideAnimation();
         try {

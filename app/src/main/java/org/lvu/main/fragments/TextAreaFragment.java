@@ -2,7 +2,7 @@ package org.lvu.main.fragments;
 
 import org.lvu.R;
 import org.lvu.main.fragments.view_pager_content.BaseListFragment;
-import org.lvu.main.fragments.view_pager_content.FunnyJokeFragment;
+import org.lvu.main.fragments.view_pager_content.text.FunnyJokeFragment;
 import org.lvu.main.fragments.view_pager_content.text.Text1Fragment;
 import org.lvu.main.fragments.view_pager_content.text.Text2Fragment;
 import org.lvu.main.fragments.view_pager_content.text.Text3Fragment;
